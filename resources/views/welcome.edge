@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <title>Hello Adonis</title>
-  {{ style('style') }}
+  {{ style('app') }}
 </head>
-<body>
-  <section>
-    <div class="logo"></div>
+<body >
+  <section style="background: url('/pyramid.png') no-repeat">
+    <div class="logo" ></div>
     <div class="title"></div>
     <div class="subtitle">
       <p>AdonisJs simplicity will make you feel confident about your code</p>
@@ -15,6 +15,8 @@
         Don't know where to start? Read the <a href="https://adonisjs.com/docs">documentation</a>.
       </p>
     </div>
+    <div id='root'>something</div>
   </section>
 </body>
 </html>
+{{ script('app') }}

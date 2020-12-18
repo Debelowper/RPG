@@ -9,7 +9,7 @@ body {
 }
 
 svg {
-
+    
 }
 svg g {
   fill: #3F51B5;
@@ -24,7 +24,7 @@ svg g:hover text {
 
 svg g polygon {
   stroke: #3F51B5;
-  stroke-width: 0.2;
+  stroke-width: 0.5;
   transition: fill-opacity .2s;
 }
 svg g text {

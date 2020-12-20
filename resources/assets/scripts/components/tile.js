@@ -5,25 +5,46 @@ import PropTypes from 'prop-types';
 
 
 export default class Tile extends Component {
-    constructor(props){
+    constructor(props, context){
         super(props)
+
+        this.onClick = this.onClick.bind(this)
+        this.onHover = this.onHover.bind(this)
+
+        this.state = {
+
+        }
+
     }
 
-    // static propTypes = {
-    //     hex : this.props.object
-    // }
+    onClick(event){
+        this.props.onChildClick(this.props.id)
+    }
 
+    onHover(){
+        this.props.onChildHover(this.props.id)
+    }
 
+    changePattern(patternId){
+        this.setState({pattern: patternId })
+    }
 
     render(){
-        const {hex} = this.props
-
+        const {hex, id} = this.props
 
         return(
-
-            <Hexagon q={hex.q} r={hex.r} s={hex.s} />
-
+            <Hexagon
+                onClick={this.onClick}
+                onMouseEnter={this.onHover}
+                onMouseLeave={}
+                q={hex.q}
+                r={hex.r}
+                s={hex.s}
+                fill={this.state.pattern}/>
         )
     }
+}
 
+Tile.propTypes = {
+    hex : PropTypes.object.isRequired
 }

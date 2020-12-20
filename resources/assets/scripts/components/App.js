@@ -1,12 +1,27 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import { HexGrid, Layout, Hexagon, GridGenerator } from 'react-hexgrid';
-import Tile from './tile';
+import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
+import Tile from './Tile';
+import patternList from './patternList'
 
 export default class App extends Component {
     constructor(props){
         super(props)
+
+        this.hexList = []
+        this.setRefs = el => {
+            this.hexList.push(el)
+        };
+
+        this.state = {
+
+        }
+
+
+        this.onChildClick = this.onChildClick.bind(this)
+        this.onChildHover = this.onChildHover.bind(this)
     }
+
 
     calcGridParams(x, y, size){
 
@@ -31,20 +46,48 @@ export default class App extends Component {
         }
     }
 
+    identificateHexagons(hexagons, gridParams){
+        hexagons = hexagons.map((hex, i)=>{
+            hex.id = {x:(hex.q ), y:i%gridParams.x}
+            return hex
+        })
+        return hexagons
+    }
+
+    onChildClick(id){
+        this.changeChildPattern(id, "tavern-sign")
+    }
+
+    onChildHover(id){
+        
+    }
+
+
+    changeChildPattern(id, pattern){
+        let el = this.hexList.find((el) => {
+            return el.props.id == id
+        })
+
+        el.changePattern(pattern)
+    }
+
+
+
     render(){
 
-        let gridParams = this.calcGridParams(50,50,10)
+        let gridParams = this.calcGridParams(20,10,10)
 
-        const hexagons = GridGenerator.orientedRectangle(gridParams.x, gridParams.y);
-
+        var hexagons = GridGenerator.orientedRectangle(gridParams.x, gridParams.y);
+        hexagons = this.identificateHexagons(hexagons, gridParams)
 
 
         return (
           <div>
             <HexGrid  width={gridParams.width} height={gridParams.height} viewBox={gridParams.viewboxParams.join(' ')}>
-              <Layout size={{ x: gridParams.size, y: gridParams.size }}>
-                { hexagons.map((hex, i) => <Tile key={i} hex={hex} />  ) }
+              <Layout ref={this.layoutRef} size={{ x: gridParams.size, y: gridParams.size }}>
+                { hexagons.map((hex, i) => <Tile ref={this.setRefs} key={i} hex={hex} id={hex.id} onChildClick={this.onChildClick} onChildHover={this.onChildHover} />  ) }
               </Layout>
+              {patternList()}
             </HexGrid>
           </div>
         );

@@ -36,7 +36,6 @@ export default class Tile extends Component {
             <Hexagon
                 onClick={this.onClick}
                 onMouseEnter={this.onHover}
-                onMouseLeave={}
                 q={hex.q}
                 r={hex.r}
                 s={hex.s}

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
 import Tile from './Tile';
 import patternList from './patternList'
+import PatternMenu from './PatternMenu'
 
 export default class App extends Component {
     constructor(props){
@@ -59,7 +60,7 @@ export default class App extends Component {
     }
 
     onChildHover(id){
-        
+
     }
 
 
@@ -89,6 +90,8 @@ export default class App extends Component {
               </Layout>
               {patternList()}
             </HexGrid>
+            <PatternMenu />
+
           </div>
         );
     }

@@ -14,15 +14,14 @@ export default class Tile extends Component {
         this.state = {
 
         }
-
     }
 
     onClick(event){
-        this.props.onChildClick(this.props.id)
+        this.props.onHexClick(this.props.id)
     }
 
     onHover(){
-        this.props.onChildHover(this.props.id)
+        this.props.onHexHover(this.props.id)
     }
 
     changePattern(patternId){

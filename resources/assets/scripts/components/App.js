@@ -15,12 +15,11 @@ export default class App extends Component {
         };
 
         this.state = {
-
+            selectedPattern: ''
         }
 
-
-        this.onChildClick = this.onChildClick.bind(this)
-        this.onChildHover = this.onChildHover.bind(this)
+        this.onHexClick = this.onHexClick.bind(this)
+        this.onHexHover = this.onHexHover.bind(this)
     }
 
 
@@ -55,12 +54,16 @@ export default class App extends Component {
         return hexagons
     }
 
-    onChildClick(id){
+    onHexClick(id){
         this.changeChildPattern(id, "tavern-sign")
     }
 
-    onChildHover(id){
+    onHexHover(id){
 
+    }
+
+    onMenuClick(patternId){
+        this.setState({selectedPattern: patternId })
     }
 
 
@@ -83,14 +86,22 @@ export default class App extends Component {
 
 
         return (
+
           <div>
             <HexGrid  width={gridParams.width} height={gridParams.height} viewBox={gridParams.viewboxParams.join(' ')}>
               <Layout ref={this.layoutRef} size={{ x: gridParams.size, y: gridParams.size }}>
-                { hexagons.map((hex, i) => <Tile ref={this.setRefs} key={i} hex={hex} id={hex.id} onChildClick={this.onChildClick} onChildHover={this.onChildHover} />  ) }
+                { hexagons.map((hex, i) =>
+                    <Tile
+                        ref={this.setRefs}
+                        key={i} hex={hex}
+                        id={hex.id}
+                        onHexClick={this.onHexClick}
+                        onHexHover={this.onHexHover} />
+                )}
               </Layout>
               {patternList()}
             </HexGrid>
-            <PatternMenu />
+            <PatternMenu onMenuClick={this.onMenuClick } />
 
           </div>
         );

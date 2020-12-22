@@ -1,5 +1,7 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+const path = require('path');
+
 const extractSass = new MiniCssExtractPlugin({
   filename: 'app.css'
 })
@@ -8,12 +10,11 @@ const extractSass = new MiniCssExtractPlugin({
 function sassRules () {
   return [
     {
-      test: /\.(sass|scss)$/,
-      use: [{loader: MiniCssExtractPlugin.loader}, {loader: 'css-loader'}, {loader: 'sass-loader'} ]
+      test: /\.(css|sass|scss)$/,
+      use: [ MiniCssExtractPlugin.loader, {loader: 'css-loader', options: { importLoaders: 1 }}, {loader: 'sass-loader'}, 'postcss-loader']
     }
   ]
 }
-
 
 function scriptRules () {
   return [
@@ -26,7 +27,6 @@ function scriptRules () {
   ]
 }
 
- const path = require('path');
 
 module.exports = {
   entry: [

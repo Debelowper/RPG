@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
 import Tile from './Tile';
 import patternList from './patternList'
-import PatternMenu from './PatternMenu'
+import PatternMenu from './PatternMenu/PatternMenu'
 
 export default class App extends Component {
     constructor(props){
@@ -20,6 +20,7 @@ export default class App extends Component {
 
         this.onHexClick = this.onHexClick.bind(this)
         this.onHexHover = this.onHexHover.bind(this)
+        this.onMenuClick = this.onMenuClick.bind(this)
     }
 
 
@@ -55,7 +56,7 @@ export default class App extends Component {
     }
 
     onHexClick(id){
-        this.changeChildPattern(id, "tavern-sign")
+        this.changeChildPattern(id, this.state.selectedPattern)
     }
 
     onHexHover(id){

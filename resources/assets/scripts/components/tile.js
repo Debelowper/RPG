@@ -38,7 +38,8 @@ export default class Tile extends Component {
                 q={hex.q}
                 r={hex.r}
                 s={hex.s}
-                fill={this.state.pattern}/>
+                fill={this.state.pattern}
+            />
         )
     }
 }

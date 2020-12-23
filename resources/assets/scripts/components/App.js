@@ -1,32 +1,27 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
-import Tile from './Tile';
-import patternList from './patternList'
+import Map from './Map'
+import SizeMenu from './SizeMenu'
 import PatternMenu from './PatternMenu/PatternMenu'
 
 export default class App extends Component {
     constructor(props){
         super(props)
 
-        this.hexList = []
-        this.setRefs = el => {
-            this.hexList.push(el)
-        };
-
         this.state = {
-            selectedPattern: ''
+            selectedPattern: '',
+            gridParams: this.calcGridParams(20,10,10)
         }
 
-        this.onHexClick = this.onHexClick.bind(this)
-        this.onHexHover = this.onHexHover.bind(this)
         this.onMenuClick = this.onMenuClick.bind(this)
+        this.saveMap = this.saveMap.bind(this)
+        this.changeGridParams = this.changeGridParams.bind(this)
     }
 
 
     calcGridParams(x, y, size){
 
-        let kx = 0.78
+        let kx = 0.77
         let ky = 0.88
 
         let spacesX = kx*2*size*x + size
@@ -47,63 +42,29 @@ export default class App extends Component {
         }
     }
 
-    identificateHexagons(hexagons, gridParams){
-        hexagons = hexagons.map((hex, i)=>{
-            hex.id = {x:(hex.q ), y:i%gridParams.x}
-            return hex
-        })
-        return hexagons
-    }
-
-    onHexClick(id){
-        this.changeChildPattern(id, this.state.selectedPattern)
-    }
-
-    onHexHover(id){
-
-    }
-
     onMenuClick(patternId){
         this.setState({selectedPattern: patternId })
     }
 
+    changeGridParams(width, height, size){
+        var gridParams = this.calcGridParams(width, height, size)
+        this.setState({gridParams})
+    }
 
-    changeChildPattern(id, pattern){
-        let el = this.hexList.find((el) => {
-            return el.props.id == id
-        })
-
-        el.changePattern(pattern)
+    saveMap(){
+        console.log(this)
     }
 
 
 
     render(){
-
-        let gridParams = this.calcGridParams(20,10,10)
-
-        var hexagons = GridGenerator.orientedRectangle(gridParams.x, gridParams.y);
-        hexagons = this.identificateHexagons(hexagons, gridParams)
-
-
         return (
 
           <div>
-            <HexGrid  width={gridParams.width} height={gridParams.height} viewBox={gridParams.viewboxParams.join(' ')}>
-              <Layout ref={this.layoutRef} size={{ x: gridParams.size, y: gridParams.size }}>
-                { hexagons.map((hex, i) =>
-                    <Tile
-                        ref={this.setRefs}
-                        key={i} hex={hex}
-                        id={hex.id}
-                        onHexClick={this.onHexClick}
-                        onHexHover={this.onHexHover} />
-                )}
-              </Layout>
-              {patternList()}
-            </HexGrid>
+            <SizeMenu changeGridParams={this.changeGridParams} />
+            <Map gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
             <PatternMenu onMenuClick={this.onMenuClick } />
-
+            <button onClick={this.saveMap} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Save Map</button>
           </div>
         );
     }

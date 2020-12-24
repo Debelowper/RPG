@@ -8,33 +8,39 @@ export default class Map extends Component {
     constructor(props){
         super(props)
 
-        this.state = {
-            hexList: []
-        }
-
+        this.hexList=[]
+        this.layoutRef = React.createRef()
 
         this.onHexClick = this.onHexClick.bind(this)
         this.onHexHover = this.onHexHover.bind(this)
-        this.setRefs = this.setRefs.bind(this)
+        this.setHexRefs = this.setHexRefs.bind(this)
 
     }
 
-    setRefs(el) {
+    componentDidUpdate(){
+        this.clearLeftoverHexes()
+    }
+
+    clearLeftoverHexes(){
+        let hexList = this.hexList
+        hexList = hexList.map(el => {
+            if(this.layoutRef.current.props.children.find(i => el.props.id.x == i.props.id.x && el.props.id.y == i.props.id.y)){
+                return el
+            }else{
+                return null
+            }
+        })
+        this.hexList = hexList.filter(el => el != null)
+    }
+
+    setHexRefs(el) {
         if(el){
-            var hexList = this.state.hexList
+            var hexList = this.hexList
             if(!hexList.find(i => i.props.id.x == el.props.id.x && i.props.id.y == el.props.id.y)){
                 hexList.push(el)
-                this.setState({hexList:hexList})
+                this.hexList = hexList
             }
         }
-    }
-
-    identificateHexagons(hexagons, gridParams){
-        hexagons = hexagons.map((hex, i)=>{
-            hex.id = {x:(hex.q ), y:i%gridParams.y}
-            return hex
-        })
-        return hexagons
     }
 
     onHexClick(id){
@@ -42,8 +48,8 @@ export default class Map extends Component {
     }
 
     changeChildPattern(id, pattern){
-        let el = this.state.hexList.find((el) => {
-            return el.props.id == id
+        let el = this.hexList.find((el) => {
+            return el.props.id.x == id.x && el.props.id.y == id.y
         })
 
         el.changePattern(pattern)
@@ -53,25 +59,34 @@ export default class Map extends Component {
 
     }
 
+    createTiles(hexagons){
+
+        let hexes = hexagons.map((hex, i) =>{
+            hex.id = {x:(hex.q ), y:i%this.props.gridParams.y}
+            return(
+                <Tile
+                    ref={this.setHexRefs}
+                    key={'r'+hex.id.x+'c'+hex.id.y}
+                    hex={hex}
+                    id={hex.id}
+                    onHexClick={this.onHexClick}
+                    onHexHover={this.onHexHover}
+                />
+            )
+
+        })
+        return hexes
+    }
 
     render(){
 
-        var hexagons = GridGenerator.orientedRectangle(this.props.gridParams.x, this.props.gridParams.y);
-        hexagons = this.identificateHexagons(hexagons, this.props.gridParams)
+        var hexagons = GridGenerator.orientedRectangle(this.props.gridParams.x, this.props.gridParams.y)
 
         return(
             <div>
                 <HexGrid  width={this.props.gridParams.width} height={this.props.gridParams.height} viewBox={this.props.gridParams.viewboxParams.join(' ')}>
                   <Layout ref={this.layoutRef} size={{ x: this.props.gridParams.size, y: this.props.gridParams.size }}>
-                    { hexagons.map((hex, i) =>
-                        <Tile
-                            ref={this.setRefs}
-                            key={i} hex={hex}
-                            id={hex.id}
-                            onHexClick={this.onHexClick}
-                            onHexHover={this.onHexHover}
-                        />
-                    )}
+                    {this.createTiles(hexagons) }
                   </Layout>
                   {patternList()}
                 </HexGrid>

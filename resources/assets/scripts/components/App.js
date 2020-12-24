@@ -10,8 +10,10 @@ export default class App extends Component {
 
         this.state = {
             selectedPattern: '',
-            gridParams: this.calcGridParams(20,10,10)
+            gridParams: this.calcGridParams(10,10,10)
         }
+
+        this.mapRef = React.createRef()
 
         this.onMenuClick = this.onMenuClick.bind(this)
         this.saveMap = this.saveMap.bind(this)
@@ -52,7 +54,15 @@ export default class App extends Component {
     }
 
     saveMap(){
-        console.log(this)
+        // console.log(this.mapRef)
+        var saveObj = this.mapRef.current.hexList.map(el => {
+            return {id: el.props.id, pattern:el.state.pattern}
+        })
+        // console.log(saveObj)
+    }
+
+    loadMap(){
+
     }
 
 
@@ -62,10 +72,10 @@ export default class App extends Component {
 
           <div>
             <SizeMenu changeGridParams={this.changeGridParams} />
-            <Map gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
+            <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
             <PatternMenu onMenuClick={this.onMenuClick } />
             <button onClick={this.saveMap} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Save Map</button>
           </div>
-        );
+        )
     }
 }

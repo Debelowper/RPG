@@ -5,8 +5,8 @@ import { Pattern } from 'react-hexgrid';
 export default function patternList(){
     return (
         [
-            <Pattern id="dragon" link={"http://"+ window.location.host +"/spiked-dragon-head.png"} />,
-            <Pattern id="tavern-sign" link={"http://"+ window.location.host +"/tavern-sign.svg"} />
+            <Pattern key={1} id="dragon" link={"http://"+ window.location.host +"/spiked-dragon-head.png"} />,
+            <Pattern key={2} id="tavern-sign" link={"http://"+ window.location.host +"/tavern-sign.svg"} />
         ]
     )
 }

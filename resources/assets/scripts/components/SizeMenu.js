@@ -33,7 +33,7 @@ export default class App extends Component {
             <div>
                 <input placeholder={'width'} value={this.state.width} onChange={this.handleChange} className="border-4 rounded" type='number' ></input>
                 <input placeholder={'height'} value={this.state.height} onChange={this.handleChange} className="border-4 rounded" type='number' ></input>
-                <input placeholder={'size'} value={this.state.size} onChange={this.handleChange} className="border-4 rounded" type='number' ></input>
+                {/*<input placeholder={'size'} value={this.state.size} onChange={this.handleChange} className="border-4 rounded" type='number' ></input>*/}
                 <button onClick={this.onClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Apply</button>
             </div>
 

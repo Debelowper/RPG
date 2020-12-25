@@ -6,10 +6,10 @@
   {{ style('app') }}
   <link rel="icon" href="spiked-dragon-head.png" type="image/x-icon">
 </head>
-<body >
-
-    <div id='root'></div>
-
+<body class="bg-gray-300" >
+    @include('layout.header')
+    <div>
+        @!section('content')
+    </div>
 </body>
 </html>
-{{ script('app') }}

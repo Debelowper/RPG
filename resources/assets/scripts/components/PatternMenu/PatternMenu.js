@@ -11,7 +11,7 @@ export default class PatternMenu extends Component {
 
     render(){
         return(
-             <div className='flex flex-row h-24 space-x-2'>
+             <div className='flex bg-gray-700 border-2 border-red-700 py-3 flex-row h-24 space-x-2'>
                 <Image onMenuClick={this.props.onMenuClick} id='dragon' src={"http://"+ window.location.host +"/spiked-dragon-head.png"}/>
                 <Image onMenuClick={this.props.onMenuClick} id='tavern-sign ' src={"http://"+ window.location.host +"/tavern-sign.svg"}/>
              </div>

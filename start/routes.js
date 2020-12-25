@@ -16,12 +16,12 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route.on('/').render('game.index')
-
 Route
-    .get('login', ({view}) =>{
-        return view.render('auth.login')
-    }).middleware('guest')
+    .on('/')
+    .render('game.index')
+    .middleware('auth')
+    .as('/')
+
 
 Route
   .post('register', 'UserController.register')
@@ -29,13 +29,19 @@ Route
   .as('register')
 
 
-  Route
+Route
     .get('register', ({view})=>{
         return view.render('auth.register')
     })
     .middleware('guest')
     .as('registerPage')
 
+Route
+    .get('login', ({view}) =>{
+        return view.render('auth.login')
+    })
+    .middleware('guest')
+    .as('loginPage')
 
 Route
   .post('login', 'UserController.login')
@@ -45,3 +51,8 @@ Route
 Route
   .get('users/:id', 'UserController.show')
   .middleware('auth')
+
+  Route
+    .get('logout', 'UserController.logout')
+    .middleware('auth')
+    .as('logout')

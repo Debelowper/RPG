@@ -2,4 +2,6 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import App from './components/App'
 
-ReactDOM.render(<App {...(root.dataset)} />, document.getElementById('root'))
+if(document.getElementById('root') ){
+    ReactDOM.render(<App {...(root.dataset)} />, document.getElementById('root'))
+}

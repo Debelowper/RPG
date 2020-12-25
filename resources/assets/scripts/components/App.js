@@ -10,7 +10,7 @@ export default class App extends Component {
 
         this.state = {
             selectedPattern: '',
-            gridParams: this.calcGridParams(10,10,10)
+            gridParams: this.calcGridParams(10,8,10)
         }
 
         this.mapRef = React.createRef()

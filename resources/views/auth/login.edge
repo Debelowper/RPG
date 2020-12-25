@@ -1,27 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>RPG</title>
-  {{ style('app') }}
-  <link rel="icon" href="spiked-dragon-head.png" type="image/x-icon">
-</head>
-<body class="bg-gray-300" >
-    <div class="flex flex-col my-8 py-8">
-        <h1 class="text-4xl px-4 antialiased"> Seja bem vindo </h1>
-        <div class="flex w-1/3 rounded-xl justify-center text-white mx-auto py-8 bg-gray-700 border-4 border-red-700">
-            <form method="POST" action="{{ route('login') }}">
-                {{csrfField(csrfToken)}}
-                <label for="email" >e-mail</label><br/>
-                <input id="email" class="rounded text-black border-2 my-2 py-2 bg-blue-50" type="email"></input><br/>
-                <label for="password" >Password</label><br/>
-                <input id="password" class="rounded text-black border-2 my-2 py-2 bg-blue-50" type="password"></input><br/>
-                <input class="rounded bg-black text-white hover:bg-red-900 hover:text-white py-2 px-3" type="submit"></input>
-                <a href="{{route('registerPage')}}">
-                    <input class="rounded bg-black text-white hover:bg-red-900 hover:text-white py-2 px-3" type="button" value="Register"></input>
-                </a>
-            </form>
-        </div>
+@layout('layout.master')
+
+@section("content")
+<div class="flex flex-col my-8 py-8">
+    <h1 class="text-4xl px-4 antialiased"> Seja bem vindo </h1>
+    <div class="flex w-1/3 rounded-xl justify-center text-white mx-auto py-8 bg-gray-700 border-4 border-red-700">
+        <form method="POST" action="{{ route('login') }}">
+            {{csrfField(csrfToken)}}
+            <label for="email" >e-mail</label><br/>
+            <input id="email" name="email"  autocomplete="email" class="rounded text-black border-2 my-2 py-2 bg-blue-50" type="email"></input><br/>
+            <label for="password" >Password</label><br/>
+            <input id="password" name="password" autocomplete="password" class="rounded text-black border-2 my-2 py-2 bg-blue-50" type="password"></input><br/>
+            <input class="rounded bg-black text-white hover:bg-red-900 hover:text-white py-2 px-3" type="submit"></input><br/>
+            <p class="text-sm">Don't have an account?</p>
+            <a href="{{route('registerPage')}}">
+                <input class="rounded bg-black text-white hover:bg-red-900 hover:text-white py-2 px-3" type="button" value="Register"></input>
+            </a>
+        </form>
     </div>
-</body>
-</html>
+</div>
+@endsection

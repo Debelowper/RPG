@@ -7,9 +7,9 @@ class MapsSchema extends Schema {
   up () {
     this.create('maps', (table) => {
       table.increments()
-      table.string('name')
-      table.string('user_id')
-      table.json('map_json')
+      table.string('name', 30).notNullable()
+      table.integer('user_id').notNullable()
+      table.json('map_json').notNullable()
       table.timestamps()
     })
   }

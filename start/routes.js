@@ -49,6 +49,11 @@ Route
   .as('login')
 
 Route
+    .post('login', 'UserController.login')
+    .middleware('guest')
+    .as('login')
+
+Route
   .get('users/:id', 'UserController.show')
   .middleware('auth')
 
@@ -56,3 +61,7 @@ Route
     .get('logout', 'UserController.logout')
     .middleware('auth')
     .as('logout')
+
+Route
+    .post('saveMap', 'SaveMapController.saveMap')
+    .middleware('auth')

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import Map from './Map'
 import SizeMenu from './SizeMenu'
 import PatternMenu from './PatternMenu/PatternMenu'
+import axios from 'axios'
 
 export default class App extends Component {
     constructor(props){
@@ -55,10 +56,18 @@ export default class App extends Component {
 
     saveMap(){
         // console.log(this.mapRef)
-        var saveObj = this.mapRef.current.hexList.map(el => {
+        var hexes = this.mapRef.current.hexList.map(el => {
             return {id: el.props.id, pattern:el.state.pattern}
         })
-        // console.log(saveObj)
+        let saveObj = {
+            id: this.props.user,
+            name: 'test',
+            hexes: hexes
+        }
+
+        axios.post('/saveMap', saveObj).then(function (response) {
+        console.log(response);
+      })
     }
 
     loadMap(){
@@ -69,12 +78,13 @@ export default class App extends Component {
 
     render(){
         return (
-
-          <div>
+          <div className='h-screen w-full'>
             <SizeMenu changeGridParams={this.changeGridParams} />
-            <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
-            <PatternMenu onMenuClick={this.onMenuClick } />
             <button onClick={this.saveMap} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Save Map</button>
+            <div className="h-2/3 w-full" >
+                <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
+            </div>
+            <PatternMenu onMenuClick={this.onMenuClick } />
           </div>
         )
     }

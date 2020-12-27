@@ -4,6 +4,7 @@ import Map from './Map'
 import SizeMenu from './SizeMenu'
 import PatternMenu from './PatternMenu/PatternMenu'
 import axios from 'axios'
+import MapMenu from './SaveMenu/MapMenu'
 
 export default class App extends Component {
     constructor(props){
@@ -101,7 +102,7 @@ export default class App extends Component {
                     el.changePattern(hex.pattern)
                 })
             })
-        })    
+        })
     }
 
 
@@ -110,10 +111,11 @@ export default class App extends Component {
         return (
           <div className='h-screen w-full'>
             <SizeMenu changeGridParams={this.changeGridParams} />
-            <button onClick={this.saveMap} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Save Map</button>
-            <button onClick={this.loadMap} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Load Map</button>
-            <div className="h-2/3 w-full" >
+            <div className="flex h-2/3 w-full" >
                 <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
+                <div className="flex flex-col absolute right-0 z-10 bg-gray-700 border-2 border-red-700 h-1/2 space-y-2">
+                    <MapMenu saveMap={this.saveMap} loadMap={this.loadMap} />
+                </div>
             </div>
             <PatternMenu onMenuClick={this.onMenuClick } />
           </div>

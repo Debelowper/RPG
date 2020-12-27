@@ -69,3 +69,7 @@ Route
 Route
     .get('loadMap', 'MapController.loadMap')
     .middleware('auth')
+
+Route
+    .get('listMaps', 'MapController.listMaps')
+    .middleware('auth')

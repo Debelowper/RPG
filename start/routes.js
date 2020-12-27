@@ -63,5 +63,9 @@ Route
     .as('logout')
 
 Route
-    .post('saveMap', 'SaveMapController.saveMap')
+    .post('saveMap', 'MapController.saveMap')
+    .middleware('auth')
+
+Route
+    .get('loadMap', 'MapController.loadMap')
     .middleware('auth')

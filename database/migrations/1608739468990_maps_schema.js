@@ -9,6 +9,8 @@ class MapsSchema extends Schema {
       table.increments()
       table.string('name', 30).notNullable()
       table.integer('user_id').notNullable()
+      table.integer('width').notNullable()
+      table.integer('height').notNullable()
       table.json('map_json').notNullable()
       table.timestamps()
     })

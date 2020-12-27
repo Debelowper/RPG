@@ -14,6 +14,7 @@ export default class Map extends Component {
         this.onHexClick = this.onHexClick.bind(this)
         this.onHexHover = this.onHexHover.bind(this)
         this.setHexRefs = this.setHexRefs.bind(this)
+        this.createTiles = this.createTiles.bind(this)
 
     }
 
@@ -59,7 +60,8 @@ export default class Map extends Component {
 
     }
 
-    createTiles(hexagons){
+    createTiles(){
+        var hexagons = GridGenerator.orientedRectangle(this.props.gridParams.x, this.props.gridParams.y)
 
         let hexes = hexagons.map((hex, i) =>{
             hex.id = {x:(hex.q ), y:i%this.props.gridParams.y}
@@ -80,13 +82,11 @@ export default class Map extends Component {
 
     render(){
 
-        var hexagons = GridGenerator.orientedRectangle(this.props.gridParams.x, this.props.gridParams.y)
-
         return(
             <div>
                 <HexGrid  width={this.props.gridParams.width} height={this.props.gridParams.height} viewBox={this.props.gridParams.viewboxParams.join(' ')}>
                   <Layout ref={this.layoutRef} size={{ x: this.props.gridParams.size, y: this.props.gridParams.size }}>
-                    {this.createTiles(hexagons) }
+                    {this.createTiles() }
                   </Layout>
                   {patternList()}
                 </HexGrid>

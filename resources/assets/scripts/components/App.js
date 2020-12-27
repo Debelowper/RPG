@@ -18,6 +18,7 @@ export default class App extends Component {
 
         this.onMenuClick = this.onMenuClick.bind(this)
         this.saveMap = this.saveMap.bind(this)
+        this.loadMap = this.loadMap.bind(this)
         this.changeGridParams = this.changeGridParams.bind(this)
     }
 
@@ -59,19 +60,48 @@ export default class App extends Component {
         var hexes = this.mapRef.current.hexList.map(el => {
             return {id: el.props.id, pattern:el.state.pattern}
         })
+
+        let width = this.mapRef.current.props.gridParams.x
+        let height = this.mapRef.current.props.gridParams.y
+
+
         let saveObj = {
             id: this.props.user,
+            width: width,
+            height:height,
             name: 'test',
             hexes: hexes
         }
 
+
         axios.post('/saveMap', saveObj).then(function (response) {
-        console.log(response);
-      })
+            console.log(response);
+        })
     }
 
     loadMap(){
+        let id = 1
+        let url = '/loadMap?id=' + id
+        axios.get(url).then((response) => {
 
+            let map = JSON.parse(response.data.map_json)
+            const {width, height, name} = response.data
+            // console.log(this.mapRef.current)
+
+            let gridParams = this.calcGridParams(width, height, 10)
+
+            this.setState({gridParams: gridParams}, () =>{
+
+                 this.mapRef.current.hexList.forEach(el => {
+                    // {id: el.props.id, pattern:el.state.pattern}
+                    let hex = map.find((id) =>{
+                        return id.id.x == el.props.id.x && id.id.y == el.props.id.y
+                    })
+
+                    el.changePattern(hex.pattern)
+                })
+            })
+        })    
     }
 
 
@@ -81,6 +111,7 @@ export default class App extends Component {
           <div className='h-screen w-full'>
             <SizeMenu changeGridParams={this.changeGridParams} />
             <button onClick={this.saveMap} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Save Map</button>
+            <button onClick={this.loadMap} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >Load Map</button>
             <div className="h-2/3 w-full" >
                 <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
             </div>

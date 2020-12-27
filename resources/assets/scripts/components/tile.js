@@ -10,6 +10,7 @@ export default class Tile extends Component {
 
         this.onClick = this.onClick.bind(this)
         this.onHover = this.onHover.bind(this)
+        this.changePattern = this.changePattern.bind(this)
 
         this.state = {
 

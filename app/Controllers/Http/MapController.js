@@ -49,17 +49,39 @@ class MapController {
 
     async loadMap({request}){
 
-        const {id} = request.get()
+        const {name} = request.get()
 
         let map = await Database
-                            .table('maps')
-                            .where('id', id)
-                            .first()
+            .table('maps')
+            .where('name', name)
+            .first()
 
         return map
 
     }
 
+    async listMaps({auth}){
+
+        let maps = await Database
+            .select('name')
+            .from('maps')
+            .where('user_id', auth.user.id)
+
+        return maps
+
+    }
+
+    async deleteMap({request}){
+        const {name} = request.all()
+
+        const affectedRows = await Database
+          .table('maps')
+          .where('name', name)
+          .delete()
+
+          return affectedRows
+    }
 }
+
 
 module.exports = MapController

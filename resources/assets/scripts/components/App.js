@@ -12,15 +12,23 @@ export default class App extends Component {
 
         this.state = {
             selectedPattern: '',
-            gridParams: this.calcGridParams(10,8,10)
+            gridParams: this.calcGridParams(10,8,10),
+            currentMap: '',
+            selectedMap: '',
+            mapList: []
         }
 
         this.mapRef = React.createRef()
 
         this.onMenuClick = this.onMenuClick.bind(this)
         this.saveMap = this.saveMap.bind(this)
+        this.deleteMap = this.deleteMap.bind(this)
         this.loadMap = this.loadMap.bind(this)
         this.changeGridParams = this.changeGridParams.bind(this)
+        this.selectMap = this.selectMap.bind(this)
+        this.changeMapName = this.changeMapName.bind(this)
+        this.getMapsList = this.getMapsList.bind(this)
+
     }
 
 
@@ -65,24 +73,26 @@ export default class App extends Component {
         let width = this.mapRef.current.props.gridParams.x
         let height = this.mapRef.current.props.gridParams.y
 
-
         let saveObj = {
             id: this.props.user,
             width: width,
             height:height,
-            name: 'test',
+            name: this.state.selectedMap,
             hexes: hexes
         }
 
+        if(confirm('Are you sure you want to save under name: '+this.state.selectedMap+ '?')){
+            axios.post('/saveMap', saveObj).then((response) => {
+                this.setState({selectedMap: saveObj.name})
 
-        axios.post('/saveMap', saveObj).then(function (response) {
-            console.log(response);
-        })
+            })
+
+            this.setState({currentMap: saveObj.name})
+        }
     }
 
     loadMap(){
-        let id = 1
-        let url = '/loadMap?id=' + id
+        let url = '/loadMap?name=' + this.state.selectedMap
         axios.get(url).then((response) => {
 
             let map = JSON.parse(response.data.map_json)
@@ -91,7 +101,7 @@ export default class App extends Component {
 
             let gridParams = this.calcGridParams(width, height, 10)
 
-            this.setState({gridParams: gridParams}, () =>{
+            this.setState({gridParams: gridParams, currentMap: name}, () =>{
 
                  this.mapRef.current.hexList.forEach(el => {
                     // {id: el.props.id, pattern:el.state.pattern}
@@ -105,6 +115,49 @@ export default class App extends Component {
         })
     }
 
+    selectMap(event){
+        this.setState({selectedMap: event.target.name})
+    }
+
+    changeMapName(e){
+        this.setState({selectedMap: e.target.value})
+    }
+
+    deleteMap(){
+        let url = '/deleteMap?name=' + this.state.selectedMap
+        if(confirm('Are you sure you want to delete save: '+this.state.selectedMap+ '?')){
+            axios.get(url).then((response) => {
+                this.setState({selectedMap: ''})
+            })
+        }
+
+    }
+
+    getMapsList(){
+        axios.get('/listMaps').then((response)=>{
+            if(!this.isUpToDate(this.state.mapList,response.data)){
+                this.setState({mapList: response.data})
+            }
+        })
+    }
+
+    isUpToDate(currentList,newList){
+        if(currentList.length != newList.length){
+            return false
+        }
+
+        newList.forEach((el)=>{
+            if(
+                currentList.find((i) => {
+                    return i.name == el.name
+                })
+                == undefined
+            ){
+                return false
+            }
+        })
+        return true
+    }
 
 
     render(){
@@ -113,8 +166,17 @@ export default class App extends Component {
             <SizeMenu changeGridParams={this.changeGridParams} />
             <div className="flex h-2/3 w-full" >
                 <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
-                <div className="flex flex-col absolute right-0 z-10 bg-gray-700 border-2 border-red-700 h-1/2 space-y-2">
-                    <MapMenu saveMap={this.saveMap} loadMap={this.loadMap} />
+                <div className="flex flex-col absolute right-0 z-10 bg-gray-700 border-2 border-red-700 h-1/2 space-y-2 rounded">
+                    <MapMenu
+                        saveMap={this.saveMap}
+                        loadMap={this.loadMap}
+                        deleteMap={this.deleteMap}
+                        selectMap={this.selectMap}
+                        changeMapName={this.changeMapName}
+                        selectedMap={this.state.selectedMap}
+                        getMapsList={this.getMapsList}
+                        mapList={this.state.mapList}
+                    />
                 </div>
             </div>
             <PatternMenu onMenuClick={this.onMenuClick } />

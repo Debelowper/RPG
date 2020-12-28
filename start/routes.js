@@ -73,3 +73,7 @@ Route
 Route
     .get('listMaps', 'MapController.listMaps')
     .middleware('auth')
+
+Route
+    .get('deleteMap', 'MapController.deleteMap')
+    .middleware('auth')

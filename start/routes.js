@@ -16,64 +16,39 @@
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
 const Route = use('Route')
 
-Route
-    .on('/')
-    .render('game.index')
-    .middleware('auth')
-    .as('/')
-
-
-Route
-  .post('register', 'UserController.register')
-  .middleware('guest')
-  .as('register')
-
-
-Route
-    .get('register', ({view})=>{
-        return view.render('auth.register')
-    })
-    .middleware('guest')
-    .as('registerPage')
-
-Route
-    .get('login', ({view}) =>{
+Route.get('/', ({view, auth}) => {
+    if(auth.user){
+        return view.render('index')
+    }else{
         return view.render('auth.login')
-    })
-    .middleware('guest')
-    .as('loginPage')
+    }
+})
 
-Route
-  .post('login', 'UserController.login')
-  .middleware('guest')
-  .as('login')
+Route.on('createMap').render('game.createMap').as('createMap').middleware('auth')
+Route.on('createTile').render('game.createTile').as('createTile').middleware('auth')
 
-Route
-    .post('login', 'UserController.login')
-    .middleware('guest')
-    .as('login')
+Route.group(()=>{
+    Route.post('', 'UserController.register').as('register')
+    Route.get('', ({view})=>{
+            return view.render('auth.register')
+        }).as('registerPage')
+}).middleware('guest').prefix('register')
 
-Route
-  .get('users/:id', 'UserController.show')
-  .middleware('auth')
+Route.group(()=>{
+    Route.post('', 'UserController.login').as('login')
+    Route.get('', ({view})=>{
+            return view.render('auth.login')
+        }).as('loginPage')
+}).middleware('guest').prefix('login')
 
   Route
     .get('logout', 'UserController.logout')
     .middleware('auth')
     .as('logout')
 
-Route
-    .post('saveMap', 'MapController.saveMap')
-    .middleware('auth')
-
-Route
-    .get('loadMap', 'MapController.loadMap')
-    .middleware('auth')
-
-Route
-    .get('listMaps', 'MapController.listMaps')
-    .middleware('auth')
-
-Route
-    .get('deleteMap', 'MapController.deleteMap')
-    .middleware('auth')
+Route.group(()=>{
+    Route.post('saveMap', 'MapController.saveMap')
+    Route.get('loadMap', 'MapController.loadMap')
+    Route.get('listMaps', 'MapController.listMaps')
+    Route.get('deleteMap', 'MapController.deleteMap')
+}).middleware('auth')

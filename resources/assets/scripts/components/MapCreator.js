@@ -6,7 +6,7 @@ import PatternMenu from './PatternMenu/PatternMenu'
 import axios from 'axios'
 import MapMenu from './SaveMenu/MapMenu'
 
-export default class App extends Component {
+export default class MapCreator extends Component {
     constructor(props){
         super(props)
 
@@ -74,7 +74,6 @@ export default class App extends Component {
         let height = this.mapRef.current.props.gridParams.y
 
         let saveObj = {
-            id: this.props.user,
             width: width,
             height:height,
             name: this.state.selectedMap,

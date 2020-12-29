@@ -2,15 +2,15 @@
 const Database = use('Database')
 
 class MapController {
-    async saveMap({request}){
+    async saveMap({request, auth}){
 
-        const {id, name, hexes, width, height} = request.post()
+        const { name, hexes, width, height} = request.post()
 
         const Map = use('App/Models/Map')
 
         const map = new Map
 
-        map.user_id = id
+        map.user_id = auth.user.id
         map.height = height
         map.width = width
         map.name = name

@@ -1,0 +1,8 @@
+.btn {
+  @apply px-4 py-2 font-bold rounded;
+
+}
+
+.btn-primary {
+    @apply  btn bg-blue-500 border-2 border-red-500 hover:bg-blue-700 text-white;
+}

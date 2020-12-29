@@ -4,9 +4,9 @@
         <div class="inline px-4 py-4"><img class="h-12 w-12" src="spiked-dragon-head.png"> </img></div>
         <div class="inline px-4 py-4">
             @loggedIn
-            <span> hello {{ auth.user.username }}</span>               
+            <span> hello {{ auth.user.username }}</span>
             <a href={{route('logout')}}>
-                <button class="bg-blue-500 hover:bg-red-500 py-2 px-3">Logout</button>
+                <button class="btn-primary">Logout</button>
             </a>
             @endloggedIn
         </div>

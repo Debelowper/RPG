@@ -19,14 +19,6 @@ class UserController {
 
   }
 
-    show ({ auth, params }) {
-
-     if (auth.user.id !== Number(params.id)) {
-        return "You cannot see someone else's profile"
-      }
-      return auth.user
-    }
-
     async register({request, response}){
 
         const {username, password, email} = request.post()

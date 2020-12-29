@@ -81,7 +81,7 @@ export default class MapCreator extends Component {
         }
 
         if(confirm('Are you sure you want to save under name: '+this.state.selectedMap+ '?')){
-            axios.post('/saveMap', saveObj).then((response) => {
+            axios.post('/Map/save', saveObj).then((response) => {
                 this.setState({selectedMap: saveObj.name})
 
             })
@@ -91,7 +91,7 @@ export default class MapCreator extends Component {
     }
 
     loadMap(){
-        let url = '/loadMap?name=' + this.state.selectedMap
+        let url = '/Map/load?name=' + this.state.selectedMap
         axios.get(url).then((response) => {
 
             let map = JSON.parse(response.data.map_json)
@@ -123,7 +123,7 @@ export default class MapCreator extends Component {
     }
 
     deleteMap(){
-        let url = '/deleteMap?name=' + this.state.selectedMap
+        let url = '/Map/delete?name=' + this.state.selectedMap
         if(confirm('Are you sure you want to delete save: '+this.state.selectedMap+ '?')){
             axios.get(url).then((response) => {
                 this.setState({selectedMap: ''})
@@ -133,7 +133,7 @@ export default class MapCreator extends Component {
     }
 
     getMapsList(){
-        axios.get('/listMaps').then((response)=>{
+        axios.get('/Map/list').then((response)=>{
             if(!this.isUpToDate(this.state.mapList,response.data)){
                 this.setState({mapList: response.data})
             }

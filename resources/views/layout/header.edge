@@ -1,7 +1,11 @@
 
 @section('header')
     <div class='flex bg-gray-700 place-content-between text-white w-screen h-16' id='header'>
-        <div class="inline px-4 py-4"><img class="h-12 w-12" src="spiked-dragon-head.png"> </img></div>
+        <div class="inline px-4 py-4">
+            <a href={{route('/')}}>
+                <img class="h-12 w-12" src="spiked-dragon-head.png"> </img>
+            </a>
+        </div>
         <div class="inline px-4 py-4">
             @loggedIn
             <span> hello {{ auth.user.username }}</span>

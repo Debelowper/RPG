@@ -4,13 +4,7 @@
 |--------------------------------------------------------------------------
 | Routes
 |--------------------------------------------------------------------------
-|
-| Http routes are entry points to your web application. You can create
-| routes for different URL's and bind Controller actions to them.
-|
-| A complete guide on routing is available here.
-| http://adonisjs.com/docs/4.1/routing
-|
+
 */
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
@@ -27,6 +21,8 @@ Route.get('/', ({view, auth}) => {
 Route.on('createMap').render('game.createMap').as('createMap').middleware('auth')
 Route.on('createTile').render('game.createTile').as('createTile').middleware('auth')
 
+Route.post('Tile/save', 'TileController.saveTile').middleware('auth')
+
 Route.group(()=>{
     Route.post('', 'UserController.register').as('register')
     Route.get('', ({view})=>{
@@ -41,14 +37,14 @@ Route.group(()=>{
         }).as('loginPage')
 }).middleware('guest').prefix('login')
 
-  Route
-    .get('logout', 'UserController.logout')
-    .middleware('auth')
-    .as('logout')
+Route
+.get('logout', 'UserController.logout')
+.middleware('auth')
+.as('logout')
 
 Route.group(()=>{
-    Route.post('saveMap', 'MapController.saveMap')
-    Route.get('loadMap', 'MapController.loadMap')
-    Route.get('listMaps', 'MapController.listMaps')
-    Route.get('deleteMap', 'MapController.deleteMap')
-}).middleware('auth')
+    Route.post('save', 'MapController.saveMap')
+    Route.get('load', 'MapController.loadMap')
+    Route.get('list', 'MapController.listMaps')
+    Route.get('delete', 'MapController.deleteMap')
+}).middleware('auth').prefix('Map/')

@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import MapCreator from './components/MapCreator'
+import TileCreator from './components/TileCreator'
 
 if(document.getElementById('createMap') ){
     let createMap = document.getElementById('createMap');

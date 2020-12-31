@@ -9,54 +9,111 @@ export default class TileCreator extends Component {
         super(props)
 
         this.state = {
-            name: '',
-            passable:true,
-            blocksSight:false,
-            diffucultTerrain:false,
-            terrainType: 'ground',
+            formState: {
+                name: '',
+                passable:1,
+                blocksSight:0,
+                swimSpeed:0,
+                flySpeed:100,
+                walkSpeed:100,
+            },
+            imageName:'',
+            imageType:1,
         }
+
 
         this.fileInput = React.createRef();
 
         this.handleNameChange = this.handleNameChange.bind(this)
         this.handlePassableChange = this.handlePassableChange.bind(this)
         this.handleBlocksSightChange = this.handleBlocksSightChange.bind(this)
-        this.handleDifficultTerrainChange = this.handleDifficultTerrainChange.bind(this)
-        this.handleTerrainTypeChange = this.handleTerrainTypeChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
+        this.handleFlySpeedChange = this.handleFlySpeedChange.bind(this)
+        this.handleWalkSpeedChange = this.handleWalkSpeedChange.bind(this)
+        this.handleSwimSpeedChange = this.handleSwimSpeedChange.bind(this)
+        this.handleSubmitImage = this.handleSubmitImage.bind(this)
+        this.handleSubmitForm = this.handleSubmitForm.bind(this)
+        this.handleImageNameChange = this.handleImageNameChange.bind(this)
+        this.handleImageTypeChange = this.handleImageTypeChange.bind(this)
     }
 
     handleNameChange(e){
-        this.setState({name: e.target.value})
+        let obj = this.state.formState
+        obj.name = e.target.value
+        this.setState({formState: obj})
     }
 
     handlePassableChange(e){
-        this.setState({passable: e.target.value})
+        let obj = this.state.formState
+        e.target.checked == true ?
+            obj.passable = 1 :
+            obj.passable = 0
+
+        this.setState({formState: obj})
     }
 
     handleBlocksSightChange(e){
-        this.setState({blocksSight: e.target.value})
+        let obj = this.state.formState
+        e.target.checked == true ?
+            obj.blocksSight = 1 :
+            obj.blocksSight = 0
+
+        this.setState({formState: obj})
+
     }
 
-    handleDifficultTerrainChange(e){
-        this.setState({difficultTerrain: e.target.value})
+    handleWalkSpeedChange(e){
+        let obj = this.state.formState
+        obj.walkSpeed = e.target.value
+        if(e.target.value >= 0 && e.target.value <= 100){
+            this.setState({formState: obj})
+        }
+    }
+    handleFlySpeedChange(e){
+        let obj = this.state.formState
+        obj.flySpeed = e.target.value
+        if(e.target.value >= 0 && e.target.value <= 100){
+            this.setState({formState: obj})
+        }
+    }
+    handleSwimSpeedChange(e){
+        let obj = this.state.formState
+        obj.swimSpeed = e.target.value
+        if(e.target.value >= 0 && e.target.value <= 100){
+            this.setState({formState: obj})
+        }
     }
 
-    handleTerrainTypeChange(event) {
-    this.setState({terrainType: event.target.value});
-  }
+    handleImageNameChange(e){
+        this.setState({imageName: e.target.value})
+    }
 
-    handleSubmit(e){
+    handleImageTypeChange(e){
+        this.setState({imageType: e.target.value})
+    }
+
+    handleSubmitImage(e){
         e.preventDefault();
-        let url = 'Tile/save'
+        let ext = this.fileInput.current.files[0].name.split('.').pop()
+        let url = 'Image/save'
         var formData = new FormData()
-        formData.append('file', this.fileInput.current.files[0])
-        formData.append('name', this.state.name)
-        formData.append('passable', this.state.passable)
-        formData.append('blocksSight', this.state.blocksSight)
-        formData.append('diffucultTerrain', this.state.diffucultTerrain)
-        formData.append('terrainType', this.state.terrainType)
-        axios.post(url, formData , {}).then((response)=>{
+        formData.append('file', this.fileInput.current.files[0], this.state.imageName+'.'+ext)
+        formData.append('name', this.state.imageName)
+        formData.append('type', this.state.imageType)
+        axios.post(url, formData , {headers:{'Content-Type': 'multipart/form-data'}} ).then((response)=>{
+            console.log(response)
+        })
+    }
+
+    handleSubmitForm(e){
+        e.preventDefault()
+        let url = 'Tile/save'
+        axios.post(url, this.state.formState ).then((response)=>{
+            console.log(response)
+        })
+    }
+
+    loadImage(){
+        axios.get('Image/load').then(response =>{
             console.log(response)
         })
     }
@@ -66,32 +123,49 @@ export default class TileCreator extends Component {
             <div className="flex flex-col w-screen h-full">
                 <div className="flex flex-col mx-auto h-full w-1/2 place-items-center space-y-2 border-2 border-red-500 bg-gray-500 py-5 my-5">
                     <h1 className='text-3xl' >Create Tile</h1>
-                    <form className="form "  method='POST' onSubmit={this.handleSubmit} encType="multipart/form-data">
+                    <form className="form "  method='POST' onSubmit={this.handleSubmitForm} encType="multipart/form-data">
                         <label>Name</label>
-                        <input type='text' name='name' value={this.state.name} onChange={this.handleNameChange} className="text-2xl border-gray-500 rounded" required ></input>
-                        <label>Image</label>
-                        <input type='file' ref={this.fileInput} name='image' className="input" accept="image/*" encType="multipart/form-data"></input>
-                        <label>special effect</label>
-                        <input type='text' name='specialEffect'  className="input"></input>
-                        <label>terrainType</label>
-                        <select id="terrainType" value={this.state.terrainType} onChange={this.handleTerrainTypeChange} name="terrainType" >
-                            <option value="air">Air</option>
-                            <option value="ground">Ground</option>
-                            <option value="water">Water</option>
-                        </select>
+                        <input type='text' name='name' value={this.state.formState.name} onChange={this.handleNameChange} className="text-2xl border-gray-500 rounded" required ></input>
+
                         <div className="flex flew-row space-x-3">
                             <label>passable:</label>
-                            <input type='checkbox' name='passable' onChange={this.handlePassableChange} value={this.state.passable} className="input" ></input>
+                            <input type='checkbox' name='passable' onChange={this.handlePassableChange} checked={this.state.formState.passable} className="input" ></input>
                             <label>blocks Sight:</label>
-                            <input type='checkbox' name='blocksSight' value={this.state.blocksSight} className="input" ></input>
-                            <label>difficult terrain:</label>
-                            <input type='checkbox' name='difficultTerrain' value={this.state.difficultTerrain} className="input" ></input>
+                            <input type='checkbox' name='blocksSight' onChange={this.handleBlocksSightChange} checked={this.state.formState.blocksSight} className="input" ></input>
+                        </div>
+                        <div>
+                            <label>Walk Speed: </label>
+                            <input type='range' name='walkSpeed' value={this.state.formState.walkSpeed} onChange={this.handleWalkSpeedChange} required></input>
+                            <output>{this.state.formState.walkSpeed}</output>
+                        </div>
+                        <div>
+                            <label>Fly Speed: </label>
+                            <input type='range' name='flySpeed' value={this.state.formState.flySpeed} onChange={this.handleFlySpeedChange} required></input>
+                            <output>{this.state.formState.flySpeed}</output>
+                        </div>
+                        <div>
+                            <label>Swim Speed: </label>
+                            <input type='range' name='swimSpeed' value={this.state.formState.swimSpeed} onChange={this.handleSwimSpeedChange} required></input>
+                            <output>{this.state.formState.swimSpeed}</output>
                         </div>
                         <input className="input" type="submit"></input>
                     </form>
                 </div>
+                <div className="flex flex-col mx-auto h-full w-1/2 place-items-center space-y-2 border-2 border-red-500 bg-gray-500 py-5 my-5">
+                    <form className="form "  method='POST' onSubmit={this.handleSubmitImage} encType="multipart/form-data">
+                        <label>Image</label>
+                        <input type='file' ref={this.fileInput} name='file' className="input" accept="image/*" ></input>
+                        <label>Name</label>
+                        <input type='text' name='name' value={this.state.imageName} onChange={this.handleImageNameChange} className="text-2xl border-gray-500 rounded" required ></input>
+                        <label>Image Type</label>
+                        <input type='text' name='type' value={this.state.imageType} onChange={this.handleImageTypeChange} className="text-2xl border-gray-500 rounded" required ></input>
+                        <input className="input" type='submit' ></input>
+                    </form>
+                </div>
+                <div className="flex flex-col mx-auto h-full w-1/2 place-items-center space-y-2 border-2 border-red-500 bg-gray-500 py-5 my-5">
+                    <button onClick={this.loadImage} />
+                </div>
             </div>
-
         )
     }
 }

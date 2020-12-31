@@ -21,7 +21,18 @@ Route.get('/', ({view, auth}) => {
 Route.on('createMap').render('game.createMap').as('createMap').middleware('auth')
 Route.on('createTile').render('game.createTile').as('createTile').middleware('auth')
 
-Route.post('Tile/save', 'TileController.saveTile').middleware('auth')
+Route.group(()=>{
+    Route.post('save', 'TileController.saveTile')
+    Route.get('load', 'TileController.loadTile')
+    Route.get('loadList', 'TileController.loadTileList')
+}).prefix('Tile/').middleware('auth')
+
+
+Route.group(()=>{
+    Route.post('save', 'ImageController.saveImage' )
+    Route.get('load', 'ImageController.loadImage')
+    Route.delete('delete', 'ImageController.deleteImage')
+}).middleware('auth').prefix('Image/')
 
 Route.group(()=>{
     Route.post('', 'UserController.register').as('register')

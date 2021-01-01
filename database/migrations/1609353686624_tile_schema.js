@@ -9,6 +9,7 @@ class TileSchema extends Schema {
       table.increments()
       table.string('name', 50).notNullable().unique()
       table.integer('image_id').notNullable()
+      table.integer('user_id').notNullable()
       table.boolean('passable',1).notNullable()
       table.boolean('blocks_sight',1).notNullable()
       table.integer('walk_speed').notNullable()

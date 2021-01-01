@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import PatternMenu from './PatternMenu/PatternMenu'
 import axios from 'axios'
 import patternList from './patternList'
+import ImageMenu from './ImageMenu'
 
 export default class TileCreator extends Component {
     constructor(props){
@@ -17,8 +18,6 @@ export default class TileCreator extends Component {
                 flySpeed:100,
                 walkSpeed:100,
             },
-            imageName:'',
-            imageType:1,
         }
 
 
@@ -30,10 +29,8 @@ export default class TileCreator extends Component {
         this.handleFlySpeedChange = this.handleFlySpeedChange.bind(this)
         this.handleWalkSpeedChange = this.handleWalkSpeedChange.bind(this)
         this.handleSwimSpeedChange = this.handleSwimSpeedChange.bind(this)
-        this.handleSubmitImage = this.handleSubmitImage.bind(this)
         this.handleSubmitForm = this.handleSubmitForm.bind(this)
-        this.handleImageNameChange = this.handleImageNameChange.bind(this)
-        this.handleImageTypeChange = this.handleImageTypeChange.bind(this)
+
     }
 
     handleNameChange(e){
@@ -83,27 +80,6 @@ export default class TileCreator extends Component {
         }
     }
 
-    handleImageNameChange(e){
-        this.setState({imageName: e.target.value})
-    }
-
-    handleImageTypeChange(e){
-        this.setState({imageType: e.target.value})
-    }
-
-    handleSubmitImage(e){
-        e.preventDefault();
-        let ext = this.fileInput.current.files[0].name.split('.').pop()
-        let url = 'Image/save'
-        var formData = new FormData()
-        formData.append('file', this.fileInput.current.files[0], this.state.imageName+'.'+ext)
-        formData.append('name', this.state.imageName)
-        formData.append('type', this.state.imageType)
-        axios.post(url, formData , {headers:{'Content-Type': 'multipart/form-data'}} ).then((response)=>{
-            console.log(response)
-        })
-    }
-
     handleSubmitForm(e){
         e.preventDefault()
         let url = 'Tile/save'
@@ -112,11 +88,7 @@ export default class TileCreator extends Component {
         })
     }
 
-    loadImage(){
-        axios.get('Image/load').then(response =>{
-            console.log(response)
-        })
-    }
+
 
     render(){
         return(
@@ -151,20 +123,7 @@ export default class TileCreator extends Component {
                         <input className="input" type="submit"></input>
                     </form>
                 </div>
-                <div className="flex flex-col mx-auto h-full w-1/2 place-items-center space-y-2 border-2 border-red-500 bg-gray-500 py-5 my-5">
-                    <form className="form "  method='POST' onSubmit={this.handleSubmitImage} encType="multipart/form-data">
-                        <label>Image</label>
-                        <input type='file' ref={this.fileInput} name='file' className="input" accept="image/*" ></input>
-                        <label>Name</label>
-                        <input type='text' name='name' value={this.state.imageName} onChange={this.handleImageNameChange} className="text-2xl border-gray-500 rounded" required ></input>
-                        <label>Image Type</label>
-                        <input type='text' name='type' value={this.state.imageType} onChange={this.handleImageTypeChange} className="text-2xl border-gray-500 rounded" required ></input>
-                        <input className="input" type='submit' ></input>
-                    </form>
-                </div>
-                <div className="flex flex-col mx-auto h-full w-1/2 place-items-center space-y-2 border-2 border-red-500 bg-gray-500 py-5 my-5">
-                    <button onClick={this.loadImage} />
-                </div>
+
             </div>
         )
     }

@@ -20,6 +20,7 @@ Route.get('/', ({view, auth}) => {
 
 Route.on('createMap').render('game.createMap').as('createMap').middleware('auth')
 Route.on('createTile').render('game.createTile').as('createTile').middleware('auth')
+Route.on('uploadImage').render('game.uploadImage').as('uploadImage').middleware('auth')
 
 Route.group(()=>{
     Route.post('save', 'TileController.saveTile')

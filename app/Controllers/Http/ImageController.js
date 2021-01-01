@@ -2,6 +2,8 @@
 
 const Drive = use('Drive')
 const Image = use('App/Models/Image')
+const Database = use('Database')
+const Env = use('Env')
 
 class ImageController {
 
@@ -44,6 +46,7 @@ class ImageController {
         }
 
         const image = new Image
+        image.user_id = auth.user.id
         image.name = body.name
         image.image_type_id = body.type
         image.filename = body.fileName
@@ -57,22 +60,27 @@ class ImageController {
           return 'image saved'
     }
 
-    async loadImage({auth, request}){
-        const {fileNames} = request.post()
-        var files = []
-        fileNames.forEach((el)=>{
-            try{
-                const file = Drive.disk('s3').get(el)
-                files.push(file)
-            }catch(e){
-                console.log(e.message)
-            }
-        })
-        if(files == null){
-            return 'no files found!'
-        }else{
-            return file
+    async updateImage({auth, request}){
 
+    }
+
+    async loadImage({auth, request}){
+        let id = auth.user.id
+
+        //https://rpgtiles.s3-sa-east-1.amazonaws.com/gbelow_guilherme.jpeg
+
+        const query = await Database.table('images').where('user_id', id)
+
+        var images = []
+        query.forEach((el)=>{
+            const url = 'https://'+Env.get('S3_BUCKET')+'.s3-'+Env.get('S3_REGION')+'.'+'amazonaws.com/'+el.filename
+            images.push(url)
+        })
+
+        if(images == null){
+            return 'no images found!'
+        }else{
+            return images
         }
     }
 

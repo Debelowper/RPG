@@ -2,8 +2,6 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import PatternMenu from './PatternMenu/PatternMenu'
 import axios from 'axios'
-import patternList from './patternList'
-import ImageMenu from './ImageMenu'
 
 export default class TileCreator extends Component {
     constructor(props){
@@ -123,6 +121,7 @@ export default class TileCreator extends Component {
                         <input className="input" type="submit"></input>
                     </form>
                 </div>
+
 
             </div>
         )

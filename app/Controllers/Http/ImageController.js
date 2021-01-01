@@ -64,7 +64,7 @@ class ImageController {
 
     }
 
-    async loadImage({auth, request}){
+    async loadImage({auth}){
         let id = auth.user.id
 
         //https://rpgtiles.s3-sa-east-1.amazonaws.com/gbelow_guilherme.jpeg
@@ -74,7 +74,7 @@ class ImageController {
         var images = []
         query.forEach((el)=>{
             const url = 'https://'+Env.get('S3_BUCKET')+'.s3-'+Env.get('S3_REGION')+'.'+'amazonaws.com/'+el.filename
-            images.push(url)
+            images.push({url: url, name: el.name, type: el.image_type_id  })
         })
 
         if(images == null){

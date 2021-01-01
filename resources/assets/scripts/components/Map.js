@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
 import Tile from './Tile';
-import patternList from './patternList'
+import PatternList from './PatternList'
 
 export default class Map extends Component {
     constructor(props){
@@ -85,10 +85,10 @@ export default class Map extends Component {
         return(
             <div>
                 <HexGrid  width={this.props.gridParams.width} height={this.props.gridParams.height} viewBox={this.props.gridParams.viewboxParams.join(' ')}>
-                  <Layout ref={this.layoutRef} size={{ x: this.props.gridParams.size, y: this.props.gridParams.size }}>
-                    {this.createTiles() }
-                  </Layout>
-                  {patternList()}
+                    <Layout ref={this.layoutRef} size={{ x: this.props.gridParams.size, y: this.props.gridParams.size }}>
+                        {this.createTiles() }
+                    </Layout>
+                    <PatternList />
                 </HexGrid>
             </div>
         )

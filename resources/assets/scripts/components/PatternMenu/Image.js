@@ -15,7 +15,7 @@ export default class Image extends Component {
 
     render(){
         return(
-            <img className="object-contain h-full" onClick={this.onClick} id={this.props.id} src={this.props.src}/>
+            <img className="object-contain h-full" onClick={this.onClick} id={this.props.id} src={this.props.src} width={this.props.width} height={this.props.height}/>
         )
     }
 }

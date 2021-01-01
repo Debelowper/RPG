@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
-import ImageMenu from './ImageMenu'
+import PatternMenu from './PatternMenu/PatternMenu'
 
 export default class ImageUploader extends Component {
     constructor(props){
@@ -59,9 +59,7 @@ export default class ImageUploader extends Component {
                         <input className="input" type='submit' ></input>
                     </form>
                 </div>
-                <div className="flex flex-col mx-auto h-full w-1/2 place-items-center space-y-2 border-2 border-red-500 bg-gray-500 py-5 my-5">
-                    <ImageMenu />
-                </div>
+                <PatternMenu />
             </div>
         )
     }

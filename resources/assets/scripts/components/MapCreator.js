@@ -162,23 +162,23 @@ export default class MapCreator extends Component {
     render(){
         return (
           <div className='h-screen w-full'>
-            <SizeMenu changeGridParams={this.changeGridParams} />
-            <div className="flex h-2/3 w-full" >
-                <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
-                <div className="flex flex-col absolute right-0 z-10 bg-gray-700 border-2 border-red-700 h-1/2 space-y-2 rounded">
-                    <MapMenu
-                        saveMap={this.saveMap}
-                        loadMap={this.loadMap}
-                        deleteMap={this.deleteMap}
-                        selectMap={this.selectMap}
-                        changeMapName={this.changeMapName}
-                        selectedMap={this.state.selectedMap}
-                        getMapsList={this.getMapsList}
-                        mapList={this.state.mapList}
-                    />
-                </div>
-            </div>
-            <PatternMenu onMenuClick={this.onMenuClick } />
+              <SizeMenu changeGridParams={this.changeGridParams} />
+              <div className="flex h-2/3 w-full" >
+                  <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
+                  <div className="flex flex-col absolute right-0 z-10 bg-gray-700 border-2 border-red-700 h-1/2 space-y-2 rounded">
+                      <MapMenu
+                          saveMap={this.saveMap}
+                          loadMap={this.loadMap}
+                          deleteMap={this.deleteMap}
+                          selectMap={this.selectMap}
+                          changeMapName={this.changeMapName}
+                          selectedMap={this.state.selectedMap}
+                          getMapsList={this.getMapsList}
+                          mapList={this.state.mapList}
+                      />
+                  </div>
+              </div>
+              <PatternMenu onMenuClick={this.onMenuClick } />
           </div>
         )
     }

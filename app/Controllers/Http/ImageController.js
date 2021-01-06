@@ -60,10 +60,6 @@ class ImageController {
           return 'image saved'
     }
 
-    async updateImage({auth, request}){
-
-    }
-
     async loadImage({auth}){
         let id = auth.user.id
 
@@ -74,7 +70,7 @@ class ImageController {
         var images = []
         query.forEach((el)=>{
             const url = 'https://'+Env.get('S3_BUCKET')+'.s3-'+Env.get('S3_REGION')+'.'+'amazonaws.com/'+el.filename
-            images.push({url: url, name: el.name, type: el.image_type_id  })
+            images.push({id:el.id, url: url, name: el.name, type: el.image_type_id  })
         })
 
         if(images == null){
@@ -85,12 +81,15 @@ class ImageController {
     }
 
     async deleteImage({auth, request}){
-        const {fileName} = request.post()
+        const {imgId} = request.post()
+        let file = await Database.table('images').where('id', imgId).first()
         try{
-            const file = Drive.disk('s3').delete(fileName)
+            const msg = await Drive.disk('s3').delete(file.filename)
         }catch(e){
             return e.message
         }
+
+        const affectedRows = await Database.table('images').where('id', imgId).delete()
         return 'file deleted'
     }
 }

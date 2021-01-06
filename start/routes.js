@@ -24,6 +24,7 @@ Route.on('uploadImage').render('game.uploadImage').as('uploadImage').middleware(
 
 Route.group(()=>{
     Route.post('save', 'TileController.saveTile')
+    Route.post('delete', 'TileController.deleteTile')
     Route.get('load', 'TileController.loadTile')
     Route.get('loadList', 'TileController.loadTileList')
 }).prefix('Tile/').middleware('auth')
@@ -32,7 +33,7 @@ Route.group(()=>{
 Route.group(()=>{
     Route.post('save', 'ImageController.saveImage' )
     Route.get('load', 'ImageController.loadImage')
-    Route.delete('delete', 'ImageController.deleteImage')
+    Route.post('delete', 'ImageController.deleteImage')
 }).middleware('auth').prefix('Image/')
 
 Route.group(()=>{

@@ -2,9 +2,9 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import Map from './Map'
 import SizeMenu from './SizeMenu'
-import PatternMenu from './PatternMenu/PatternMenu'
+import TilesMenu from './TilesMenu'
 import axios from 'axios'
-import MapMenu from './SaveMenu/MapMenu'
+import MapMenu from './MapMenu'
 
 export default class MapCreator extends Component {
     constructor(props){
@@ -55,8 +55,8 @@ export default class MapCreator extends Component {
         }
     }
 
-    onMenuClick(patternId){
-        this.setState({selectedPattern: patternId })
+    onMenuClick(e){
+        this.setState({selectedPattern: e.target.name })
     }
 
     changeGridParams(width, height, size){
@@ -178,7 +178,9 @@ export default class MapCreator extends Component {
                       />
                   </div>
               </div>
-              <PatternMenu onMenuClick={this.onMenuClick } />
+              <div className='flex fixed inset-x-0 bottom-0 z-10 bg-gray-700 border-2 border-red-700 py-3 h-24 w-screen px-2 space-x-2'>
+                  <TilesMenu onMenuClick={this.onMenuClick } />
+              </div>
           </div>
         )
     }

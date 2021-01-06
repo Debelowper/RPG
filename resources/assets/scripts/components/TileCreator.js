@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import PatternMenu from './PatternMenu/PatternMenu'
+import ImagesMenu from './ImagesMenu'
 import axios from 'axios'
+import TilesMenu from './TilesMenu'
 
 export default class TileCreator extends Component {
     constructor(props){
@@ -15,7 +16,10 @@ export default class TileCreator extends Component {
                 swimSpeed:0,
                 flySpeed:100,
                 walkSpeed:100,
+                imageId: '',
             },
+            selectedImage:'',
+            updater:0
         }
 
 
@@ -27,7 +31,10 @@ export default class TileCreator extends Component {
         this.handleFlySpeedChange = this.handleFlySpeedChange.bind(this)
         this.handleWalkSpeedChange = this.handleWalkSpeedChange.bind(this)
         this.handleSwimSpeedChange = this.handleSwimSpeedChange.bind(this)
-        this.handleSubmitForm = this.handleSubmitForm.bind(this)
+        this.handleSaveTile = this.handleSaveTile.bind(this)
+        this.handleSelectImage = this.handleSelectImage.bind(this)
+        this.handleSelectTile = this.handleSelectTile.bind(this)
+        this.handleDeleteTile = this.handleDeleteTile.bind(this)
 
     }
 
@@ -78,12 +85,43 @@ export default class TileCreator extends Component {
         }
     }
 
-    handleSubmitForm(e){
+    handleSaveTile(e){
         e.preventDefault()
         let url = 'Tile/save'
         axios.post(url, this.state.formState ).then((response)=>{
+            this.setState({updater: this.state.updater + 1})
             console.log(response)
         })
+    }
+
+    handleDeleteTile(){
+        let url = 'Tile/delete'
+        axios.post(url, {name: this.state.formState.name} ).then((response)=>{
+            this.setState({updater: this.state.updater + 1})
+            console.log(response)
+        })
+    }
+
+    handleSelectImage(e){
+        console.log(e.target)
+        let formState = this.state.formState
+        formState.imageId = e.target.id
+        this.setState({selectedImage: e.target.src,formState:formState })
+
+    }
+
+    handleSelectTile(e, props){
+        console.log(props)
+        let formState = {
+            name:props.name,
+            passable: props.passable,
+            blocksSight: props.blocks_sight,
+            swimSpeed:props.swim_speed,
+            flySpeed:props.fly_speed,
+            walkSpeed:props.walk_speed,
+            imageId:props.image_id
+        }
+        this.setState({formState:formState, selectedImage: e.target.src})
     }
 
 
@@ -93,14 +131,15 @@ export default class TileCreator extends Component {
             <div className="flex flex-col w-screen h-full">
                 <div className="flex flex-col mx-auto h-full w-1/2 place-items-center space-y-2 border-2 border-red-500 bg-gray-500 py-5 my-5">
                     <h1 className='text-3xl' >Create Tile</h1>
-                    <form className="form "  method='POST' onSubmit={this.handleSubmitForm} encType="multipart/form-data">
+                    <form className="form "  method='POST' onSubmit={this.handleSaveTile} encType="multipart/form-data">
                         <label>Name</label>
                         <input type='text' name='name' value={this.state.formState.name} onChange={this.handleNameChange} className="text-2xl border-gray-500 rounded" required ></input>
+                        {this.state.selectedImage ? <img  src={this.state.selectedImage} height={50} width={50}  ></img> : ''}
 
                         <div className="flex flew-row space-x-3">
-                            <label>passable:</label>
+                            <label>Passable:</label>
                             <input type='checkbox' name='passable' onChange={this.handlePassableChange} checked={this.state.formState.passable} className="input" ></input>
-                            <label>blocks Sight:</label>
+                            <label>Blocks Sight:</label>
                             <input type='checkbox' name='blocksSight' onChange={this.handleBlocksSightChange} checked={this.state.formState.blocksSight} className="input" ></input>
                         </div>
                         <div>
@@ -118,9 +157,16 @@ export default class TileCreator extends Component {
                             <input type='range' name='swimSpeed' value={this.state.formState.swimSpeed} onChange={this.handleSwimSpeedChange} required></input>
                             <output>{this.state.formState.swimSpeed}</output>
                         </div>
-                        <input className="input" type="submit"></input>
+                        <div className="flex flex-row">
+                            <input className="input" type="submit" value="Save"></input>
+                            <input className="input" type="button" value="Delete" onClick={this.handleDeleteTile}></input>
+                        </div>
                     </form>
                 </div>
+                <div className="flex flex-col mx-auto h-full w-1/2 place-items-center space-y-2 border-2 border-red-500 bg-gray-500 py-5 my-5">
+                    <TilesMenu  onMenuClick={this.handleSelectTile} updater={this.state.updater}/>
+                </div>
+                <ImagesMenu onMenuClick={this.handleSelectImage}/>
 
 
             </div>

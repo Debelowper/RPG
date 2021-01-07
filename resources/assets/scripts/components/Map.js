@@ -11,10 +11,14 @@ export default class Map extends Component {
         this.hexList=[]
         this.layoutRef = React.createRef()
 
+        this.clicked = false
+
         this.onHexClick = this.onHexClick.bind(this)
         this.onHexHover = this.onHexHover.bind(this)
         this.setHexRefs = this.setHexRefs.bind(this)
         this.createTiles = this.createTiles.bind(this)
+        this.onMouseUp = this.onMouseUp.bind(this)
+        this.onMouseDown = this.onMouseDown.bind(this)
 
     }
 
@@ -49,15 +53,31 @@ export default class Map extends Component {
     }
 
     changeChildPattern(id, pattern){
-        let el = this.hexList.find((el) => {
-            return el.props.id.x == id.x && el.props.id.y == id.y
+        let brushSize = parseInt(this.props.brushSize)
+        let x = id.x + brushSize
+        let y = id.y + brushSize
+        let tiles = this.hexList.filter(el=>{
+            return (
+                el.props.id.x >= id.x
+                && el.props.id.y >= id.y
+                && el.props.id.x < x
+                && el.props.id.y < y
+            )
         })
 
-        el.changePattern(pattern)
+        // let el = this.hexList.find((el) => {
+        //     return el.props.id.x == id.x && el.props.id.y == id.y
+        // })
+        tiles.forEach((el)=>{
+            el.changePattern(pattern)
+        })
+
     }
 
     onHexHover(id){
-
+        if(this.clicked){
+            this.changeChildPattern(id, this.props.selectedPattern)
+        }
     }
 
     createTiles(){
@@ -80,12 +100,22 @@ export default class Map extends Component {
         return hexes
     }
 
+    onMouseDown(){
+        this.clicked = true
+    }
+
+    onMouseUp(){
+        this.clicked = false
+    }
+
+
+
     render(){
 
         return(
-            <div>
+            <div onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp}>
                 <HexGrid  width={this.props.gridParams.width} height={this.props.gridParams.height} viewBox={this.props.gridParams.viewboxParams.join(' ')}>
-                    <Layout ref={this.layoutRef} size={{ x: this.props.gridParams.size, y: this.props.gridParams.size }}>
+                    <Layout  ref={this.layoutRef} size={{ x: this.props.gridParams.size, y: this.props.gridParams.size }}>
                         {this.createTiles() }
                     </Layout>
                     <PatternList />

@@ -111,7 +111,6 @@ export default class TileCreator extends Component {
     }
 
     handleSelectTile(e, props){
-        console.log(props)
         let formState = {
             name:props.name,
             passable: props.passable,

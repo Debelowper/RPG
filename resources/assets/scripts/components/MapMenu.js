@@ -33,7 +33,7 @@ export default class MapMenu extends Component {
                                             <button
                                                 onClick={this.props.selectMap}
                                                 name={el.name}
-                                                className="bg-gray-100 hover:bg-blue-300 border-2 border-red-500 py-2 px-4 rounded">
+                                            className="bg-gray-100 hover:bg-blue-300 border-2 border-red-500 py-2 px-4 rounded">
                                                 {el.name}
                                             </button>
                                         </li>
@@ -42,6 +42,12 @@ export default class MapMenu extends Component {
                             : ' '
                         }
                     </ol>
+                </div>
+                <div className="mb-2">
+                    <button className={'input ' + (this.props.brushSize == 1 ? 'bg-white text-black ' : 'bg-gray-900 text-white')} onClick={this.props.selectBrushSize} value={1}>1</button>
+                    <button className={'input ' + (this.props.brushSize == 2 ? 'bg-white text-black ' : 'bg-gray-900 text-white')} onClick={this.props.selectBrushSize} value={2}>2</button>
+                    <button className={'input ' + (this.props.brushSize == 3 ? 'bg-white text-black ' : 'bg-gray-900 text-white')} onClick={this.props.selectBrushSize} value={3}>3</button>
+                    <button className={'input ' + (this.props.brushSize == 4 ? 'bg-white text-black ' : 'bg-gray-900 text-white')} onClick={this.props.selectBrushSize} value={4}>4</button>
                 </div>
 
             </>

@@ -15,7 +15,8 @@ export default class MapCreator extends Component {
             gridParams: this.calcGridParams(10,8,10),
             currentMap: '',
             selectedMap: '',
-            mapList: []
+            mapList: [],
+            brushSize:1,
         }
 
         this.mapRef = React.createRef()
@@ -28,6 +29,7 @@ export default class MapCreator extends Component {
         this.selectMap = this.selectMap.bind(this)
         this.changeMapName = this.changeMapName.bind(this)
         this.getMapsList = this.getMapsList.bind(this)
+        this.selectBrushSize = this.selectBrushSize.bind(this)
 
     }
 
@@ -92,26 +94,29 @@ export default class MapCreator extends Component {
 
     loadMap(){
         let url = '/Map/load?name=' + this.state.selectedMap
-        axios.get(url).then((response) => {
+        if(confirm('Are you sure you want to load save: '+this.state.selectedMap+ '?')){
+            axios.get(url).then((response) => {
 
-            let map = JSON.parse(response.data.map_json)
-            const {width, height, name} = response.data
-            // console.log(this.mapRef.current)
+                let map = JSON.parse(response.data.map_json)
+                const {width, height, name} = response.data
+                // console.log(this.mapRef.current)
 
-            let gridParams = this.calcGridParams(width, height, 10)
+                let gridParams = this.calcGridParams(width, height, 10)
 
-            this.setState({gridParams: gridParams, currentMap: name}, () =>{
+                this.setState({gridParams: gridParams, currentMap: name}, () =>{
 
-                 this.mapRef.current.hexList.forEach(el => {
-                    // {id: el.props.id, pattern:el.state.pattern}
-                    let hex = map.find((id) =>{
-                        return id.id.x == el.props.id.x && id.id.y == el.props.id.y
+                     this.mapRef.current.hexList.forEach(el => {
+                        // {id: el.props.id, pattern:el.state.pattern}
+                        let hex = map.find((id) =>{
+                            return id.id.x == el.props.id.x && id.id.y == el.props.id.y
+                        })
+
+                        el.changePattern(hex.pattern)
                     })
-
-                    el.changePattern(hex.pattern)
                 })
             })
-        })
+        }
+
     }
 
     selectMap(event){
@@ -158,13 +163,22 @@ export default class MapCreator extends Component {
         return true
     }
 
+    selectBrushSize(e){
+        this.setState({brushSize: e.target.value})
+    }
+
 
     render(){
         return (
           <div className='h-screen w-full'>
               <SizeMenu changeGridParams={this.changeGridParams} />
               <div className="flex h-2/3 w-full" >
-                  <Map ref={this.mapRef} gridParams={this.state.gridParams} selectedPattern={this.state.selectedPattern} />
+                  <Map
+                      ref={this.mapRef}
+                      gridParams={this.state.gridParams}
+                      selectedPattern={this.state.selectedPattern}
+                      brushSize={this.state.brushSize}
+                  />
                   <div className="flex flex-col absolute right-0 z-10 bg-gray-700 border-2 border-red-700 h-1/2 space-y-2 rounded">
                       <MapMenu
                           saveMap={this.saveMap}
@@ -175,11 +189,13 @@ export default class MapCreator extends Component {
                           selectedMap={this.state.selectedMap}
                           getMapsList={this.getMapsList}
                           mapList={this.state.mapList}
+                          selectBrushSize={this.selectBrushSize}
+                          brushSize={this.state.brushSize}
                       />
                   </div>
               </div>
               <div className='flex fixed inset-x-0 bottom-0 z-10 bg-gray-700 border-2 border-red-700 py-3 h-24 w-screen px-2 space-x-2'>
-                  <TilesMenu onMenuClick={this.onMenuClick } />
+                  <TilesMenu onMenuClick={this.onMenuClick } selectedPattern={this.state.selectedPattern} />
               </div>
           </div>
         )

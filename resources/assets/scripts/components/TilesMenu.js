@@ -45,7 +45,7 @@ export default class TilesMenu extends Component {
                  {
                      this.state.tiles.map((el, i)=>{
                          return (
-                             <div className="flex flex-col">
+                             <div key={el.name} className="flex flex-col">
                                  <p>{el.name}</p>
                                  <div className={this.props.selectedPattern == el.name ? "border-2 border-red-500" : "border-2 border-black"} >
                                      <img onClick={this.onClick} name={el.name} id={el.id} key={i} src={el.url} width={50} height={50}/>

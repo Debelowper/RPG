@@ -11,6 +11,7 @@ class TileController {
 
           const tile = new Tile
 
+
           tile.name = auth.user.username+ '_' + name
           tile.image_id = imageId
           tile.user_id = auth.user.id
@@ -20,7 +21,7 @@ class TileController {
           tile.passable = passable
           tile.blocks_sight = blocksSight
 
-          if(Database.table('tiles').where('name', auth.user.username+ '_' + name)){
+          if(await Database.table('tiles').where('name', auth.user.username+ '_' + name).first()  ){
               const affectedRows = await Database
                 .table('tiles')
                 .where('name', auth.user.username+ '_' + name)
@@ -30,6 +31,7 @@ class TileController {
                 .update('fly_speed', tile.fly_speed)
                 .update('passable', tile.passable)
                 .update('blocks_sight', tile.blocks_sight)
+
           }else{
               try{
                   await tile.save()
@@ -44,11 +46,16 @@ class TileController {
     async loadTile({auth, request}){
 
         var tiles = await Database
-            .table('tiles')
-            .innerJoin('images', 'tiles.image_id', 'images.id')
+            .table('tiles').first()
+
+        var tiles = await Database
+            .table('images')
+            .innerJoin('tiles', 'images.id', 'tiles.image_id')
 
         tiles = tiles.map((el)=>{
             el.url = 'https://'+Env.get('S3_BUCKET')+'.s3-'+Env.get('S3_REGION')+'.'+'amazonaws.com/'+el.filename
+            let name = el.name.split('_').shift()
+            el.name = el.name.replace(name+'_', '')
             return el
         })
         return tiles

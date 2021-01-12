@@ -47,7 +47,7 @@ class ImageController {
 
         const image = new Image
         image.user_id = auth.user.id
-        image.name = body.name
+        image.name = auth.user.username+'_'+body.name
         image.image_type_id = body.type
         image.filename = body.fileName
 

@@ -103,7 +103,6 @@ export default class TileCreator extends Component {
     }
 
     handleSelectImage(e){
-        console.log(e.target)
         let formState = this.state.formState
         formState.imageId = e.target.id
         this.setState({selectedImage: e.target.src,formState:formState })

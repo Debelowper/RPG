@@ -36,11 +36,8 @@ export default class StatSystemCreator extends Component {
         this.addStatField = this.addStatField.bind(this)
     }
 
-    componentDidMount(){
-    }
-
     handleNFieldsChange(e){
-        let max = e.target.id == 'nAbilities' ? 20 : 10
+        let max = e.target.id == 'nAbilities' ? 20 : 15
         let value = e.target.value < 0 ? 0 : e.target.value
         value = value > max ? max : value
         this.setState({[e.target.id]: value})
@@ -175,8 +172,8 @@ export default class StatSystemCreator extends Component {
         return(
             <div className='flex flex-col space-y-2 border-2 border-red-500 rounded bg-gray-500 py-3 mx-2'>
                 <div>
-                    <h2 className="text-2xl font-bold" >{fieldName}</h2>
-                    <label>Number of {fieldName}</label>
+                    <h2 className="text-2xl font-bold" >{fieldName} Fields</h2>
+                    <label>Number of {fieldName} Fields</label>
                     <input id={numName} className="input" type="number" onChange={this.handleNFieldsChange} value={this.state[numName]} />
                     <button id={statName} className="btn-primary" onClick={this.applyNFieldsChange}>Apply</button>
                 </div>
@@ -195,17 +192,17 @@ export default class StatSystemCreator extends Component {
             <div className="grid grid-cols-2 w-screen h-full">
                 <h1 className="text-3xl font-bold col-span-full">System Creator </h1>
 
-                {this.renderFormCard('Stat Fields', 'nStatFields', 'statFields')}
+                {this.renderFormCard('Stat', 'nStatFields', 'statFields')}
 
-                {this.renderFormCard('Resources Fields', 'nResources', 'resources')}
+                {this.renderFormCard('Resources', 'nResources', 'resources')}
 
-                {this.renderFormCard('Ability Fields', 'nAbilities', 'abilities')}
+                {this.renderFormCard('Ability', 'nAbilities', 'abilities')}
 
-                {this.renderFormCard('Saving Throw Fields', 'nSavingThrows', 'savingThrows')}
+                {this.renderFormCard('Saving Throw', 'nSavingThrows', 'savingThrows')}
 
-                {this.renderFormCard('Damage Type Fields', 'nDamageTypes', 'damageTypes')}
+                {this.renderFormCard('Damage Type', 'nDamageTypes', 'damageTypes')}
 
-                {this.renderFormCard('status effects', 'nStatusEffects', 'statusEffects')}
+                {this.renderFormCard('Status Effects', 'nStatusEffects', 'statusEffects')}
 
             </div>
         )

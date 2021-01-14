@@ -46,9 +46,6 @@ class TileController {
     async loadTile({auth, request}){
 
         var tiles = await Database
-            .table('tiles').first()
-
-        var tiles = await Database
             .table('images')
             .innerJoin('tiles', 'images.id', 'tiles.image_id')
 

@@ -24,11 +24,17 @@ Route.on('uploadImage').render('game.uploadImage').as('uploadImage').middleware(
 Route.on('createStatSystem').render('game.createStatSystem').as('createStatSystem').middleware('auth')
 
 Route.group(()=>{
+    Route.post('save', 'CreateSystemController.saveSystem')
+    Route.post('delete', 'CreateSystemController.deleteSystem')
+    Route.get('load', 'CreateSystemController.loadSystem')
+}).prefix('CreateSystem/').middleware('auth')
+
+Route.group(()=>{
     Route.post('save', 'TileController.saveTile')
     Route.post('delete', 'TileController.deleteTile')
     Route.get('load', 'TileController.loadTile')
-    Route.get('loadList', 'TileController.loadTileList')
 }).prefix('Tile/').middleware('auth')
+
 
 
 Route.group(()=>{

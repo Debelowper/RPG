@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
+import StatSystemMenu from './StatSystemMenu'
 
 class Stat {
     constructor(id, type, name, value){
@@ -16,6 +17,7 @@ export default class StatSystemCreator extends Component {
         super(props)
 
         this.state = {
+            name: '',
             nStatFields:0,
             statFields:[],
             nResources:0,
@@ -27,13 +29,27 @@ export default class StatSystemCreator extends Component {
             nDamageTypes:0,
             damageTypes:[],
             nStatusEffects:0,
-            statusEffects:[]
+            statusEffects:[],
+
+            sysList:[],
+            selectedSys:"",
         }
 
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handleNFieldsChange = this.handleNFieldsChange.bind(this)
         this.applyNFieldsChange = this.applyNFieldsChange.bind(this)
         this.addStatField = this.addStatField.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
+        this.handleChangeName = this.handleChangeName.bind(this)
+        this.listSystems = this.listSystems.bind(this)
+        this.onSysOptionClick = this.onSysOptionClick.bind(this)
+        this.loadSystem = this.loadSystem.bind(this)
+        this.deleteSystem = this.deleteSystem.bind(this)
+
+    }
+
+    componentDidMount(){
+        this.listSystems()
     }
 
     handleNFieldsChange(e){
@@ -177,34 +193,118 @@ export default class StatSystemCreator extends Component {
                     <input id={numName} className="input" type="number" onChange={this.handleNFieldsChange} value={this.state[numName]} />
                     <button id={statName} className="btn-primary" onClick={this.applyNFieldsChange}>Apply</button>
                 </div>
-                <form className="flex flex-col items-center space-y-2">
+                <form id={fieldName} className="flex flex-col items-center space-y-2" method='POST' onSubmit={this.handleSubmit} encType="multipart/form-data">
                     {
                         this.state[statName].map(this.addStatField)
                     }
+                    <input type="submit" className="input" value="Save" />
                 </form>
             </div>
         )
     }
 
+    handleSubmit(e){
+        e.preventDefault()
+        let form
+        switch(e.target.id){
+            case 'Stat':
+                form = this.state.statFields
+                break
+            case 'Resources':
+                form = this.state.resources
+                break
+            case 'Ability':
+                form = this.state.abilities
+                break
+            case 'Saving Throw':
+                form = this.state.savingThrows
+                break
+            case 'Damage Type':
+                form = this.state.damageTypes
+                break
+            case 'Status Effects':
+                form = this.state.statusEffects
+                break
+        }
+        axios.post('CreateSystem/save', {form: form, sysName: this.state.name}).then((response)=>{
+            console.log(response)
+        })
+    }
+
+    handleChangeName(e){
+        let name = e.target.value
+        this.setState({name: name})
+    }
+
+    listSystems(e){
+        axios.get('/CreateSystem/load').then((response)=>{
+            this.setState({sysList: response.data})
+        })
+    }
+
+    onSysOptionClick(e){
+        this.setState({selectedSys: e.target.id})
+    }
+
+    loadSystem(){
+        let system = this.state.sysList.find(el => el.name == this.state.selectedSys)
+
+        let stats = JSON.parse(system.stats)
+        let abilities = JSON.parse(system.abilities)
+        let savingThrows = JSON.parse(system.saving_throws)
+        let damageTypes = JSON.parse(system.damage_types)
+        let statusEffects = JSON.parse(system.status_effects)
+        let resources = JSON.parse(system.resources)
+
+        this.setState({
+            name:system.name,
+            statFields:stats ? stats : [], nStatFields: stats ? stats.length : 0,
+            abilities: abilities ? abilities : [], nAbilities: abilities ? abilities.length : 0,
+            resources:resources ? resources : [], nResources: resources ? resources.length : 0,
+            savingThrows: savingThrows ? savingThrows : [], nSavingThrows: savingThrows ? savingThrows.length : 0,
+            damageTypes:damageTypes ? damageTypes : [], nDamageTypes: damageTypes ? damageTypes.length : 0,
+            statusEffects:statusEffects ? statusEffects : [], nStatusEffects: statusEffects ? statusEffects.length : 0,
+        })
+    }
+
+    deleteSystem(e){
+        axios.post('/CreateSystem/delete',{name: this.state.selectedSys}).then(response => {
+            console.log(response)
+        })
+    }
+
 
     render(){
         return(
-            <div className="grid grid-cols-2 w-screen h-full">
+            <div>
                 <h1 className="text-3xl font-bold col-span-full">System Creator </h1>
+                <input className="text-3xl input" type="text" value={this.state.name} onChange={this.handleChangeName}/>
+                <div className="grid grid-cols-2 w-screen h-full">
 
-                {this.renderFormCard('Stat', 'nStatFields', 'statFields')}
+                    {this.renderFormCard('Stat', 'nStatFields', 'statFields')}
 
-                {this.renderFormCard('Resources', 'nResources', 'resources')}
+                    {this.renderFormCard('Resources', 'nResources', 'resources')}
 
-                {this.renderFormCard('Ability', 'nAbilities', 'abilities')}
+                    {this.renderFormCard('Ability', 'nAbilities', 'abilities')}
 
-                {this.renderFormCard('Saving Throw', 'nSavingThrows', 'savingThrows')}
+                    {this.renderFormCard('Saving Throw', 'nSavingThrows', 'savingThrows')}
 
-                {this.renderFormCard('Damage Type', 'nDamageTypes', 'damageTypes')}
+                    {this.renderFormCard('Damage Type', 'nDamageTypes', 'damageTypes')}
 
-                {this.renderFormCard('Status Effects', 'nStatusEffects', 'statusEffects')}
+                    {this.renderFormCard('Status Effects', 'nStatusEffects', 'statusEffects')}
 
+                </div>
+
+                <StatSystemMenu
+                    onSysOptionClick={this.onSysOptionClick}
+                    loadSystem={this.loadSystem}
+                    listSystems={this.listSystems}
+                    sysList={this.state.sysList}
+                    selectedSys={this.props.selectedSys}
+                    deleteSystem={this.deleteSystem}
+                />
             </div>
+
         )
     }
 }

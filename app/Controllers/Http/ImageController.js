@@ -70,6 +70,10 @@ class ImageController {
         var images = []
         query.forEach((el)=>{
             const url = 'https://'+Env.get('S3_BUCKET')+'.s3-'+Env.get('S3_REGION')+'.'+'amazonaws.com/'+el.filename
+
+            let name = el.name.split('_').shift()
+            el.name = el.name.replace(name+'_', '')
+
             images.push({id:el.id, url: url, name: el.name, type: el.image_type_id  })
         })
 

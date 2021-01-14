@@ -22,6 +22,7 @@ Route.on('createMap').render('game.createMap').as('createMap').middleware('auth'
 Route.on('createTile').render('game.createTile').as('createTile').middleware('auth')
 Route.on('uploadImage').render('game.uploadImage').as('uploadImage').middleware('auth')
 Route.on('createStatSystem').render('game.createStatSystem').as('createStatSystem').middleware('auth')
+Route.on('createCharacter').render('game.createCharacter').as('createCharacter').middleware('auth')
 
 Route.group(()=>{
     Route.post('save', 'CreateSystemController.saveSystem')

@@ -11,16 +11,14 @@ export default class App extends Component {
             size: 10
         }
 
-        this.handleChange = this.handleChange.bind(this);
-        this.onClick = this.onClick.bind(this);
 
     }
 
-    onClick(){
+    onClick= () => {
         this.props.changeGridParams(this.state.width, this.state.height, this.state.size)
     }
 
-    handleChange(event) {
+    handleChange = (event) => {
         if(event.target.placeholder != 'size' && event.target.value <= 80){
             this.setState({[event.target.placeholder]: event.target.value});
         }else if(event.target.value <= 30){

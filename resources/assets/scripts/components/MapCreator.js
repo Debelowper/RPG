@@ -21,16 +21,6 @@ export default class MapCreator extends Component {
 
         this.mapRef = React.createRef()
 
-        this.onMenuClick = this.onMenuClick.bind(this)
-        this.saveMap = this.saveMap.bind(this)
-        this.deleteMap = this.deleteMap.bind(this)
-        this.loadMap = this.loadMap.bind(this)
-        this.changeGridParams = this.changeGridParams.bind(this)
-        this.selectMap = this.selectMap.bind(this)
-        this.changeMapName = this.changeMapName.bind(this)
-        this.getMapsList = this.getMapsList.bind(this)
-        this.selectBrushSize = this.selectBrushSize.bind(this)
-
     }
 
 
@@ -57,16 +47,16 @@ export default class MapCreator extends Component {
         }
     }
 
-    onMenuClick(e){
+    onMenuClick = (e) => {
         this.setState({selectedPattern: e.target.name })
     }
 
-    changeGridParams(width, height, size){
+    changeGridParams = (width, height, size) => {
         var gridParams = this.calcGridParams(width, height, size)
         this.setState({gridParams})
     }
 
-    saveMap(){
+    saveMap = () => {
         // console.log(this.mapRef)
         var hexes = this.mapRef.current.hexList.map(el => {
             return {id: el.props.id, pattern:el.state.pattern}
@@ -92,7 +82,7 @@ export default class MapCreator extends Component {
         }
     }
 
-    loadMap(){
+    loadMap = () => {
         let url = '/Map/load?name=' + this.state.selectedMap
         if(confirm('Are you sure you want to load save: '+this.state.selectedMap+ '?')){
             axios.get(url).then((response) => {
@@ -119,15 +109,15 @@ export default class MapCreator extends Component {
 
     }
 
-    selectMap(event){
+    selectMap = (event) => {
         this.setState({selectedMap: event.target.name})
     }
 
-    changeMapName(e){
+    changeMapName = (e) => {
         this.setState({selectedMap: e.target.value})
     }
 
-    deleteMap(){
+    deleteMap = () => {
         let url = '/Map/delete?name=' + this.state.selectedMap
         if(confirm('Are you sure you want to delete save: '+this.state.selectedMap+ '?')){
             axios.get(url).then((response) => {
@@ -137,7 +127,7 @@ export default class MapCreator extends Component {
 
     }
 
-    getMapsList(){
+    getMapsList = () => {
         axios.get('/Map/list').then((response)=>{
             if(!this.isUpToDate(this.state.mapList,response.data)){
                 this.setState({mapList: response.data})
@@ -163,7 +153,7 @@ export default class MapCreator extends Component {
         return true
     }
 
-    selectBrushSize(e){
+    selectBrushSize = (e) => {
         this.setState({brushSize: e.target.value})
     }
 

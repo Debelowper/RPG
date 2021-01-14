@@ -25,26 +25,15 @@ export default class TileCreator extends Component {
 
         this.fileInput = React.createRef();
 
-        this.handleNameChange = this.handleNameChange.bind(this)
-        this.handlePassableChange = this.handlePassableChange.bind(this)
-        this.handleBlocksSightChange = this.handleBlocksSightChange.bind(this)
-        this.handleFlySpeedChange = this.handleFlySpeedChange.bind(this)
-        this.handleWalkSpeedChange = this.handleWalkSpeedChange.bind(this)
-        this.handleSwimSpeedChange = this.handleSwimSpeedChange.bind(this)
-        this.handleSaveTile = this.handleSaveTile.bind(this)
-        this.handleSelectImage = this.handleSelectImage.bind(this)
-        this.handleSelectTile = this.handleSelectTile.bind(this)
-        this.handleDeleteTile = this.handleDeleteTile.bind(this)
-
     }
 
-    handleNameChange(e){
+    handleNameChange = (e) => {
         let obj = this.state.formState
         obj.name = e.target.value
         this.setState({formState: obj})
     }
 
-    handlePassableChange(e){
+    handlePassableChange = (e) => {
         let obj = this.state.formState
         e.target.checked == true ?
             obj.passable = 1 :
@@ -53,7 +42,7 @@ export default class TileCreator extends Component {
         this.setState({formState: obj})
     }
 
-    handleBlocksSightChange(e){
+    handleBlocksSightChange = (e) => {
         let obj = this.state.formState
         e.target.checked == true ?
             obj.blocksSight = 1 :
@@ -63,21 +52,21 @@ export default class TileCreator extends Component {
 
     }
 
-    handleWalkSpeedChange(e){
+    handleWalkSpeedChange = (e) => {
         let obj = this.state.formState
         obj.walkSpeed = e.target.value
         if(e.target.value >= 0 && e.target.value <= 100){
             this.setState({formState: obj})
         }
     }
-    handleFlySpeedChange(e){
+    handleFlySpeedChange = (e) => {
         let obj = this.state.formState
         obj.flySpeed = e.target.value
         if(e.target.value >= 0 && e.target.value <= 100){
             this.setState({formState: obj})
         }
     }
-    handleSwimSpeedChange(e){
+    handleSwimSpeedChange = (e) => {
         let obj = this.state.formState
         obj.swimSpeed = e.target.value
         if(e.target.value >= 0 && e.target.value <= 100){
@@ -85,7 +74,7 @@ export default class TileCreator extends Component {
         }
     }
 
-    handleSaveTile(e){
+    handleSaveTile = (e) => {
         e.preventDefault()
         let url = 'Tile/save'
         axios.post(url, this.state.formState ).then((response)=>{
@@ -94,7 +83,7 @@ export default class TileCreator extends Component {
         })
     }
 
-    handleDeleteTile(){
+    handleDeleteTile = () => {
         let url = 'Tile/delete'
         axios.post(url, {name: this.state.formState.name} ).then((response)=>{
             this.setState({updater: this.state.updater + 1})
@@ -102,14 +91,14 @@ export default class TileCreator extends Component {
         })
     }
 
-    handleSelectImage(e){
+    handleSelectImage = (e) => {
         let formState = this.state.formState
         formState.imageId = e.target.id
         this.setState({selectedImage: e.target.src,formState:formState })
 
     }
 
-    handleSelectTile(e, props){
+    handleSelectTile = (e, props) => {
         let formState = {
             name:props.name,
             passable: props.passable,

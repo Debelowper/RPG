@@ -13,13 +13,6 @@ export default class Map extends Component {
 
         this.clicked = false
 
-        this.onHexClick = this.onHexClick.bind(this)
-        this.onHexHover = this.onHexHover.bind(this)
-        this.setHexRefs = this.setHexRefs.bind(this)
-        this.createTiles = this.createTiles.bind(this)
-        this.onMouseUp = this.onMouseUp.bind(this)
-        this.onMouseDown = this.onMouseDown.bind(this)
-
     }
 
     componentDidUpdate(){
@@ -38,7 +31,7 @@ export default class Map extends Component {
         this.hexList = hexList.filter(el => el != null)
     }
 
-    setHexRefs(el) {
+    setHexRefs = (el) => {
         if(el){
             var hexList = this.hexList
             if(!hexList.find(i => i.props.id.x == el.props.id.x && i.props.id.y == el.props.id.y)){
@@ -48,7 +41,7 @@ export default class Map extends Component {
         }
     }
 
-    onHexClick(id){
+    onHexClick = (id) => {
         this.changeChildPattern(id, this.props.selectedPattern)
     }
 
@@ -74,13 +67,13 @@ export default class Map extends Component {
 
     }
 
-    onHexHover(id){
+    onHexHover = (id) => {
         if(this.clicked){
             this.changeChildPattern(id, this.props.selectedPattern)
         }
     }
 
-    createTiles(){
+    createTiles = () => {
         var hexagons = GridGenerator.orientedRectangle(this.props.gridParams.x, this.props.gridParams.y)
 
         let hexes = hexagons.map((hex, i) =>{
@@ -100,11 +93,11 @@ export default class Map extends Component {
         return hexes
     }
 
-    onMouseDown(){
+    onMouseDown = () => {
         this.clicked = true
     }
 
-    onMouseUp(){
+    onMouseUp = () => {
         this.clicked = false
     }
 

@@ -18,22 +18,17 @@ export default class ImageUploader extends Component {
 
         this.fileInput = React.createRef();
 
-        this.handleSubmitImage = this.handleSubmitImage.bind(this)
-        this.handleImageNameChange = this.handleImageNameChange.bind(this)
-        this.handleImageTypeChange = this.handleImageTypeChange.bind(this)
-        this.handleMenuClick = this.handleMenuClick.bind(this)
-        this.handleDeleteImage = this.handleDeleteImage.bind(this)
     }
 
-    handleImageNameChange(e){
+    handleImageNameChange = (e) => {
         this.setState({imageName: e.target.value})
     }
 
-    handleImageTypeChange(e){
+    handleImageTypeChange = (e) => {
         this.setState({imageType: e.target.value})
     }
 
-    handleSubmitImage(e){
+    handleSubmitImage = (e) => {
         e.preventDefault();
         let ext = this.fileInput.current.files[0].name.split('.').pop()
         let url = 'Image/save'
@@ -47,11 +42,11 @@ export default class ImageUploader extends Component {
         })
     }
 
-    handleMenuClick(e){
+    handleMenuClick =(e) => {
         this.setState({selectedImage: e.target})
     }
 
-    handleDeleteImage(e){
+    handleDeleteImage = (e) => {
         e.preventDefault()
         axios.post('Image/delete', {imgId: this.state.selectedImage.id} ).then((response)=>{
 

@@ -8,24 +8,20 @@ export default class Tile extends Component {
     constructor(props, context){
         super(props)
 
-        this.onClick = this.onClick.bind(this)
-        this.onHover = this.onHover.bind(this)
-        this.changePattern = this.changePattern.bind(this)
-
         this.state = {
 
         }
     }
 
-    onClick(event){
+    onClick = (event) => {
         this.props.onHexClick(this.props.id)
     }
 
-    onHover(){
+    onHover = () => {
         this.props.onHexHover(this.props.id)
     }
 
-    changePattern(patternId){
+    changePattern = (patternId) => {
         this.setState({pattern: patternId })
     }
 

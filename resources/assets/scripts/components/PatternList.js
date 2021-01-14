@@ -11,14 +11,13 @@ export default class PatternList extends Component{
             images:[],
         }
 
-        this.loadImages =this.loadImages.bind(this)
     }
 
     componentDidMount(){
         this.loadImages()
     }
 
-    loadImages(){
+    loadImages = () => {
         axios.get('Image/load').then(response =>{
             this.setState({images: response.data})
         })
@@ -28,6 +27,7 @@ export default class PatternList extends Component{
         return (
             <>{
                 this.state.images.map((el, i)=>{
+                    console.log(el)
                     return <Pattern key={i} id={el.name} link={el.url} />
                 })
             }

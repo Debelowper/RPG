@@ -35,16 +35,6 @@ export default class StatSystemCreator extends Component {
             selectedSys:"",
         }
 
-        this.handleInputChange = this.handleInputChange.bind(this)
-        this.handleNFieldsChange = this.handleNFieldsChange.bind(this)
-        this.applyNFieldsChange = this.applyNFieldsChange.bind(this)
-        this.addStatField = this.addStatField.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleChangeName = this.handleChangeName.bind(this)
-        this.listSystems = this.listSystems.bind(this)
-        this.onSysOptionClick = this.onSysOptionClick.bind(this)
-        this.loadSystem = this.loadSystem.bind(this)
-        this.deleteSystem = this.deleteSystem.bind(this)
 
     }
 
@@ -52,14 +42,14 @@ export default class StatSystemCreator extends Component {
         this.listSystems()
     }
 
-    handleNFieldsChange(e){
+    handleNFieldsChange = (e) => {
         let max = e.target.id == 'nAbilities' ? 20 : 15
         let value = e.target.value < 0 ? 0 : e.target.value
         value = value > max ? max : value
         this.setState({[e.target.id]: value})
     }
 
-    applyNFieldsChange(e){
+    applyNFieldsChange = (e) => {
         let statFields = ''
         let nFields = ''
         let type = ''
@@ -111,7 +101,7 @@ export default class StatSystemCreator extends Component {
         this.setState({[e.target.id]:statFields})
     }
 
-    handleInputChange(e){
+    handleInputChange = (e) => {
         let statFields = []
         let group = ''
 
@@ -148,7 +138,7 @@ export default class StatSystemCreator extends Component {
         this.setState({[group]:statFields })
     }
 
-    addStatField(stat){
+    addStatField = (stat) => {
         let name = ''
         switch(stat.type){
             case 'stat':
@@ -203,7 +193,7 @@ export default class StatSystemCreator extends Component {
         )
     }
 
-    handleSubmit(e){
+    handleSubmit = (e) => {
         e.preventDefault()
         let form
         switch(e.target.id){
@@ -231,22 +221,22 @@ export default class StatSystemCreator extends Component {
         })
     }
 
-    handleChangeName(e){
+    handleChangeName = (e) => {
         let name = e.target.value
         this.setState({name: name})
     }
 
-    listSystems(e){
+    listSystems = (e) => {
         axios.get('/CreateSystem/load').then((response)=>{
             this.setState({sysList: response.data})
         })
     }
 
-    onSysOptionClick(e){
+    onSysOptionClick = (e) => {
         this.setState({selectedSys: e.target.id})
     }
 
-    loadSystem(){
+    loadSystem = () => {
         let system = this.state.sysList.find(el => el.name == this.state.selectedSys)
 
         let stats = JSON.parse(system.stats)
@@ -267,7 +257,7 @@ export default class StatSystemCreator extends Component {
         })
     }
 
-    deleteSystem(e){
+    deleteSystem = (e) => {
         axios.post('/CreateSystem/delete',{name: this.state.selectedSys}).then(response => {
             console.log(response)
         })

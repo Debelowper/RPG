@@ -8,7 +8,7 @@ class Stat {
         this.id=id
         this.type = type
         this.name=name ? name : ''
-        this.value=value
+        this.value=value ? value : 0
     }
 }
 
@@ -18,12 +18,12 @@ export default class StatSystemCreator extends Component {
 
         this.state = {
             name: '',
-            nStatFields:0,
-            statFields:[],
+            nStats:0,
+            stats:[],
             nResources:0,
             resources:[],
-            nAbilities:0,
-            abilities:[],
+            nSkills:0,
+            skills:[],
             nSavingThrows:0,
             savingThrows:[],
             nDamageTypes:0,
@@ -42,133 +42,44 @@ export default class StatSystemCreator extends Component {
         this.listSystems()
     }
 
-    handleNFieldsChange = (e) => {
-        let max = e.target.id == 'nAbilities' ? 20 : 15
+    handleNFieldsChange = (e, nFields) => {
+        let max = nFields == 'nSkills' ? 20 : 20
         let value = e.target.value < 0 ? 0 : e.target.value
         value = value > max ? max : value
-        this.setState({[e.target.id]: value})
+        this.setState({[nFields]: value})
     }
 
-    applyNFieldsChange = (e) => {
-        let statFields = ''
-        let nFields = ''
-        let type = ''
-        let maxFields = 10
+    applyNFieldsChange = (e, nFields, type) => {
+        nFields = this.state[nFields]
+        let stats = this.state[type]
+        let maxFields = 20
 
-        switch(e.target.id){
-            case 'statFields':
-                statFields = this.state.statFields
-                nFields = this.state.nStatFields
-                type = 'stat'
-                break
-            case 'resources':
-                statFields = this.state.resources
-                nFields = this.state.nResources
-                type='resource'
-                break
-            case 'abilities':
-                statFields = this.state.abilities
-                nFields = this.state.nAbilities
-                type='ability'
-                maxFields = 20
-                break
-            case 'savingThrows':
-                statFields = this.state.savingThrows
-                nFields = this.state.nSavingThrows
-                type='savingThrow'
-                maxFields = 20
-                break
-            case 'damageTypes':
-                statFields = this.state.damageTypes
-                nFields = this.state.nDamageTypes
-                type='damageType'
-                break
-            case 'statusEffects':
-                statFields = this.state.statusEffects
-                nFields = this.state.nStatusEffects
-                type='statusEffect'
-                break
-        }
-
-        for(var i = 0;i <= maxFields; i++){
-            if(!statFields[i] && i< nFields){
-                statFields.push(new Stat(i, type))
+        for(var i = 0;i < maxFields; i++){
+            if(!stats[i] && i< nFields){
+                stats.push(new Stat(i, type))
             }else if(i >= nFields){
-                statFields.splice(i, 10)
+                stats.splice(i, 10)
             }
         }
 
-        this.setState({[e.target.id]:statFields})
+        this.setState({[type]:stats})
     }
 
-    handleInputChange = (e) => {
-        let statFields = []
-        let group = ''
-
-        switch(e.target.name){
-            case 'stat'+'_'+e.target.name.split('_')[1]:
-                statFields = this.state.statFields
-                group = 'statFields'
-                break
-            case 'resource'+'_'+e.target.name.split('_')[1]:
-                statFields = this.state.resources
-                group = 'resources'
-                break
-            case 'ability'+'_'+e.target.name.split('_')[1]:
-                statFields = this.state.abilities
-                group = 'abilities'
-                break
-            case 'savingThrow'+'_'+e.target.name.split('_')[1]:
-                statFields = this.state.savingThrows
-                group = 'savingThrows'
-                break
-            case 'damageType'+'_'+e.target.name.split('_')[1]:
-                statFields = this.state.damageTypes
-                group = 'damageTypes'
-                break
-            case 'statusEffect'+'_'+e.target.name.split('_')[1]:
-                statFields = this.state.statusEffects
-                group = 'statusEffects'
-                break
-            default:
-                return
-        }
-        let index = e.target.name.split('_')[1]
-        statFields[index].name=e.target.value
-        this.setState({[group]:statFields })
+    handleInputChange = (e, type, id) => {
+        let stats = this.state[type]
+        stats[id].name=e.target.value
+        this.setState({[type]:stats })
     }
 
     addStatField = (stat) => {
-        let name = ''
-        switch(stat.type){
-            case 'stat':
-                name = this.state.statFields[stat.id].name
-                break
-            case 'resource':
-                name = this.state.resources[stat.id].name
-                break
-            case 'ability':
-                name = this.state.abilities[stat.id].name
-                break
-            case 'savingThrow':
-                name = this.state.savingThrows[stat.id].name
-                break
-            case 'damageType':
-                name = this.state.damageTypes[stat.id].name
-                break
-            case 'statusEffect':
-                name = this.state.statusEffects[stat.id].name
-                break
-            default:
-                return
-        }
+        let name = stat.name
 
         return(
             <div key={stat.id}>
                 <label >Stat {stat.id} Name: </label>
-                <input  className='input' type="text"  name={stat.type+'_'+stat.id}
+                <input  className='input' type="text"
                     value={name}
-                    onChange={this.handleInputChange}
+                    onChange={(e) => this.handleInputChange(e, stat.type, stat.id)}
                 />
             </div>
         )
@@ -180,10 +91,10 @@ export default class StatSystemCreator extends Component {
                 <div>
                     <h2 className="text-2xl font-bold" >{fieldName} Fields</h2>
                     <label>Number of {fieldName} Fields</label>
-                    <input id={numName} className="input" type="number" onChange={this.handleNFieldsChange} value={this.state[numName]} />
-                    <button id={statName} className="btn-primary" onClick={this.applyNFieldsChange}>Apply</button>
+                    <input  className="input" type="number" onChange={(e) => this.handleNFieldsChange(e, numName)} value={this.state[numName]} />
+                    <button  className="btn-primary" onClick={(e) => this.applyNFieldsChange(e, numName, statName)}>Apply</button>
                 </div>
-                <form id={fieldName} className="flex flex-col items-center space-y-2" method='POST' onSubmit={this.handleSubmit} encType="multipart/form-data">
+                <form  className="flex flex-col items-center space-y-2" method='POST' onSubmit={(e) => this.saveSystem(e, statName)} encType="multipart/form-data">
                     {
                         this.state[statName].map(this.addStatField)
                     }
@@ -193,31 +104,13 @@ export default class StatSystemCreator extends Component {
         )
     }
 
-    handleSubmit = (e) => {
+    saveSystem = (e, statName) => {
         e.preventDefault()
-        let form
-        switch(e.target.id){
-            case 'Stat':
-                form = this.state.statFields
-                break
-            case 'Resources':
-                form = this.state.resources
-                break
-            case 'Ability':
-                form = this.state.abilities
-                break
-            case 'Saving Throw':
-                form = this.state.savingThrows
-                break
-            case 'Damage Type':
-                form = this.state.damageTypes
-                break
-            case 'Status Effects':
-                form = this.state.statusEffects
-                break
-        }
+        let form = this.state[statName]
+
         axios.post('CreateSystem/save', {form: form, sysName: this.state.name}).then((response)=>{
             console.log(response)
+            this.listSystems()
         })
     }
 
@@ -226,7 +119,7 @@ export default class StatSystemCreator extends Component {
         this.setState({name: name})
     }
 
-    listSystems = (e) => {
+    listSystems = () => {
         axios.get('/CreateSystem/load').then((response)=>{
             this.setState({sysList: response.data})
         })
@@ -240,7 +133,7 @@ export default class StatSystemCreator extends Component {
         let system = this.state.sysList.find(el => el.name == this.state.selectedSys)
 
         let stats = JSON.parse(system.stats)
-        let abilities = JSON.parse(system.abilities)
+        let skills = JSON.parse(system.skills)
         let savingThrows = JSON.parse(system.saving_throws)
         let damageTypes = JSON.parse(system.damage_types)
         let statusEffects = JSON.parse(system.status_effects)
@@ -248,8 +141,8 @@ export default class StatSystemCreator extends Component {
 
         this.setState({
             name:system.name,
-            statFields:stats ? stats : [], nStatFields: stats ? stats.length : 0,
-            abilities: abilities ? abilities : [], nAbilities: abilities ? abilities.length : 0,
+            stats:stats ? stats : [], nStats: stats ? stats.length : 0,
+            skills: skills ? skills : [], nSkills: skills ? skills.length : 0,
             resources:resources ? resources : [], nResources: resources ? resources.length : 0,
             savingThrows: savingThrows ? savingThrows : [], nSavingThrows: savingThrows ? savingThrows.length : 0,
             damageTypes:damageTypes ? damageTypes : [], nDamageTypes: damageTypes ? damageTypes.length : 0,
@@ -260,6 +153,7 @@ export default class StatSystemCreator extends Component {
     deleteSystem = (e) => {
         axios.post('/CreateSystem/delete',{name: this.state.selectedSys}).then(response => {
             console.log(response)
+            this.listSystems()
         })
     }
 
@@ -271,11 +165,11 @@ export default class StatSystemCreator extends Component {
                 <input className="text-3xl input" type="text" value={this.state.name} onChange={this.handleChangeName}/>
                 <div className="grid grid-cols-2 w-screen h-full">
 
-                    {this.renderFormCard('Stat', 'nStatFields', 'statFields')}
+                    {this.renderFormCard('Stat', 'nStats', 'stats')}
 
                     {this.renderFormCard('Resources', 'nResources', 'resources')}
 
-                    {this.renderFormCard('Ability', 'nAbilities', 'abilities')}
+                    {this.renderFormCard('Skill', 'nSkills', 'skills')}
 
                     {this.renderFormCard('Saving Throw', 'nSavingThrows', 'savingThrows')}
 
@@ -288,7 +182,6 @@ export default class StatSystemCreator extends Component {
                 <StatSystemMenu
                     onSysOptionClick={this.onSysOptionClick}
                     loadSystem={this.loadSystem}
-                    listSystems={this.listSystems}
                     sysList={this.state.sysList}
                     selectedSys={this.props.selectedSys}
                     deleteSystem={this.deleteSystem}

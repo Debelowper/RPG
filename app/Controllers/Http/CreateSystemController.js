@@ -8,23 +8,24 @@ class CreateSystemController {
         const {form, sysName} = request.post()
         const name=auth.user.username
         let stats
+        console.log(form)
         switch(form[0].type){
-            case 'stat':
+            case 'stats':
                 stats = 'stats'
                 break
-            case 'resource':
+            case 'resources':
                 stats = 'resources'
                 break
-            case 'ability':
-                stats = 'abilities'
+            case 'skills':
+                stats = 'skills'
                 break
-            case 'savingThrow':
+            case 'savingThrows':
                 stats = 'saving_throws'
                 break
-            case 'damageType':
+            case 'damageTypes':
                 stats = 'damage_types'
                 break
-            case 'statusEffect':
+            case 'statusEffects':
                 stats = 'status_effects'
                 break
         }

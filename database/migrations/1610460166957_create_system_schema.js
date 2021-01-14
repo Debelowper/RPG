@@ -13,7 +13,7 @@ class CreateSystemSchema extends Schema {
       table.json('resources')
       table.json('saving_throws')
       table.json('damage_types')
-      table.json('abilities')
+      table.json('skills')
       table.json('status_effects')
 
       table.timestamps()

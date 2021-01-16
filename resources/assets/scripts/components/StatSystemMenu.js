@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import axios from 'axios'
 
 
-export default class StatSystemCreator extends Component {
+export default class StatSystemMenu extends Component {
     constructor(props){
         super(props)
 
@@ -20,6 +20,7 @@ export default class StatSystemCreator extends Component {
                 {this.props.sysList.map((el)=>{
                     return <button id={el.name} key={el.name} className="btn" onClick={this.props.onSysOptionClick}>{el.name}</button>
                 })}
+                <button className="btn-primary" onClick={this.props.saveSystem} >Save</button>
                 <button className="btn-primary" onClick={this.props.loadSystem} >Load</button>
                 <button className="btn-primary" onClick={this.props.deleteSystem} >Delete</button>
             </div>

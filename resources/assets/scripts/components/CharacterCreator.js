@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
-import StatSystemMenu from './StatSystemMenu'
+import CharacterMenu from './CharacterMenu'
 
 export default class CharacterCreator extends Component {
     constructor(props){
@@ -10,10 +10,11 @@ export default class CharacterCreator extends Component {
         this.state = {
             stats: [],
             resources: [],
-            abilities: [],
+            skills: [],
             savingThrows:[],
             damageTypes:[],
             statusEffects:[],
+            name:'',
         }
 
 
@@ -25,12 +26,11 @@ export default class CharacterCreator extends Component {
 
     getStatSystem = () => {
         axios.get('CreateSystem/load').then((response)=> {
-            console.log(response)
             response = response.data[0]
             this.setState({
                 stats:response.stats ?  JSON.parse(response.stats) : [],
                 resources:response.resources ?  JSON.parse(response.resources) : [],
-                abilities:response.abilities ?  JSON.parse(response.abilities) : [],
+                skills:response.skills ?  JSON.parse(response.skills) : [],
                 savingThrows:response.saving_throws ? JSON.parse(response.saving_throws) : [],
                 damageTypes:response.damageTypes ? JSON.parse(response.damageTypes) : [],
                 statusEffects:response.statusEffects ? JSON.parse(response.statusEffects) : [],
@@ -38,9 +38,9 @@ export default class CharacterCreator extends Component {
         })
     }
 
-    handleStatsChange = (e) =>{
-        let stats = this.state[e.target.name]
-        stats[e.target.id].value = e.target.value
+    handleStatsChange = (e, field, key) =>{
+        let stats = this.state[field]
+        stats[key].value = e.target.value
 
         this.setState({[stats]: stats})
     }
@@ -48,20 +48,6 @@ export default class CharacterCreator extends Component {
     addFactor = (e) =>{
         return(
             <input className="input"  value={0} />
-        )
-    }
-
-    dropdown = () => {
-        return(
-            <select>
-                {
-                    this.state.stats.map((el)=>{
-                        return (
-                            <option key={el.name} value={el.name}> {el.name} </option>
-                        )
-                    })
-                }
-            </select>
         )
     }
 
@@ -74,17 +60,22 @@ export default class CharacterCreator extends Component {
                         <div  key={el.id}>
                             <label>{el.name} :  </label>
                             <input
-                                className="input mx-auto" id={key}
+                                className="input mx-auto"
                                 name={field} type='number'
                                 value={this.state[field][key].value ? this.state[field][key].value : 0}
-                                onChange={this.handleStatsChange}
+                                onChange={(e) => this.handleStatsChange(e, field, key)}
                             />
-                            {this.dropdown()}
+
                         </div>
                     )
                 })}
             </div>
         )
+    }
+
+    handleNameChange = (e) => {
+        let name = e.target.value
+        this.setState({name: e.target.value})
     }
 
 
@@ -93,7 +84,9 @@ export default class CharacterCreator extends Component {
     render(){
         return (
             <div>
-                <div className="flex flex-row flex-wrap" >
+                <h2 className="text-2xl font-bold">Character Name</h2>
+                <input className="input text-2xl" value={this.state.name} onChange={this.handleNameChange}/>
+                <div className="flex flex-row flex-wrap w-2/3" >
                     <div className="flex flex-col space-y-1 w-1/2 border border-black">
                         <h2 className="text-2xl font-bold" >Character Stats</h2>
                         {this.state.stats.map((el, key)=>{
@@ -101,10 +94,10 @@ export default class CharacterCreator extends Component {
                                 <div  key={el.id}>
                                     <label>{el.name} :  </label>
                                     <input
-                                        className="input mx-auto" id={key}
-                                        name='stats' type='number'
+                                        className="input mx-auto"
+                                        type='number'
                                         value={this.state.stats[key].value ? this.state.stats[key].value : 0}
-                                        onChange={this.handleStatsChange} />
+                                        onChange={(e) => this.handleStatsChange(e, 'stats' ,key)} />
                                 </div>
                             )
                         })}
@@ -112,13 +105,13 @@ export default class CharacterCreator extends Component {
 
                     {this.renderFields('resources')}
 
-                    {this.renderFields('abilities')}
+                    {this.renderFields('skills')}
 
                     {this.renderFields('savingThrows')}
 
                 </div>
 
-
+                <CharacterMenu />
                 <button id="btn" className="btn-primary" onClick={this.getStatSystem} value={this.state.name}>create character</button>
             </div>
         )

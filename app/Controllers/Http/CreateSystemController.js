@@ -5,34 +5,19 @@ const Database = use('Database')
 class CreateSystemController {
 
     async saveSystem({auth, request}){
-        const {form, sysName} = request.post()
+        const {sys} = request.post()
         const name=auth.user.username
-        let stats
-        console.log(form)
-        switch(form[0].type){
-            case 'stats':
-                stats = 'stats'
-                break
-            case 'resources':
-                stats = 'resources'
-                break
-            case 'skills':
-                stats = 'skills'
-                break
-            case 'savingThrows':
-                stats = 'saving_throws'
-                break
-            case 'damageTypes':
-                stats = 'damage_types'
-                break
-            case 'statusEffects':
-                stats = 'status_effects'
-                break
-        }
-        const system = new System
-        system.name = name + '_'+ sysName
-        system[stats] = JSON.stringify(form)
+
+        let system = new System
+        system.name = name + '_'+ sys.name
+        delete sys.name
         system.user_id = auth.user.id
+
+        const camelToSnakeCase = str => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+        let entries = Object.entries(sys)
+        entries.forEach( (el) => {
+            system[camelToSnakeCase(el[0])] = JSON.stringify(el[1])
+        })
 
         let prevSave = await Database.table('systems').where('name', system.name).first()
         if(prevSave == null){

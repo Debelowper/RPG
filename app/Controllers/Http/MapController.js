@@ -36,7 +36,7 @@ class MapController {
 
         }else{
             try{
-                map.save()
+                await map.save()
 
                 return map
 

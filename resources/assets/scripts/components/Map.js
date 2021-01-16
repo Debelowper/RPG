@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
 import Tile from './Tile';
 import PatternList from './PatternList'
+import Helpers from './Helpers'
+
 
 export default class Map extends Component {
     constructor(props){
@@ -11,8 +13,12 @@ export default class Map extends Component {
         this.hexList=[]
         this.layoutRef = React.createRef()
 
-        this.clicked = false
+        this.state = {
+            brushSize:1,
+            gridParams: Helpers.calcGridParams(10,8,10),
+        }
 
+        this.clicked = false
     }
 
     componentDidUpdate(){
@@ -46,7 +52,7 @@ export default class Map extends Component {
     }
 
     changeChildPattern(id, pattern){
-        let brushSize = parseInt(this.props.brushSize)
+        let brushSize = parseInt(this.state.brushSize)
         let x = id.x + brushSize
         let y = id.y + brushSize
         let tiles = this.hexList.filter(el=>{
@@ -74,10 +80,10 @@ export default class Map extends Component {
     }
 
     createTiles = () => {
-        var hexagons = GridGenerator.orientedRectangle(this.props.gridParams.x, this.props.gridParams.y)
+        var hexagons = GridGenerator.orientedRectangle(this.state.gridParams.x, this.state.gridParams.y)
 
         let hexes = hexagons.map((hex, i) =>{
-            hex.id = {x:(hex.q ), y:i%this.props.gridParams.y}
+            hex.id = {x:(hex.q ), y:i%this.state.gridParams.y}
             return(
                 <Tile
                     ref={this.setHexRefs}
@@ -101,18 +107,48 @@ export default class Map extends Component {
         this.clicked = false
     }
 
+    selectBrushSize = (e) => {
+        this.setState({brushSize: e.target.value})
+    }
+
+    renderRightMenu(){
+        if(this.props.MapCRUD){
+            return(
+                <this.props.MapCRUD
+                    hexList={this.hexList}
+                    gridParams={this.state.gridParams}
+                    selectBrushSize={this.selectBrushSize}
+                    brushSize={this.state.brushSize}
+                />
+            )
+        }
+    }
+
+    changeGridParams = (width, height, size) => {
+        var gridParams = Helpers.calcGridParams(width, height, size)
+        this.setState({gridParams})
+    }
 
 
     render(){
 
         return(
-            <div onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp}>
-                <HexGrid  width={this.props.gridParams.width} height={this.props.gridParams.height} viewBox={this.props.gridParams.viewboxParams.join(' ')}>
-                    <Layout  ref={this.layoutRef} size={{ x: this.props.gridParams.size, y: this.props.gridParams.size }}>
-                        {this.createTiles() }
-                    </Layout>
-                    <PatternList />
-                </HexGrid>
+            <div>
+                <div className="flex w-4/5">
+                    <this.props.SizeMenu changeGridParams={this.changeGridParams} />
+                    <div onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp}>
+                        <HexGrid  width={this.state.gridParams.width} height={this.state.gridParams.height} viewBox={this.state.gridParams.viewboxParams.join(' ')}>
+                            <Layout  ref={this.layoutRef} size={{ x: this.state.gridParams.size, y: this.state.gridParams.size }}>
+                                {this.createTiles() }
+                            </Layout>
+                            <PatternList />
+                        </HexGrid>
+                    </div>
+                    <div className='flex w-1/6'>
+                        {this.renderRightMenu()}
+                    </div>
+                </div>
+                {this.props.children}
             </div>
         )
     }

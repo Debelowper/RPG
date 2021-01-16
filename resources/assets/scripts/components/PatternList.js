@@ -10,7 +10,6 @@ export default class PatternList extends Component{
         this.state={
             images:[],
         }
-
     }
 
     componentDidMount(){
@@ -27,7 +26,6 @@ export default class PatternList extends Component{
         return (
             <>{
                 this.state.images.map((el, i)=>{
-                    console.log(el)
                     return <Pattern key={i} id={el.name} link={el.url} />
                 })
             }

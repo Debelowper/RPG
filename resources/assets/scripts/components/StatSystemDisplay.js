@@ -97,7 +97,6 @@ export default class StstSystemDisplay extends Component {
                 </div>
                 <form  className="flex flex-col items-center space-y-2"
                     method='POST' encType="multipart/form-data"
-                    // onSubmit={(e) => this.props.saveSystem(e, statName, this.state[statName], this.state.name) }
                 >
                     {
                         this.state[statName].map(this.addStatField)

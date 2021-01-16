@@ -13,8 +13,6 @@ export default class StatSystemCreator extends Component {
             sysList:[],
             selectedSys:"",
         }
-
-
     }
 
     componentDidMount(){
@@ -70,8 +68,6 @@ export default class StatSystemCreator extends Component {
     render(){
         return(
             <div>
-
-
                 <StatSystemMenu
                     saveSystem={this.saveSystem}
                     onSysOptionClick={this.onSysOptionClick}

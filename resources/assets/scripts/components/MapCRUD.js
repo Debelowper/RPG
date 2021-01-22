@@ -18,7 +18,7 @@ export default function MapCRUD({hexList, gridParams, selectBrushSize, brushSize
           <div className="flex flex-col absolute right-0 z-10 bg-gray-700 border-2 border-red-700 h-1/2 space-y-2 rounded">
               <MapMenu
                   saveMap={(selectedMap) => saveMap(selectedMap, hexList, gridParams, setMapList)}
-                  loadMap={(selectedMap) => loadMap(selectedMap, setGridParams, createTiles)}
+                  loadMap={(selectedMap) => loadMap(selectedMap, hexList, setGridParams)}
                   deleteMap={(selectedMap) => deleteMap(selectedMap, setMapList)}
                   mapList={mapList}
                   selectBrushSize={selectBrushSize}
@@ -60,8 +60,6 @@ function loadMap(selectedMap, hexList, setGridParams){
 
             await setGridParams(width, height, 10)
 
-
-            createTiles()
             hexList.forEach(el => {
                 let hex = map.find((id) =>{
                     return id.id.x == el.props.id.x && id.id.y == el.props.id.y

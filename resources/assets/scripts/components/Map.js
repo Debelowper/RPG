@@ -1,152 +1,52 @@
-import React, {Component} from 'react'
+import React, {useState} from 'react'
 import ReactDOM from 'react-dom'
 import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
 import Tile from './Tile';
 import PatternList from './PatternList'
-import {calcGridParams} from './Helpers'
 
-export default class Map extends Component {
-    constructor(props){
-        super(props)
+export default function({selectedPattern, setHexRefs, layoutRef, changeChildPattern, gridParams, rightMenu, bottomMenu, sizeMenu}){
 
-        this.hexList=[]
-        this.layoutRef = React.createRef()
+    const [clicked, setClicked] = useState(false)
 
-        this.state = {
-            brushSize:1,
-            gridParams: calcGridParams(10,8,10),
-            hexList:[],
-        }
+    var hexagons = GridGenerator.orientedRectangle(gridParams.x, gridParams.y)
 
-        this.clicked = false
-    }
-
-    componentDidUpdate(){
-        this.clearLeftoverHexes()
-    }
-
-    clearLeftoverHexes(){
-        let hexList = this.hexList
-        hexList = hexList.map(el => {
-            if(this.layoutRef.current.props.children.find(i => el.props.id.x == i.props.id.x && el.props.id.y == i.props.id.y)){
-                return el
-            }else{
-                return null
-            }
-        })
-        this.hexList = hexList.filter(el => el != null)
-    }
-
-    setHexRefs = (el) => {
-        if(el){
-            var hexList = this.hexList
-            if(!hexList.find(i => i.props.id.x == el.props.id.x && i.props.id.y == el.props.id.y)){
-                hexList.push(el)
-                this.hexList = hexList
-            }
-        }
-    }
-
-    onHexClick = (id) => {
-        this.changeChildPattern(id, this.props.selectedPattern)
-    }
-
-    changeChildPattern(id, pattern){
-        let brushSize = parseInt(this.state.brushSize)
-        let x = id.x + brushSize
-        let y = id.y + brushSize
-        let tiles = this.hexList.filter(el=>{
-            return (
-                el.props.id.x >= id.x
-                && el.props.id.y >= id.y
-                && el.props.id.x < x
-                && el.props.id.y < y
-            )
-        })
-        tiles.forEach((el)=>{
-            el.changePattern(pattern)
-        })
-
-    }
-
-    onHexHover = (id) => {
-        if(this.clicked){
-            this.changeChildPattern(id, this.props.selectedPattern)
-        }
-    }
-
-    createTiles = () => {
-        var hexagons = GridGenerator.orientedRectangle(this.state.gridParams.x, this.state.gridParams.y)
-
-        let hexes = hexagons.map((hex, i) =>{
-            hex.id = {x:(hex.q ), y:i % this.state.gridParams.y}
-            return(
-                <Tile
-                    ref={this.setHexRefs}
-                    key={'r'+hex.id.x+'c'+hex.id.y}
-                    hex={hex}
-                    id={hex.id}
-                    onHexClick={this.onHexClick}
-                    onHexHover={this.onHexHover}
-                />
-            )
-
-        })
-        return hexes
-    }
-
-    onMouseDown = () => {
-        this.clicked = true
-    }
-
-    onMouseUp = () => {
-        this.clicked = false
-    }
-
-    selectBrushSize = (e) => {
-        this.setState({brushSize: e.target.value})
-    }
-
-    renderRightMenu(){
-        if(this.props.MapCRUD){
-            return(
-                <this.props.MapCRUD
-                    hexList={this.hexList}
-                    gridParams={this.state.gridParams}
-                    selectBrushSize={this.selectBrushSize}
-                    brushSize={this.state.brushSize}
-                    setGridParams={this.setGridParams}
-                />
-            )
-        }
-    }
-
-    setGridParams = (width, height, size) => {
-        var gridParams = calcGridParams(width, height, size)
-        this.setState({gridParams})
-    }
-
-
-    render(){
-
-        return(
-            <div>
-                <div className="flex w-4/5">
-                    <this.props.SizeMenu changeGridParams={this.setGridParams} />
-                    <div onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp}>
-                        <HexGrid  width={this.state.gridParams.width} height={this.state.gridParams.height} viewBox={this.state.gridParams.viewboxParams.join(' ')}>
-                            <Layout  ref={this.layoutRef} size={{ x: this.state.gridParams.size, y: this.state.gridParams.size }}>
-                                {this.createTiles() }
-                            </Layout>
-                            <PatternList />
-                        </HexGrid>
-                    </div>
-                    <div className='flex w-1/6'>
-                        {this.renderRightMenu()}
-                    </div>
+    return(
+        <div>
+            <div className="flex w-4/5">
+                {sizeMenu}
+                <div onMouseDown={() => setClicked(true)} onMouseUp={() => setClicked(false)}>
+                    <HexGrid  width={gridParams.width} height={gridParams.height} viewBox={gridParams.viewboxParams.join(' ')}>
+                        <Layout  ref={layoutRef} size={{ x: gridParams.size, y: gridParams.size }}>
+                            {
+                                hexagons.map((hex, i) =>{
+                                    hex.id = {x:hex.q , y: i % gridParams.y}
+                                    return(
+                                        <Tile
+                                            ref={setHexRefs}
+                                            key={'r'+hex.id.x+'c'+hex.id.y}
+                                            hex={hex}
+                                            id={hex.id}
+                                            onHexClick={(id) => {
+                                                changeChildPattern(id, selectedPattern)
+                                            }}
+                                            onHexHover={(id) => {
+                                                if(clicked){
+                                                    changeChildPattern(id, selectedPattern)
+                                                }
+                                            }}
+                                        />
+                                    )
+                                })
+                            }
+                        </Layout>
+                        <PatternList />
+                    </HexGrid>
                 </div>
-                {this.props.children}
+                <div className='flex w-1/6'>
+                    {rightMenu}
+                </div>
             </div>
-        )
-    }
+            {bottomMenu}
+        </div>
+    )
 }

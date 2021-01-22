@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom'
 import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
 import Tile from './Tile';
 import PatternList from './PatternList'
-import Helpers from './Helpers'
-
+import {calcGridParams} from './Helpers'
 
 export default class Map extends Component {
     constructor(props){
@@ -15,7 +14,8 @@ export default class Map extends Component {
 
         this.state = {
             brushSize:1,
-            gridParams: Helpers.calcGridParams(10,8,10),
+            gridParams: calcGridParams(10,8,10),
+            hexList:[],
         }
 
         this.clicked = false
@@ -63,10 +63,6 @@ export default class Map extends Component {
                 && el.props.id.y < y
             )
         })
-
-        // let el = this.hexList.find((el) => {
-        //     return el.props.id.x == id.x && el.props.id.y == id.y
-        // })
         tiles.forEach((el)=>{
             el.changePattern(pattern)
         })
@@ -83,7 +79,7 @@ export default class Map extends Component {
         var hexagons = GridGenerator.orientedRectangle(this.state.gridParams.x, this.state.gridParams.y)
 
         let hexes = hexagons.map((hex, i) =>{
-            hex.id = {x:(hex.q ), y:i%this.state.gridParams.y}
+            hex.id = {x:(hex.q ), y:i % this.state.gridParams.y}
             return(
                 <Tile
                     ref={this.setHexRefs}
@@ -119,13 +115,14 @@ export default class Map extends Component {
                     gridParams={this.state.gridParams}
                     selectBrushSize={this.selectBrushSize}
                     brushSize={this.state.brushSize}
+                    setGridParams={this.setGridParams}
                 />
             )
         }
     }
 
-    changeGridParams = (width, height, size) => {
-        var gridParams = Helpers.calcGridParams(width, height, size)
+    setGridParams = (width, height, size) => {
+        var gridParams = calcGridParams(width, height, size)
         this.setState({gridParams})
     }
 
@@ -135,7 +132,7 @@ export default class Map extends Component {
         return(
             <div>
                 <div className="flex w-4/5">
-                    <this.props.SizeMenu changeGridParams={this.changeGridParams} />
+                    <this.props.SizeMenu changeGridParams={this.setGridParams} />
                     <div onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp}>
                         <HexGrid  width={this.state.gridParams.width} height={this.state.gridParams.height} viewBox={this.state.gridParams.viewboxParams.join(' ')}>
                             <Layout  ref={this.layoutRef} size={{ x: this.state.gridParams.size, y: this.state.gridParams.size }}>

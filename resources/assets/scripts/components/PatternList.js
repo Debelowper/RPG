@@ -1,35 +1,27 @@
-import React, {Component} from 'react'
+import React, {useState, useEffect} from 'react'
 import { Pattern } from 'react-hexgrid';
 import axios from 'axios'
 
-export default class PatternList extends Component{
+async function loadImages(){
+    return await axios.get('Image/load')
+}
 
-    constructor(props){
-        super(props)
+export default function PatternList(){
+    const [images, setImages] =useState([])
 
-        this.state={
-            images:[],
+    useEffect(
+        async () =>{
+            setImages((await loadImages()).data)
+        },
+        [JSON.stringify(images)]
+    )
+
+    return (
+        <>{
+            images.map((el, i)=>{
+                return <Pattern key={i} id={el.name} link={el.url} />
+            })
         }
-    }
-
-    componentDidMount(){
-        this.loadImages()
-    }
-
-    loadImages = () => {
-        axios.get('Image/load').then(response =>{
-            this.setState({images: response.data})
-        })
-    }
-
-    render(){
-        return (
-            <>{
-                this.state.images.map((el, i)=>{
-                    return <Pattern key={i} id={el.name} link={el.url} />
-                })
-            }
-            </>
-        )
-    }
+        </>
+    )
 }

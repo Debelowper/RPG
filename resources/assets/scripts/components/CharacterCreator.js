@@ -17,7 +17,6 @@ export default class CharacterCreator extends Component {
             name:'',
         }
 
-
     }
 
     componentDidMount(){
@@ -77,8 +76,6 @@ export default class CharacterCreator extends Component {
         let name = e.target.value
         this.setState({name: e.target.value})
     }
-
-
 
 
     render(){

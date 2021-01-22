@@ -1,49 +1,27 @@
-import React, {Component} from 'react'
+import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 
-export default class ImagesMenu extends Component {
+async function loadImages(){
+    return await axios.get('Image/load')
+}
 
-    constructor(props){
-        super(props)
+export default function ImagesMenu({onMenuClick}){
+    const [images, setImages] = useState( [] )
 
-        this.state={
-            images:[],
-        }
+    useEffect(async ()=>{
+        setImages(( await loadImages()).data)
+    }, [JSON.stringify(images)])
 
-        this.loadImages =this.loadImages.bind(this)
-    }
-
-    componentDidMount(){
-        this.loadImages()
-    }
-
-    componentDidUpdate(props){
-        if(props.updater != this.props.updater){
-            this.loadImages()
-        }
-    }
-
-    loadImages(){
-        axios.get('Image/load').then(response =>{
-            this.setState({images: response.data})
-        })
-    }
-
-
-
-
-    render(){
-        return(
-             <div className='flex fixed inset-x-0 bottom-0 z-10 bg-gray-700 border-2 border-red-700 py-3 h-24 w-screen px-2 space-x-2'>
-                 <div className='flex flex-row space-x-2'>
-                     {
-                         this.state.images.map((el, i)=>{
-                             return <img onClick={this.props.onMenuClick} name={el.name} id={el.id} key={i} src={el.url} width={50} height={50}/>
-                         })
-                     }
-                 </div>
-             </div>
-        )
-    }
+    return(
+        <div className='flex fixed inset-x-0 bottom-0 z-10 bg-gray-700 border-2 border-red-700 py-3 h-24 w-screen px-2 space-x-2'>
+            <div className='flex flex-row space-x-2'>
+                {
+                    images.map((el, i) => {
+                        return <img onClick={onMenuClick} name={el.name} src={el.url} key={i} width={50} height={50}></img>
+                    })
+                }
+            </div>
+        </div>
+    )
 }

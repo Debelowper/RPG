@@ -4,7 +4,6 @@ import Map from './Map'
 import SizeMenu from './SizeMenu'
 import TilesMenu from './TilesMenu'
 import axios from 'axios'
-import MapMenu from './MapMenu'
 import MapCRUD from './MapCRUD'
 
 

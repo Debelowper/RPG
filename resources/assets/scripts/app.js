@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import MapCreator from './components/MapCreator'
 import TileCreator from './components/TileCreator'
 import ImageUploader from './components/ImageUploader'
-import StatSystemDisplay from './components/StatSystemDisplay'
+import StatSystemCreator from './components/StatSystemCreator'
 import CharacterCreator from './components/CharacterCreator'
 
 if(document.getElementById('createMap') ){
@@ -23,7 +23,7 @@ if(document.getElementById('uploadImage') ){
 
 if(document.getElementById('createStatSystem') ){
     let createStatSystem = document.getElementById('createStatSystem');
-    ReactDOM.render(<StatSystemDisplay {...(createStatSystem.dataset)} />, document.getElementById('createStatSystem'))
+    ReactDOM.render(<StatSystemCreator {...(createStatSystem.dataset)} />, document.getElementById('createStatSystem'))
 }
 
 if(document.getElementById('createCharacter') ){

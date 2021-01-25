@@ -1,8 +1,8 @@
 .btn {
-  @apply px-4 py-2 font-bold rounded;
+  @apply px-2 py-1 font-bold rounded my-auto;
 
 }
 
 .btn-primary {
-    @apply  btn bg-blue-500 border-2 border-red-500 hover:bg-blue-700 text-white;
+    @apply  btn bg-blue-500 border-2 border-red-500 hover:bg-blue-700 text-white text-sm;
 }

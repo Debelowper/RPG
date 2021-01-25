@@ -11,42 +11,34 @@ export default function({selectedPattern, setHexRefs, layoutRef, changeChildPatt
     var hexagons = GridGenerator.orientedRectangle(gridParams.x, gridParams.y)
 
     return(
-        <div>
-            <div className="flex w-4/5">
-                {sizeMenu}
-                <div onMouseDown={() => setClicked(true)} onMouseUp={() => setClicked(false)}>
-                    <HexGrid  width={gridParams.width} height={gridParams.height} viewBox={gridParams.viewboxParams.join(' ')}>
-                        <Layout  ref={layoutRef} size={{ x: gridParams.size, y: gridParams.size }}>
-                            {
-                                hexagons.map((hex, i) =>{
-                                    hex.id = {x:hex.q , y: i % gridParams.y}
-                                    return(
-                                        <Tile
-                                            ref={setHexRefs}
-                                            key={'r'+hex.id.x+'c'+hex.id.y}
-                                            hex={hex}
-                                            id={hex.id}
-                                            onHexClick={(id) => {
-                                                changeChildPattern(id, selectedPattern)
-                                            }}
-                                            onHexHover={(id) => {
-                                                if(clicked){
-                                                    changeChildPattern(id, selectedPattern)
-                                                }
-                                            }}
-                                        />
-                                    )
-                                })
-                            }
-                        </Layout>
-                        <PatternList />
-                    </HexGrid>
-                </div>
-                <div className='flex w-1/6'>
-                    {rightMenu}
-                </div>
-            </div>
-            {bottomMenu}
+        <div className="block w-full" onMouseDown={() => setClicked(true)} onMouseUp={() => setClicked(false)}>
+            <HexGrid  width={gridParams.width} height={gridParams.height} viewBox={gridParams.viewboxParams.join(' ')}>
+                <Layout  ref={layoutRef} size={{ x: gridParams.size, y: gridParams.size }}>
+                    {
+                        hexagons.map((hex, i) =>{
+                            hex.id = {x:hex.q , y: i % gridParams.y}
+                            return(
+                                <Tile
+                                    ref={setHexRefs}
+                                    key={'r'+hex.id.x+'c'+hex.id.y}
+                                    hex={hex}
+                                    id={hex.id}
+                                    onHexClick={(id) => {
+                                        changeChildPattern(id, selectedPattern)
+                                    }}
+                                    onHexHover={(id) => {
+                                        if(clicked){
+                                            changeChildPattern(id, selectedPattern)
+                                        }
+                                    }}
+                                />
+                            )
+                        })
+                    }
+                </Layout>
+                <PatternList />
+            </HexGrid>
         </div>
+
     )
 }

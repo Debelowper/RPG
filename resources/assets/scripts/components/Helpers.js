@@ -1,5 +1,5 @@
 
-export function calcGridParams(x, y, size) {
+export function calcGridParams({x, y, size}) {
 
     let kx = 0.77
     let ky = 0.88

@@ -1,40 +1,36 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 
-export default class App extends Component {
-    constructor(props){
-        super(props)
+export default function SizeMenu({size, setSize, changeGridParams }){
 
-        this.state = {
-            width: 10,
-            height: 8,
-            size: 10
-        }
-
-
+    const onClick = () => {
+        changeGridParams()
     }
 
-    onClick= () => {
-        this.props.changeGridParams(this.state.width, this.state.height, this.state.size)
-    }
-
-    handleChange = (event) => {
-        if(event.target.placeholder != 'size' && event.target.value <= 80){
-            this.setState({[event.target.placeholder]: event.target.value});
-        }else if(event.target.value <= 30){
-            this.setState({[event.target.placeholder]: event.target.value});
+    const handleChange = ({target}) => {
+        if(target.placeholder != 'size' && target.value <= 80){
+            setSize({...size, [target.placeholder]: parseInt(target.value)})
+        }else if(target.value <= 30){
+            setSize(...size, {[target.placeholder]: parseInt(target.value)})
         }
     }
 
-    render(){
-        return(
+    return(
+        <>
             <div>
-                <input placeholder={'width'} value={this.state.width} onChange={this.handleChange} className="border-4 rounded" type='number' ></input>
-                <input placeholder={'height'} value={this.state.height} onChange={this.handleChange} className="border-4 rounded" type='number' ></input>
-                {/*<input placeholder={'size'} value={this.state.size} onChange={this.handleChange} className="border-4 rounded" type='number' ></input>*/}
-                <button onClick={this.onClick} className="btn-primary">Apply</button>
+                <div>
+                    <label className="text-white text-sm">width  </label>
+                    <input placeholder={'x'} value={size.x} onChange={handleChange} className="border-4 rounded w-12" type='number' ></input>
+                </div>
+                <div>
+                    <label className="text-white text-sm">height </label>
+                    <input placeholder={'y'} value={size.y} onChange={handleChange} className="border-4 rounded w-12" type='number' ></input>
+                </div>
             </div>
+            {/*<input placeholder={'size'} value={size.size} onChange={handleChange} className="border-4 rounded" type='number' ></input>*/}
+            <button onClick={onClick} className="btn-primary">Apply</button>
+        </>
 
-        )
-    }
+    )
+
 }

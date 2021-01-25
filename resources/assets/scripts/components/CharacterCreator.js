@@ -108,8 +108,7 @@ export default class CharacterCreator extends Component {
 
                 </div>
 
-                <CharacterMenu />
-                <button id="btn" className="btn-primary" onClick={this.getStatSystem} value={this.state.name}>create character</button>
+                {/* <CharacterMenu /> */}
             </div>
         )
     }

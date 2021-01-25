@@ -6,15 +6,19 @@ import TilesMenu from './TilesMenu'
 import axios from 'axios'
 import MapCRUD from './MapCRUD'
 import {calcGridParams} from './Helpers'
+import GameLayout from './GameLayout'
 
 export default function MapCreator(){
+
+    const defaultSizes = {x:10,y:8,size:10}
 
     const [selectedPattern, setSelectedPattern] = useState('')
     const [brushSize, setBrushSize] = useState(1)
     const [mapList, setMapList] = useState([])
     const [selectedMap, setSelectedMap] = useState('')
-    const [gridParams, setGridParams] = useState(calcGridParams(10,8,10) )
+    const [gridParams, setGridParams] = useState(calcGridParams(defaultSizes) )
     const [hexList, setHexList] = useState([])
+    const [size, setSize] = useState(defaultSizes)
 
     const layoutRef = React.createRef()
 
@@ -36,37 +40,41 @@ export default function MapCreator(){
     }
 
     return (
-          <div className="flex h-screen w-full" >
-              <Map
-                  selectedPattern={selectedPattern}
+        <GameLayout
+            content={
+                <Map
+                    selectedPattern={selectedPattern}
+                    setHexRefs = {setHexRef}
+                    hexList = {hexList}
+                    layoutRef = {layoutRef}
+                    brushSize={brushSize}
+                    changeChildPattern = {(id, pattern) => changeChildPattern(id, pattern, hexList, brushSize)}
+                    gridParams = {gridParams}
 
-                  setHexRefs = {setHexRef}
+                />
+            }
+            rightMenu = {
+                <div>
+                    <div className="flex flex-row flex-wrap space-x-2 py-3">
+                        <SizeMenu  size={size} setSize={setSize} changeGridParams={() => setGridParams(calcGridParams(size))}  />
+                    </div>
+                    <div className="flex flex-col place-items-center space-y-2">
+                        <MapCRUD
+                            hexList={hexList}
+                            gridParams={gridParams}
+                            selectBrushSize={(e) => setBrushSize(e.target.value)}
+                            brushSize={brushSize}
+                            setGridParams={(size) => setGridParams(calcGridParams(size))}
+                            setSize = {setSize}
+                        />
+                    </div>
+                </div>
+            }
 
-                  hexList = {hexList}
-                  layoutRef = {layoutRef}
-                  brushSize={brushSize}
-                  changeChildPattern = {(id, pattern) => changeChildPattern(id, pattern, hexList, brushSize)}
-                  gridParams = {gridParams}
-
-                  rightMenu = {
-                      <MapCRUD
-                          hexList={hexList}
-                          gridParams={gridParams}
-                          selectBrushSize={(e) => setBrushSize(e.target.value)}
-                          brushSize={brushSize}
-                          setGridParams={(width, height, size) => setGridParams(calcGridParams(width, height, size))}
-                      />
-                  }
-                  bottomMenu = {
-                      <div className='flex fixed inset-x-0 bottom-0 z-10 bg-gray-700 border-2 border-red-700 py-3 h-24 w-screen px-2 space-x-2'>
-                          <TilesMenu onMenuClick={(e) => setSelectedPattern(e.target.name) } selectedPattern={selectedPattern} />
-                      </div>
-                  }
-                  sizeMenu = {
-                      <SizeMenu changeGridParams={(width, height, size) => setGridParams(calcGridParams(width, height, size))}  />
-                  }
-              />
-          </div>
+            bottomMenu={
+                <TilesMenu onMenuClick={(e) => setSelectedPattern(e.target.name) } selectedPattern={selectedPattern} />
+            }
+        />
     )
 }
 

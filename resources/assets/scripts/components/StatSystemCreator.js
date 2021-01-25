@@ -1,83 +1,83 @@
-import React, {Component} from 'react'
+import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import StatSystemMenu from './StatSystemMenu'
+import StatSystemDisplay from './StatSystemDisplay'
 
+export default function StatSystemCreator(){
+    const [sysList, setSysList] = useState([])
+    const [selectedSys, setSelectedSys] = useState('')
 
-export default class StatSystemCreator extends Component {
-    constructor(props){
-        super(props)
-
-        this.state = {
-
-            sysList:[],
-            selectedSys:"",
+    const [system, setSystem] = useState(
+        {
+            name: '',
+            stats:[],
+            resources:[],
+            skills:[],
+            savingThrows:[],
+            damageTypes:[],
+            statusEffects:[],
         }
-    }
+    )
 
-    componentDidMount(){
-        this.listSystems()
-    }
+    useEffect(()=>{
+        listSystems()
+    }, [])
 
 
-    listSystems = () => {
-        axios.get('/CreateSystem/load').then((response)=>{
-            this.setState({sysList: response.data})
-        })
-    }
-
-    onSysOptionClick = (e) => {
-        this.setState({selectedSys: e.target.id})
-    }
-
-    saveSystem = (e) => {
+    const saveSystem = (e) => {
         e.preventDefault()
-
-        let sysState = this.props.getSystemState()
-
-        axios.post('CreateSystem/save', {sys: sysState}).then((response)=>{
-            console.log(response)
-            this.listSystems()
+        axios.post('CreateSystem/save', {sys: system}).then((response)=>{
+            listSystems()
         })
     }
 
-    loadSystem = () => {
-        let system = this.state.sysList.find(el => el.name == this.state.selectedSys)
+    const loadSystem = () => {
+        let currentSys = sysList.find(el => el.name == selectedSys)
 
         let parsedSys = {
-            name: system.name,
-            stats: JSON.parse(system.stats),
-            skills: JSON.parse(system.skills),
-            savingThrows: JSON.parse(system.saving_throws),
-            damageTypes: JSON.parse(system.damage_types),
-            statusEffects: JSON.parse(system.status_effects),
-            resources: JSON.parse(system.resources),
+            name: currentSys.name ? currentSys.name : [],
+            stats: JSON.parse(currentSys.stats) ? JSON.parse(currentSys.stats) : [],
+            skills: JSON.parse(currentSys.skills) ? JSON.parse(currentSys.skills) : [],
+            savingThrows: JSON.parse(currentSys.saving_throws) ? JSON.parse(currentSys.saving_throws) : [],
+            damageTypes: JSON.parse(currentSys.damage_types) ? JSON.parse(currentSys.damage_types) : [],
+            statusEffects: JSON.parse(currentSys.status_effects) ? JSON.parse(currentSys.status_effects) : [],
+            resources: JSON.parse(currentSys.resources) ? JSON.parse(currentSys.resources) : [],
         }
 
-        this.props.loadSystem(parsedSys)
+        setSystem(parsedSys)
     }
 
-    deleteSystem = (e) => {
-        axios.post('/CreateSystem/delete',{name: this.state.selectedSys}).then(response => {
-            console.log(response)
-            this.listSystems()
+    const deleteSystem = (e) => {
+        axios.post('/CreateSystem/delete',{name: selectedSys}).then(response => {
+            listSystems()
+        })
+    }
+
+    const listSystems = () => {
+        axios.get('/CreateSystem/load').then((response) =>{
+            setSysList(response.data)
         })
     }
 
 
-    render(){
-        return(
+    return(
+        <div>
             <div>
+                <StatSystemDisplay setSystem={setSystem} system={system} />
+            </div>
+            <div>
+
                 <StatSystemMenu
-                    saveSystem={this.saveSystem}
-                    onSysOptionClick={this.onSysOptionClick}
-                    loadSystem={this.loadSystem}
-                    sysList={this.state.sysList}
-                    selectedSys={this.props.selectedSys}
-                    deleteSystem={this.deleteSystem}
+                    saveSystem={saveSystem}
+                    onSysOptionClick={(e)=>setSelectedSys(e.target.id)}
+                    loadSystem={loadSystem}
+                    sysList={sysList}
+                    selectedSys={selectedSys}
+                    deleteSystem={deleteSystem}
                 />
             </div>
+        </div>
 
-        )
-    }
+    )
 }

@@ -25,19 +25,23 @@ export default function MapCreator(){
         [gridParams]
     )
 
+    const setHexRef = (el) =>{
+        if(el){
+            if(!hexList.find(i => i.props.id.x == el.props.id.x && i.props.id.y == el.props.id.y)){
+                let list = hexList
+                list.push(el)
+                setHexList(list)
+            }
+        }
+    }
+
     return (
           <div className="flex h-screen w-full" >
               <Map
                   selectedPattern={selectedPattern}
-                  setHexRefs = {(el) =>{
-                      if(el){
-                          if(!hexList.find(i => i.props.id.x == el.props.id.x && i.props.id.y == el.props.id.y)){
-                              let list = hexList
-                              list.push(el)
-                              setHexList(list)
-                          }
-                      }
-                  }}
+
+                  setHexRefs = {setHexRef}
+
                   hexList = {hexList}
                   layoutRef = {layoutRef}
                   brushSize={brushSize}
@@ -70,7 +74,6 @@ function changeChildPattern (id, pattern, hexList, brush){
     let brushSize = parseInt(brush)
     let x = id.x + brushSize
     let y = id.y + brushSize
-    console.log(id, pattern)
     let tiles = hexList.filter(el=>{
         return (
             el.props.id.x >= id.x

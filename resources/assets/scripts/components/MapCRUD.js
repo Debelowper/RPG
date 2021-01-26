@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
-import MapMenu from './MapMenu'
+import ResourceMenu from './ResourceMenu'
 
-export default function MapCRUD({hexList, gridParams, selectBrushSize, brushSize, setGridParams, setSize}){
+export default function MapCRUD({hexList, gridParams, setGridParams, setSize}){
 
     const [mapList, setMapList] = useState('')
 
@@ -70,13 +70,11 @@ export default function MapCRUD({hexList, gridParams, selectBrushSize, brushSize
 
 
     return (
-      <MapMenu
-          saveMap={(selectedMap) => saveMap(selectedMap, hexList, gridParams, setMapList)}
-          loadMap={(selectedMap) => loadMap(selectedMap, hexList, setGridParams)}
-          deleteMap={(selectedMap) => deleteMap(selectedMap, setMapList)}
-          mapList={mapList}
-          selectBrushSize={selectBrushSize}
-          brushSize={brushSize}
+      <ResourceMenu
+          saveResource={(selectedMap) => saveMap(selectedMap, hexList, gridParams, setMapList)}
+          loadResource={(selectedMap) => loadMap(selectedMap, hexList, setGridParams)}
+          deleteResource={(selectedMap) => deleteMap(selectedMap, setMapList)}
+          resourceList={mapList}
       />
     )
 }

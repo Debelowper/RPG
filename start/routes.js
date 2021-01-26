@@ -28,6 +28,12 @@ Route.group(()=>{
     Route.post('save', 'CreateSystemController.saveSystem')
     Route.post('delete', 'CreateSystemController.deleteSystem')
     Route.get('load', 'CreateSystemController.loadSystem')
+}).prefix('CreateClass/').middleware('auth')
+
+Route.group(()=>{
+    Route.post('save', 'CreateSystemController.saveSystem')
+    Route.post('delete', 'CreateSystemController.deleteSystem')
+    Route.get('load', 'CreateSystemController.loadSystem')
 }).prefix('CreateSystem/').middleware('auth')
 
 Route.group(()=>{

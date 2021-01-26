@@ -19,7 +19,7 @@ export default function StatSystemDisplay({system, setSystem}){
         let max = numName == 'nSkills' ? 40 : 40
         let value = e.target.value < 0 ? 0 : e.target.value
         value = value > max ? max : value
-        setNFields({[numName]: value})
+        setNFields({...nFields, [numName]: value})
     }
 
     const applyNFieldsChange = (e, numName, type) => {
@@ -44,11 +44,6 @@ export default function StatSystemDisplay({system, setSystem}){
         setSystem({...system, [type]:stats })
     }
 
-    const handleChangeName = (e) => {
-        let name = e.target.value
-        setSystem({...system, name: name})
-    }
-
     const addStatField = (stat) => {
         let name = stat.name
 
@@ -69,7 +64,7 @@ export default function StatSystemDisplay({system, setSystem}){
                 <div>
                     <h2 className="text-2xl font-bold" >{fieldName} Fields</h2>
                     <label>Number of {fieldName} Fields</label>
-                    <input  className="input" type="number" onChange={(e) => handleNFieldsChange(e, numName)} value={system[numName]} />
+                    <input  className="input" type="number" onChange={(e) => handleNFieldsChange(e, numName)} value={nFields[numName]} />
                     <button  className="btn-primary" onClick={(e) => applyNFieldsChange(e, numName, statName)}>Apply</button>
                 </div>
                 <form  className="flex flex-col items-center space-y-2"
@@ -86,8 +81,7 @@ export default function StatSystemDisplay({system, setSystem}){
     return(
         <div>
             <h1 className="text-3xl font-bold col-span-full">System Creator </h1>
-            <input className="text-3xl input" type="text" value={system.name} onChange={handleChangeName}/>
-            <div className="grid grid-cols-2 w-screen h-full">
+            <div className="grid grid-cols-2 w-full h-full">
                 {renderFormCard('Stat', 'nStats', 'stats')}
                 {renderFormCard('Resources', 'nResources', 'resources')}
                 {renderFormCard('Skill', 'nSkills', 'skills')}

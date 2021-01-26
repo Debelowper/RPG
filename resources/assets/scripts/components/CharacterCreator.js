@@ -44,12 +44,6 @@ export default class CharacterCreator extends Component {
         this.setState({[stats]: stats})
     }
 
-    addFactor = (e) =>{
-        return(
-            <input className="input"  value={0} />
-        )
-    }
-
     renderFields = (field) => {
         return(
             <div className="flex flex-col space-y-1 w-1/2 border border-black">

@@ -7,6 +7,7 @@ import axios from 'axios'
 import MapCRUD from './MapCRUD'
 import {calcGridParams} from './Helpers'
 import GameLayout from './GameLayout'
+import BrushSizeMenu from './BrushSizeMenu'
 
 export default function MapCreator(){
 
@@ -62,10 +63,14 @@ export default function MapCreator(){
                         <MapCRUD
                             hexList={hexList}
                             gridParams={gridParams}
-                            selectBrushSize={(e) => setBrushSize(e.target.value)}
-                            brushSize={brushSize}
                             setGridParams={(size) => setGridParams(calcGridParams(size))}
                             setSize = {setSize}
+                        />
+                    </div>
+                    <div>
+                        <BrushSizeMenu
+                            selectBrushSize={(e) => setBrushSize(e.target.value)}
+                            brushSize={brushSize}
                         />
                     </div>
                 </div>

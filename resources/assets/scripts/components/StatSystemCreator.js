@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
-import StatSystemMenu from './StatSystemMenu'
 import StatSystemDisplay from './StatSystemDisplay'
+import GameLayout from './GameLayout'
+import ResourceMenu from './ResourceMenu'
 
 export default function StatSystemCreator(){
     const [sysList, setSysList] = useState([])
-    const [selectedSys, setSelectedSys] = useState('')
 
     const [system, setSystem] = useState(
         {
@@ -25,15 +25,16 @@ export default function StatSystemCreator(){
     }, [])
 
 
-    const saveSystem = (e) => {
-        e.preventDefault()
-        axios.post('CreateSystem/save', {sys: system}).then((response)=>{
+    const saveSystem = (selected) => {
+        let sys = {...system, name:selected}
+        console.log(sys)
+        axios.post('CreateSystem/save', {sys: sys}).then((response)=>{
             listSystems()
         })
     }
 
-    const loadSystem = () => {
-        let currentSys = sysList.find(el => el.name == selectedSys)
+    const loadSystem = (selected) => {
+        let currentSys = sysList.find(el => el.name == selected)
 
         let parsedSys = {
             name: currentSys.name ? currentSys.name : [],
@@ -48,8 +49,8 @@ export default function StatSystemCreator(){
         setSystem(parsedSys)
     }
 
-    const deleteSystem = (e) => {
-        axios.post('/CreateSystem/delete',{name: selectedSys}).then(response => {
+    const deleteSystem = (selected) => {
+        axios.post('/CreateSystem/delete',{name: selected}).then(response => {
             listSystems()
         })
     }
@@ -62,22 +63,18 @@ export default function StatSystemCreator(){
 
 
     return(
-        <div>
-            <div>
-                <StatSystemDisplay setSystem={setSystem} system={system} />
-            </div>
-            <div>
-
-                <StatSystemMenu
-                    saveSystem={saveSystem}
-                    onSysOptionClick={(e)=>setSelectedSys(e.target.id)}
-                    loadSystem={loadSystem}
-                    sysList={sysList}
-                    selectedSys={selectedSys}
-                    deleteSystem={deleteSystem}
+        <GameLayout
+            rightMenu={
+                <ResourceMenu
+                    saveResource={saveSystem}
+                    loadResource={loadSystem}
+                    resourceList={sysList}
+                    deleteResource={deleteSystem}
                 />
-            </div>
-        </div>
-
+            }
+            content={
+                <StatSystemDisplay setSystem={setSystem} system={system} />
+            }
+        />
     )
 }

@@ -42,6 +42,7 @@ export default function MapCreator(){
 
     return (
         <GameLayout
+            backgroundURL='/forest.jpg'
             content={
                 <Map
                     selectedPattern={selectedPattern}
@@ -55,11 +56,11 @@ export default function MapCreator(){
                 />
             }
             rightMenu = {
-                <div>
-                    <div className="flex flex-row flex-wrap space-x-2 py-3">
+                <>
+                    <div className="sub-menu menu-h">
                         <SizeMenu  size={size} setSize={setSize} changeGridParams={() => setGridParams(calcGridParams(size))}  />
                     </div>
-                    <div className="flex flex-col place-items-center space-y-2">
+                    <div className="sub-menu menu-v">
                         <MapCRUD
                             hexList={hexList}
                             gridParams={gridParams}
@@ -67,13 +68,13 @@ export default function MapCreator(){
                             setSize = {setSize}
                         />
                     </div>
-                    <div>
+                    <div className="sub-menu menu-v">
                         <BrushSizeMenu
                             selectBrushSize={(e) => setBrushSize(e.target.value)}
                             brushSize={brushSize}
                         />
                     </div>
-                </div>
+                </>
             }
 
             bottomMenu={

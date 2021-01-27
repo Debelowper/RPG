@@ -6,22 +6,32 @@ async function loadImages(){
     return await axios.get('Image/load')
 }
 
-export default function PatternList(){
+function getMeta(url){
+    var img = new Image();
+    img.onload = function(){
+        return {x: this.width, y:this.height}
+    };
+    img.src = url;
+}
+
+export default function PatternList({gridParams}){
     const [images, setImages] =useState([])
 
     useEffect(
         async () =>{
             setImages((await loadImages()).data)
+            console.log(images)
         },
         [JSON.stringify(images)]
     )
 
     return (
         <>{
-            images.map((el, i)=>{
+            images.map( (el, i)=>{
                 return <Pattern key={i} id={el.name} link={el.url} />
             })
         }
+
         </>
     )
 }

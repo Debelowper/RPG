@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import CharacterMenu from './CharacterMenu'
+import GameLayout from './GameLayout'
 
 export default class CharacterCreator extends Component {
     constructor(props){
@@ -74,36 +75,44 @@ export default class CharacterCreator extends Component {
 
     render(){
         return (
-            <div>
-                <h2 className="text-2xl font-bold">Character Name</h2>
-                <input className="input text-2xl" value={this.state.name} onChange={this.handleNameChange}/>
-                <div className="flex flex-row flex-wrap w-2/3" >
-                    <div className="flex flex-col space-y-1 w-1/2 border border-black">
-                        <h2 className="text-2xl font-bold" >Character Stats</h2>
-                        {this.state.stats.map((el, key)=>{
-                            return(
-                                <div  key={el.id}>
-                                    <label>{el.name} :  </label>
-                                    <input
-                                        className="input mx-auto"
-                                        type='number'
-                                        value={this.state.stats[key].value ? this.state.stats[key].value : 0}
-                                        onChange={(e) => this.handleStatsChange(e, 'stats' ,key)} />
+            <GameLayout
+                backgroundURL={'/warrior-hall.jpg'}
+                content={
+                    <div className="block h-full text-white overflow-y-auto" >
+                        <div>
+                            <h2 className="text-2xl font-bold">Character Name</h2>
+                            <input className="input text-2xl" value={this.state.name} onChange={this.handleNameChange}/>
+                            <div className="flex flex-row flex-wrap" >
+                                <div className="flex flex-col space-y-1 w-1/2 border border-black">
+                                    <h2 className="text-2xl font-bold" >Character Stats</h2>
+                                    {this.state.stats.map((el, key)=>{
+                                        return(
+                                            <div  key={el.id}>
+                                                <label>{el.name} :  </label>
+                                                <input
+                                                    className="input mx-auto"
+                                                    type='number'
+                                                    value={this.state.stats[key].value ? this.state.stats[key].value : 0}
+                                                    onChange={(e) => this.handleStatsChange(e, 'stats' ,key)} />
+                                            </div>
+                                        )
+                                    })}
                                 </div>
-                            )
-                        })}
+
+                                {this.renderFields('resources')}
+
+                                {this.renderFields('skills')}
+
+                                {this.renderFields('savingThrows')}
+
+                            </div>
+
+                            {/* <CharacterMenu /> */}
+                        </div>
                     </div>
+                }
+            />
 
-                    {this.renderFields('resources')}
-
-                    {this.renderFields('skills')}
-
-                    {this.renderFields('savingThrows')}
-
-                </div>
-
-                {/* <CharacterMenu /> */}
-            </div>
         )
     }
 }

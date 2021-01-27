@@ -41,15 +41,16 @@ export default class TilesMenu extends Component {
 
     render(){
         return(
-             <div className='flex flex-row space-x-2'>
+             <div className='flex flex-row flex-wrap border border-black bg-gray-700 bg-opacity-70 space-x-2 px-2 ' style={{backgroundImage: 'url(/black-marble.jpg)'}} >
                  {
                      this.state.tiles.map((el, i)=>{
                          return (
-                             <div key={el.name} className="flex flex-col">
+                             <div key={el.name} className="flex flex-col text-white">
                                  <p>{el.name}</p>
-                                 <div className={this.props.selectedPattern == el.name ? "border-2 border-red-500" : "border-2 border-black"} >
-                                     <img onClick={this.onClick} name={el.name} id={el.id} key={i} src={el.url} width={50} height={50}/>
-                                 </div>
+                                 <img className={this.props.selectedPattern == el.name ? "border-2 border-red-500" : "border-2 border-black"}
+                                     onClick={this.onClick} name={el.name} id={el.id} key={i} src={el.url} width={50} height={50}
+                                 />
+
                              </div>
                          )
                      })

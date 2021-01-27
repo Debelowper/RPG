@@ -36,7 +36,7 @@ export default function({selectedPattern, setHexRefs, layoutRef, changeChildPatt
                         })
                     }
                 </Layout>
-                <PatternList />
+                <PatternList gridParams={gridParams} />
             </HexGrid>
         </div>
 

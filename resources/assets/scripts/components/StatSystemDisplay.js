@@ -60,8 +60,8 @@ export default function StatSystemDisplay({system, setSystem}){
 
     const renderFormCard = (fieldName, numName, statName) => {
         return(
-            <div className='flex flex-col space-y-2 border-2 border-red-500 rounded bg-gray-500 py-3 mx-2'>
-                <div>
+            <div className='flex flex-col space-y-2 border-2 border-black rounded bg-gray-900 bg-opacity-30 py-3 mx-2'>
+                <div >
                     <h2 className="text-2xl font-bold" >{fieldName} Fields</h2>
                     <label>Number of {fieldName} Fields</label>
                     <input  className="input" type="number" onChange={(e) => handleNFieldsChange(e, numName)} value={nFields[numName]} />
@@ -79,8 +79,8 @@ export default function StatSystemDisplay({system, setSystem}){
     }
 
     return(
-        <div>
-            <h1 className="text-3xl font-bold col-span-full">System Creator </h1>
+        <div className="text-white" >
+            <h1 className="text-3xl  font-bold col-span-full">System Creator </h1>
             <div className="grid grid-cols-2 w-full h-full">
                 {renderFormCard('Stat', 'nStats', 'stats')}
                 {renderFormCard('Resources', 'nResources', 'resources')}

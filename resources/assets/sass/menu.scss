@@ -1,0 +1,15 @@
+.menu{
+    @apply flex flex-wrap flex-shrink-0 place-items-center bg-opacity-50 bg-gray-700 border-2 border-black rounded py-2 px-2 mx-2 my-2;
+}
+
+.menu-v{
+    @apply flex-col space-y-2;
+}
+
+.menu-h{
+    @apply flex-row space-x-2;
+}
+
+.sub-menu{
+    @apply  flex flex-wrap flex-shrink-0 place-items-center text-white border bg-opacity-50 bg-black border-black py-2 px-2 mx-2 my-2 ;
+}

@@ -17,14 +17,14 @@ export default function SizeMenu({size, setSize, changeGridParams }){
 
     return(
         <>
-            <div>
-                <div>
-                    <label className="text-white text-sm">width  </label>
-                    <input placeholder={'x'} value={size.x} onChange={handleChange} className="border-4 rounded w-12" type='number' ></input>
+            <div className="text-sm">
+                <div >
+                    <label >width  </label>
+                    <input placeholder={'x'} value={size.x} onChange={handleChange} className="input w-12" type='number' ></input>
                 </div>
                 <div>
-                    <label className="text-white text-sm">height </label>
-                    <input placeholder={'y'} value={size.y} onChange={handleChange} className="border-4 rounded w-12" type='number' ></input>
+                    <label>height </label>
+                    <input placeholder={'y'} value={size.y} onChange={handleChange} className="input w-12" type='number' ></input>
                 </div>
             </div>
             {/*<input placeholder={'size'} value={size.size} onChange={handleChange} className="border-4 rounded" type='number' ></input>*/}

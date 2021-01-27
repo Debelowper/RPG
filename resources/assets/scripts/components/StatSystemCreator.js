@@ -64,6 +64,7 @@ export default function StatSystemCreator(){
 
     return(
         <GameLayout
+            backgroundURL='/wizard-room.jpg'
             rightMenu={
                 <ResourceMenu
                     saveResource={saveSystem}

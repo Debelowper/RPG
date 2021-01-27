@@ -42,14 +42,15 @@ export default function ResourceMenu({loadResource, deleteResource, saveResource
 
     return(
         <>
-            <label className="text-white" > name</label>
-            <input  className="mx-1 py-2 mb-2  rounded" type="text"   onChange={(e)=>setSelected(e.target.value)} value={selected}></input>
-            <button onClick={() => saveResource(selected)} className="btn-primary mx-2" >Save </button>
-            <button onClick={() => loadResource(selected)} className="btn-primary mx-2" >Load </button>
-            <button onClick={() => deleteResource(selected)} className="btn-primary mx-2" >Delete </button>
-            <div className="flex flex-col place-items-center space-y-2">
+            <div className="sub-menu menu-v">
+                <input  className="input" type="text" placeholder="Name"  onChange={(e)=>setSelected(e.target.value)} value={selected}></input>
+                <button onClick={() => saveResource(selected)} className="btn-primary mx-2" >Save </button>
+                <button onClick={() => loadResource(selected)} className="btn-primary mx-2" >Load </button>
+                <button onClick={() => deleteResource(selected)} className="btn-primary mx-2" >Delete </button>
+            </div>
+            <div className="sub-menu menu-v">
 
-                <input type='text' className='input text-sm' placeholder='filter' value={filterString} onChange={(e) => setFilterString(e.target.value)}/>
+                <input type='text' className='input' placeholder='Filter' value={filterString} onChange={(e) => setFilterString(e.target.value)}/>
 
                 <ol >
                     {
@@ -61,7 +62,7 @@ export default function ResourceMenu({loadResource, deleteResource, saveResource
                                         <button
                                             onClick={(e) => setSelected(e.target.name)}
                                             name={el.name}
-                                            className="bg-gray-100 hover:bg-blue-300 border-2 border-red-500 py-2 px-4 rounded"
+                                            className="btn-primary"
                                         >{el.name}
                                         </button>
                                     </li>

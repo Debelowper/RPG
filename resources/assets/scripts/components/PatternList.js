@@ -20,7 +20,6 @@ export default function PatternList({gridParams}){
     useEffect(
         async () =>{
             setImages((await loadImages()).data)
-            console.log(images)
         },
         [JSON.stringify(images)]
     )

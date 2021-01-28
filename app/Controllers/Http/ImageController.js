@@ -4,6 +4,7 @@ const Drive = use('Drive')
 const Image = use('App/Models/Image')
 const Database = use('Database')
 const Env = use('Env')
+const sharp = require('sharp')
 
 class ImageController {
 
@@ -20,6 +21,9 @@ class ImageController {
             body[name] = value
         })
 
+
+        let transform = sharp()
+
         request.multipart.file('file', validationOptions, async (file) => {
             file.size = file.stream.byteCount
             await file.runValidations()
@@ -30,8 +34,24 @@ class ImageController {
             }
             body['fileName'] = auth.user.username+'_'+file.clientName
 
+            //resizing image with sharp
+            const data = await transform
+                .resize({
+                    height:1024,
+                    width:1024,
+                    fit:sharp.fit.fill,
+                })
+                .jpeg({
+                  quality: 100,
+                  chromaSubsampling: '4:4:4'
+                })
+                .toFormat('jpeg')
+
+            file.stream.pipe(transform).pipe(data)
+              ///
+
             if(!await Drive.disk('s3').exists(body['fileName'])){
-                await Drive.disk('s3').put(body['fileName'], file.stream, {ContentType: file.headers['content-type'],ACL: 'public-read'})
+                await Drive.disk('s3').put(body['fileName'], data, {ContentType: 'jpeg',ACL: 'public-read'})
             }else{
                 throw new Error('image with that name already exists')
             }

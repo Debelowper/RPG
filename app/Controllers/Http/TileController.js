@@ -47,7 +47,8 @@ class TileController {
 
         var tiles = await Database
             .table('images')
-            .innerJoin('tiles', 'images.id', 'tiles.image_id')
+            .rightJoin('tiles', 'images.id', 'tiles.image_id')
+            .where('tiles.user_id', auth.user.id)
 
         tiles = tiles.map((el)=>{
             el.url = 'https://'+Env.get('S3_BUCKET')+'.s3-'+Env.get('S3_REGION')+'.'+'amazonaws.com/'+el.filename
@@ -56,7 +57,6 @@ class TileController {
             return el
         })
         return tiles
-
     }
 
 

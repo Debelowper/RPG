@@ -56,7 +56,7 @@ export default function MapCreator(){
                 />
             }
             rightMenu = {
-                <>
+                <div className="overflow-y-auto">
                     <div className="sub-menu menu-h">
                         <SizeMenu  size={size} setSize={setSize} changeGridParams={() => setGridParams(calcGridParams(size))}  />
                     </div>
@@ -74,7 +74,7 @@ export default function MapCreator(){
                             brushSize={brushSize}
                         />
                     </div>
-                </>
+                </div>
             }
 
             bottomMenu={

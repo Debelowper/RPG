@@ -1,33 +1,30 @@
-import React, {Component} from 'react'
+import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
 import CharacterMenu from './CharacterMenu'
 import GameLayout from './GameLayout'
+import ResourceMenu from './ResourceMenu'
 
-export default class CharacterCreator extends Component {
-    constructor(props){
-        super(props)
+export default function CharacterCreator (){
 
-        this.state = {
-            stats: [],
-            resources: [],
-            skills: [],
-            savingThrows:[],
-            damageTypes:[],
-            statusEffects:[],
-            name:'',
-        }
+    const [fields, setFields] = useState({
+        stats: [],
+        resources: [],
+        skills: [],
+        savingThrows:[],
+        damageTypes:[],
+        statusEffects:[],
+        name:'',
+    })
 
-    }
+    useEffect(()=>{
+        getStatSystem()
+    }, [])
 
-    componentDidMount(){
-        this.getStatSystem()
-    }
-
-    getStatSystem = () => {
+    const getStatSystem = () => {
         axios.get('CreateSystem/load').then((response)=> {
             response = response.data[0]
-            this.setState({
+            setFields({
                 stats:response.stats ?  JSON.parse(response.stats) : [],
                 resources:response.resources ?  JSON.parse(response.resources) : [],
                 skills:response.skills ?  JSON.parse(response.skills) : [],
@@ -38,26 +35,26 @@ export default class CharacterCreator extends Component {
         })
     }
 
-    handleStatsChange = (e, field, key) =>{
-        let stats = this.state[field]
+    const handleStatsChange = (e, field, key) =>{
+        let stats = fields[field]
         stats[key].value = e.target.value
 
-        this.setState({[stats]: stats})
+        setFields({...fields, [stats]: stats})
     }
 
-    renderFields = (field) => {
+    const renderFields = (field) => {
         return(
-            <div className="flex flex-col space-y-1 w-1/2 border border-black">
+            <div className="sub-menu menu-v" >
                 <h2 className="text-2xl font-bold">{field}</h2>
-                {this.state[field].map((el, key)=>{
+                {fields[field].map((el, key)=>{
                     return(
                         <div  key={el.id}>
                             <label>{el.name} :  </label>
                             <input
                                 className="input mx-auto"
                                 name={field} type='number'
-                                value={this.state[field][key].value ? this.state[field][key].value : 0}
-                                onChange={(e) => this.handleStatsChange(e, field, key)}
+                                value={fields[field][key].value ? fields[field][key].value : 0}
+                                onChange={(e) => handleStatsChange(e, field, key)}
                             />
 
                         </div>
@@ -67,52 +64,60 @@ export default class CharacterCreator extends Component {
         )
     }
 
-    handleNameChange = (e) => {
-        let name = e.target.value
-        this.setState({name: e.target.value})
+    const saveCharacter = () => {
+
     }
 
+    const loadCharacters = () => {
 
-    render(){
-        return (
-            <GameLayout
-                backgroundURL={'/warrior-hall.jpg'}
-                content={
-                    <div className="block h-full text-white overflow-y-auto" >
-                        <div>
-                            <h2 className="text-2xl font-bold">Character Name</h2>
-                            <input className="input text-2xl" value={this.state.name} onChange={this.handleNameChange}/>
-                            <div className="flex flex-row flex-wrap" >
-                                <div className="flex flex-col space-y-1 w-1/2 border border-black">
-                                    <h2 className="text-2xl font-bold" >Character Stats</h2>
-                                    {this.state.stats.map((el, key)=>{
-                                        return(
-                                            <div  key={el.id}>
-                                                <label>{el.name} :  </label>
-                                                <input
-                                                    className="input mx-auto"
-                                                    type='number'
-                                                    value={this.state.stats[key].value ? this.state.stats[key].value : 0}
-                                                    onChange={(e) => this.handleStatsChange(e, 'stats' ,key)} />
-                                            </div>
-                                        )
-                                    })}
-                                </div>
+    }
 
-                                {this.renderFields('resources')}
+    const deleteCharacter = () => {
 
-                                {this.renderFields('skills')}
+    }
 
-                                {this.renderFields('savingThrows')}
-
-                            </div>
-
-                            {/* <CharacterMenu /> */}
-                        </div>
+    return (
+        <GameLayout
+            backgroundURL={'/warrior-hall.jpg'}
+            content={
+                <div className="menu menu-v overflow-y-auto" >
+                    <div className="sub-menu">
+                        <h2 className="text-2xl font-bold ">Character Name</h2>
+                        <input className="input text-2xl space-x-4" value={fields.name} onChange={(e) => setFields({...fields, name:e.target.value}) }/>
                     </div>
-                }
-            />
+                    <div className="menu menu-h flex-wrap" >
+                        <div className="sub-menu menu-v" >
+                            <h2 className="text-2xl font-bold" >Character Stats</h2>
+                            {fields.stats.map((el, key)=>{
+                                return(
+                                    <div  key={el.id}>
+                                        <label>{el.name} :  </label>
+                                        <input
+                                            className="input mx-auto"
+                                            type='number'
+                                            value={fields.stats[key].value ? fields.stats[key].value : 0}
+                                            onChange={(e) => handleStatsChange(e, 'stats' ,key)}
+                                        />
+                                    </div>
+                                )
+                            })}
+                        </div>
 
-        )
-    }
+                        {renderFields('resources')}
+
+                        {renderFields('skills')}
+
+                        {renderFields('savingThrows')}
+
+                    </div>
+
+                </div>
+            }
+            // rightMenu = {
+            //     <ResourceMenu loadResource={loadCharacters} deleteResource={deleteCharacter} saveResource={saveCharacter} resourceList={} />
+            // }
+
+        />
+
+    )
 }

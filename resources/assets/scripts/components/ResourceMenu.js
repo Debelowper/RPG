@@ -52,17 +52,17 @@ export default function ResourceMenu({loadResource, deleteResource, saveResource
 
                 <input type='text' className='input' placeholder='Filter' value={filterString} onChange={(e) => setFilterString(e.target.value)}/>
 
-                <ol >
+                <ol className="sub-menu menu-v w-full">
                     {
                         list ?
                             getPage(list).map((el) => {
                                 return(
-                                    <li
+                                    <li className="btn-list"
                                         id={el.name} key={el.name} >
                                         <button
                                             onClick={(e) => setSelected(e.target.name)}
                                             name={el.name}
-                                            className="btn-primary"
+                                            className="w-full"
                                         >{el.name}
                                         </button>
                                     </li>

@@ -6,3 +6,7 @@
 .btn-primary {
     @apply  btn bg-gray-500 border-2 border-black hover:bg-gray-900 text-white text-sm;
 }
+
+.btn-list {
+    @apply text-white w-full text-sm bg-opacity-50 bg-gray-700 hover:bg-opacity-90 hover:bg-gray-300;
+}

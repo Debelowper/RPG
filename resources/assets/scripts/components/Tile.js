@@ -13,12 +13,20 @@ export default class Tile extends Component {
         }
     }
 
-    onClick = (event) => {
-        this.props.onHexClick(this.props.id)
+    onClick = () => {
+        this.props.onHexClick(this.props.hex)
     }
 
     onHover = () => {
-        this.props.onHexHover(this.props.id)
+        this.props.onHexHover(this.props.hex)
+    }
+
+    shouldComponentUpdate(nextProps, nextState){
+        if(nextState.pattern != this.state.pattern){
+            return true
+        }else{
+            return false
+        }
     }
 
     changePattern = (patternId) => {
@@ -26,7 +34,8 @@ export default class Tile extends Component {
     }
 
     render(){
-        const {hex, id} = this.props
+        console.log('tile render')
+        const {hex} = this.props
 
         return(
             <Hexagon

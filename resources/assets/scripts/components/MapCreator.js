@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
-import Map from './Map'
+import {Map} from './Map'
 import SizeMenu from './SizeMenu'
 import TilesMenu from './TilesMenu'
 import axios from 'axios'
@@ -8,51 +8,64 @@ import MapCRUD from './MapCRUD'
 import {calcGridParams} from './Helpers'
 import GameLayout from './GameLayout'
 import BrushSizeMenu from './BrushSizeMenu'
+import {HexUtils} from 'react-hexgrid';
 
 export default function MapCreator(){
 
-    const defaultSizes = {x:10,y:8,size:10}
+    const defaultSizes = {x:16,y:8,size:10}
 
     const [selectedPattern, setSelectedPattern] = useState('')
     const [brushSize, setBrushSize] = useState(1)
     const [mapList, setMapList] = useState([])
     const [selectedMap, setSelectedMap] = useState('')
     const [gridParams, setGridParams] = useState(calcGridParams(defaultSizes) )
-    const [hexList, setHexList] = useState([])
+    const [hexList, setHexList] = useState({})
     const [size, setSize] = useState(defaultSizes)
 
-    const layoutRef = React.createRef()
-
-    useEffect(
-        ()=>{
-            clearLeftoverHexes(hexList, layoutRef, setHexList)
-        },
-        [gridParams]
-    )
 
     const setHexRef = (el) =>{
         if(el){
-            if(!hexList.find(i => i.props.id.x == el.props.id.x && i.props.id.y == el.props.id.y)){
+            if(!hexList[el.props.id]){
                 let list = hexList
-                list.push(el)
+                list[el.props.id.x + '-' + el.props.id.y] = el
                 setHexList(list)
             }
         }
     }
+
+    const  changeChildPattern = React.useCallback(
+        (hex) => {
+            let brush = parseInt(brushSize)
+
+            let tilesArray = Object.values(hexList)
+            let tiles = tilesArray.filter(el=>{
+                if((Math.abs(hex.id.x - el.props.hex.id.x) < 4) && (Math.abs(hex.id.y - el.props.hex.id.y) < 4) ){
+                    return (
+                        HexUtils.distance(hex, el.props.hex) < brush
+                    )
+                } else{
+                    return false
+                }
+            })
+            tiles.forEach((el)=>{
+                el.changePattern(selectedPattern)
+            })
+        }, [selectedPattern, brushSize]
+    )
+
+
+
+
 
     return (
         <GameLayout
             backgroundURL='/forest.jpg'
             content={
                 <Map
-                    selectedPattern={selectedPattern}
                     setHexRefs = {setHexRef}
-                    hexList = {hexList}
-                    layoutRef = {layoutRef}
-                    brushSize={brushSize}
-                    changeChildPattern = {(id, pattern) => changeChildPattern(id, pattern, hexList, brushSize)}
+                    selectedPattern= {selectedPattern}
+                    changeChildPattern = {changeChildPattern}
                     gridParams = {gridParams}
-
                 />
             }
             rightMenu = {
@@ -82,33 +95,4 @@ export default function MapCreator(){
             }
         />
     )
-}
-
-function changeChildPattern (id, pattern, hexList, brush){
-    let brushSize = parseInt(brush)
-    let x = id.x + brushSize
-    let y = id.y + brushSize
-    let tiles = hexList.filter(el=>{
-        return (
-            el.props.id.x >= id.x
-            && el.props.id.y >= id.y
-            && el.props.id.x < x
-            && el.props.id.y < y
-        )
-    })
-    tiles.forEach((el)=>{
-        el.changePattern(pattern)
-    })
-}
-
-function clearLeftoverHexes (hexList, layoutRef, setHexList) {
-    let list = hexList
-    list = list.map(el => {
-        if(layoutRef.current.props.children.find(i => el.props.id.x == i.props.id.x && el.props.id.y == i.props.id.y)){
-            return el
-        }else{
-            return null
-        }
-    })
-     setHexList(list.filter(el => el != null))
 }

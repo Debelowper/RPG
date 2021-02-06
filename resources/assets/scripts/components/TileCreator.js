@@ -45,7 +45,7 @@ export default function TileCreator(){
         )
     }
 
-    const SaveTile = (e) => {
+    const saveTile = (e) => {
         e.preventDefault()
         let url = 'Tile/save'
         axios.post(url, formState ).then((response)=>{
@@ -54,7 +54,15 @@ export default function TileCreator(){
         })
     }
 
-    const handleSelectTile = (e, props) => {
+    const DeleteTile = () => {
+        let url = 'Tile/delete'
+        axios.post(url, {name: formState.name} ).then((response)=>{
+            setUpdater(updater+1)
+            console.log(response)
+        })
+    }
+
+    const loadSelectTile = (e, props) => {
         let formState = {
             name:props.name,
             passable: props.passable,
@@ -69,13 +77,6 @@ export default function TileCreator(){
         setSelectedImage(e.target.src)
     }
 
-    const DeleteTile = () => {
-        let url = 'Tile/delete'
-        axios.post(url, {name: formState.name} ).then((response)=>{
-            setUpdater(updater+1)
-            console.log(response)
-        })
-    }
 
     return(
         <GameLayout
@@ -83,7 +84,7 @@ export default function TileCreator(){
             content={
                 <div className="menu menu-v  mx-auto">
                     <h1 className='text-3xl font-bold' >Create Tile</h1>
-                    <form className="form "  method='POST' onSubmit={SaveTile} encType="multipart/form-data">
+                    <form className="form "  method='POST' onSubmit={saveTile} encType="multipart/form-data">
                         <label>Name</label>
                         <input type='text' name='name' value={formState.name}
                             onChange={({target})=>{setFormState({...formState, name:target.value})}}
@@ -106,7 +107,7 @@ export default function TileCreator(){
                             <input className="input" type="button" value="Delete" onClick={DeleteTile}></input>
                         </div>
                     </form>
-                    <TilesMenu  onMenuClick={handleSelectTile} updater={updater}/>
+                    <TilesMenu  onMenuClick={loadSelectTile} updater={updater}/>
                 </div>
             }
             bottomMenu={

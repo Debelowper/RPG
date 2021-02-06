@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import axios from 'axios'
 import ResourceMenu from './ResourceMenu'
 
-export default function MapCRUD({hexList, gridParams, setGridParams, setSize}){
+export default function MapCRUD({hexList, gridParams, setGridParams, setSize, editable}){
 
     const [mapList, setMapList] = useState('')
 
@@ -15,7 +15,8 @@ export default function MapCRUD({hexList, gridParams, setGridParams, setSize}){
     )
 
     const saveMap = (selectedMap) => {
-        var hexes = hexList.map(el => {
+        let list = Object.values(hexList)
+        var hexes = list.map(el => {
             return {id: el.props.id, pattern:el.state.pattern}
         })
 
@@ -47,14 +48,15 @@ export default function MapCRUD({hexList, gridParams, setGridParams, setSize}){
                 await setGridParams({x:width, y:height, size:10})
                 await setSize({x:width, y:height, size:10})
 
-                hexList.forEach(el => {
+                let list = Object.values(hexList)
+
+                list.forEach(el => {
                     let hex = map.find((id) =>{
                         return id.id.x == el.props.id.x && id.id.y == el.props.id.y
                     })
 
                     el.changePattern(hex.pattern)
                 })
-
             })
         }
     }
@@ -71,9 +73,10 @@ export default function MapCRUD({hexList, gridParams, setGridParams, setSize}){
 
     return (
       <ResourceMenu
-          saveResource={(selectedMap) => saveMap(selectedMap, hexList, gridParams, setMapList)}
-          loadResource={(selectedMap) => loadMap(selectedMap, hexList, setGridParams)}
-          deleteResource={(selectedMap) => deleteMap(selectedMap, setMapList)}
+          editable = {editable}
+          saveResource={(selectedMap) => saveMap(selectedMap)}
+          loadResource={(selectedMap) => loadMap(selectedMap)}
+          deleteResource={(selectedMap) => deleteMap(selectedMap)}
           resourceList={mapList}
       />
     )

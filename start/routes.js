@@ -22,13 +22,15 @@ Route.on('createMap').render('game.createMap').as('createMap').middleware('auth'
 Route.on('createTile').render('game.createTile').as('createTile').middleware('auth')
 Route.on('uploadImage').render('game.uploadImage').as('uploadImage').middleware('auth')
 Route.on('createStatSystem').render('game.createStatSystem').as('createStatSystem').middleware('auth')
-Route.on('createCharacter').render('game.createCharacter').as('createCharacter').middleware('auth')
+Route.on('createClass').render('game.createClass').as('createClass').middleware('auth')
+Route.on('adventure').render('game.adventure').as('adventure').middleware('auth')
 
 Route.group(()=>{
     Route.post('save', 'CreateSystemController.saveSystem')
     Route.post('delete', 'CreateSystemController.deleteSystem')
     Route.get('load', 'CreateSystemController.loadSystem')
-}).prefix('CreateClass/').middleware('auth')
+}).prefix('CreateClasses/').middleware('auth')
+
 
 Route.group(()=>{
     Route.post('save', 'CreateSystemController.saveSystem')

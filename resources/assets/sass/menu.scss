@@ -11,5 +11,5 @@
 }
 
 .sub-menu{
-    @apply  flex flex-wrap flex-shrink-0 place-items-center text-white border bg-opacity-50 bg-black border-black py-2 px-2 mx-2 my-2 ;
+    @apply  flex flex-wrap flex-shrink-0 place-items-center text-white border bg-opacity-50 bg-black border-black py-2 px-2 mx-2 my-2 rounded;
 }

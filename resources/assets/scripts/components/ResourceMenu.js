@@ -1,7 +1,7 @@
 import React, { useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 
-export default function ResourceMenu({loadResource, deleteResource, saveResource, resourceList}){
+export default function ResourceMenu({loadResource, deleteResource, saveResource, resourceList, editable}){
 
     const [selected, setSelected] = useState('')
     const [filterString, setFilterString] = useState('')
@@ -44,9 +44,9 @@ export default function ResourceMenu({loadResource, deleteResource, saveResource
         <>
             <div className="sub-menu menu-v">
                 <input  className="input" type="text" placeholder="Name"  onChange={(e)=>setSelected(e.target.value)} value={selected}></input>
-                <button onClick={() => saveResource(selected)} className="btn-primary mx-2" >Save </button>
+                {editable ? <button onClick={() => saveResource(selected)} className="btn-primary mx-2" >Save </button> : ''}
                 <button onClick={() => loadResource(selected)} className="btn-primary mx-2" >Load </button>
-                <button onClick={() => deleteResource(selected)} className="btn-primary mx-2" >Delete </button>
+                {editable ? <button onClick={() => deleteResource(selected)} className="btn-primary mx-2" >Delete </button> : ''}
             </div>
             <div className="sub-menu menu-v">
 

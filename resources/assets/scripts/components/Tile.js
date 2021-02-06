@@ -9,7 +9,9 @@ export default class Tile extends Component {
         super(props)
 
         this.state = {
-
+            character:'',
+            structure:'',
+            pattern:''
         }
     }
 
@@ -30,11 +32,10 @@ export default class Tile extends Component {
     }
 
     changePattern = (patternId) => {
-        this.setState({pattern: patternId })
+        this.setState({pattern: patternId.toString() })
     }
 
     render(){
-        console.log('tile render')
         const {hex} = this.props
 
         return(

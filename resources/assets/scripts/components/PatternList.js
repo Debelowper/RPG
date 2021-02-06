@@ -14,7 +14,7 @@ function getMeta(url){
     img.src = url;
 }
 
-export default function PatternList({gridParams}){
+export default function PatternList(){
     const [images, setImages] =useState([])
 
     useEffect(
@@ -25,12 +25,14 @@ export default function PatternList({gridParams}){
     )
 
     return (
-        <>{
-            images.map( (el, i)=>{
-                return <Pattern key={i} id={el.name} link={el.url} />
-            })
-        }
+        <>
+            {
+                images.map( (el, i)=>{
+                    return <Pattern key={i} id={el.id.toString()} link={el.url} />
+                })
+            }
 
+            <Pattern key={'elf'} id={'elf'} link={'./sorcerer-elf.png'} />
         </>
     )
 }

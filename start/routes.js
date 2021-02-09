@@ -24,6 +24,7 @@ Route.on('uploadImage').render('game.uploadImage').as('uploadImage').middleware(
 Route.on('createStatSystem').render('game.createStatSystem').as('createStatSystem').middleware('auth')
 Route.on('createClass').render('game.createClass').as('createClass').middleware('auth')
 Route.on('adventure').render('game.adventure').as('adventure').middleware('auth')
+Route.on('createStructure').render('game.createStructure').as('createStructure').middleware('auth')
 
 Route.group(()=>{
     Route.post('save', 'CreateSystemController.saveSystem')
@@ -41,7 +42,7 @@ Route.group(()=>{
 Route.group(()=>{
     Route.post('save', 'TileController.saveTile')
     Route.post('delete', 'TileController.deleteTile')
-    Route.get('load', 'TileController.loadTile')
+    Route.get('load', 'TileController.loadUserTiles')
 }).prefix('Tile/').middleware('auth')
 
 

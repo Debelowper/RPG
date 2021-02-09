@@ -9,6 +9,7 @@ export default function TileCreator(){
 
     const [formState, setFormState] = useState(
         {
+            id:0,
             name: '',
             passable:1,
             blocksSight:0,
@@ -27,7 +28,7 @@ export default function TileCreator(){
         return(
             <div>
                 <label>{label} Speed: </label>
-                <input type='range' name='walkSpeed' value={formState[key]} onChange={({target})=>{setFormState({...formState, [key]:target.value})}} required></input>
+                <input type='range' value={formState[key]} onChange={({target})=>{setFormState({...formState, [key]:target.value})}} required></input>
                 <output>{formState[key]}</output>
             </div>
         )
@@ -62,8 +63,9 @@ export default function TileCreator(){
         })
     }
 
-    const loadSelectTile = (e, props) => {
+    const loadSelectTile = (props, img) => {
         let formState = {
+            id:props.id,
             name:props.name,
             passable: props.passable,
             blocksSight: props.blocks_sight,
@@ -74,7 +76,7 @@ export default function TileCreator(){
             imageId:props.image_id
         }
         setFormState(formState)
-        setSelectedImage(e.target.src)
+        setSelectedImage(img.src)
     }
 
 
@@ -107,7 +109,7 @@ export default function TileCreator(){
                             <input className="input" type="button" value="Delete" onClick={DeleteTile}></input>
                         </div>
                     </form>
-                    <TilesMenu  onMenuClick={loadSelectTile} updater={updater}/>
+                    <TilesMenu selectedPattern={formState} onMenuClick={loadSelectTile} updater={updater}/>
                 </div>
             }
             bottomMenu={

@@ -1,12 +1,16 @@
 .btn {
-  @apply px-2 py-1 font-bold rounded my-auto;
+  @apply  font-bold rounded my-auto;
 
 }
 
 .btn-primary {
-    @apply  btn bg-gray-500 border-2 border-black hover:bg-gray-900 text-white text-sm;
+    @apply  btn bg-gray-500 border-2 border-black hover:bg-gray-900 text-white text-sm px-2 py-1;
 }
 
 .btn-list {
     @apply text-white w-full text-sm bg-opacity-50 bg-gray-700 hover:bg-opacity-90 hover:bg-gray-300;
+}
+
+.btn-options {
+    @apply btn bg-gray-500 border-2 border-black hover:bg-gray-900 text-white text-sm;
 }

@@ -2,37 +2,30 @@ import React, {useState, useEffect} from 'react'
 import { Pattern } from 'react-hexgrid';
 import axios from 'axios'
 
-async function loadImages(){
-    return await axios.get('Image/load')
-}
-
-function getMeta(url){
-    var img = new Image();
-    img.onload = function(){
-        return {x: this.width, y:this.height}
-    };
-    img.src = url;
+async function loadTiles(){
+    return await axios.get('Tile/load')
 }
 
 export default function PatternList(){
-    const [images, setImages] =useState([])
+    const [tiles, setTiles] =useState([])
 
     useEffect(
         async () =>{
-            setImages((await loadImages()).data)
+            setTiles((await loadTiles()).data)
         },
-        [JSON.stringify(images)]
+        [JSON.stringify(tiles)]
     )
 
     return (
         <>
             {
-                images.map( (el, i)=>{
-                    return <Pattern key={i} id={el.id.toString()} link={el.url} />
+                tiles.map( (el, i)=>{
+                    return <Pattern key={i} id={'tile-'+ el.id.toString()} link={el.url} />
                 })
             }
 
-            <Pattern key={'elf'} id={'elf'} link={'./sorcerer-elf.png'} />
+            <Pattern key={'elfSorcerer'} id={'character-elfSorcerer'} link={'./sorcerer-elf.png'} />
+            <Pattern key={'watchtower'} id={'structure-watchtower'} link={'./watchtower.png'} />
         </>
     )
 }

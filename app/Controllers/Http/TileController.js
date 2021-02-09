@@ -43,7 +43,7 @@ class TileController {
           return 'saved'
     }
 
-    async loadTile({auth, request}){
+    async loadUserTiles({auth, request}){
 
         var tiles = await Database
             .table('images')
@@ -57,6 +57,10 @@ class TileController {
             return el
         })
         return tiles
+    }
+
+    async loadTiles(request){
+
     }
 
 

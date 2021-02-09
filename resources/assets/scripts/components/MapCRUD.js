@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import axios from 'axios'
 import ResourceMenu from './ResourceMenu'
 
-export default function MapCRUD({hexList, gridParams, setGridParams, setSize, editable}){
+export default function MapCRUD({mapToSave, size, loadIntoMap, setSize, editable}){
 
     const [mapList, setMapList] = useState('')
 
@@ -15,13 +15,11 @@ export default function MapCRUD({hexList, gridParams, setGridParams, setSize, ed
     )
 
     const saveMap = (selectedMap) => {
-        let list = Object.values(hexList)
-        var hexes = list.map(el => {
-            return {id: el.props.id, pattern:el.state.pattern}
-        })
 
-        let width = gridParams.x
-        let height = gridParams.y
+        let width = size.x
+        let height = size.y
+
+        let hexes = {tile: mapToSave.tiles.current, structure: mapToSave.structures.current}
 
         let saveObj = {
             width: width,
@@ -40,23 +38,9 @@ export default function MapCRUD({hexList, gridParams, setGridParams, setSize, ed
     const loadMap = (selectedMap) => {
         let url = '/Map/load?name=' + selectedMap
         if(confirm('Are you sure you want to load save: '+selectedMap+ '?')){
-            axios.get(url).then(async (response) => {
+            axios.get(url).then((response) => {
+                loadIntoMap(response.data)
 
-                let map = JSON.parse(response.data.map_json)
-                const {width, height, name} = response.data
-
-                await setGridParams({x:width, y:height, size:10})
-                await setSize({x:width, y:height, size:10})
-
-                let list = Object.values(hexList)
-
-                list.forEach(el => {
-                    let hex = map.find((id) =>{
-                        return id.id.x == el.props.id.x && id.id.y == el.props.id.y
-                    })
-
-                    el.changePattern(hex.pattern)
-                })
             })
         }
     }

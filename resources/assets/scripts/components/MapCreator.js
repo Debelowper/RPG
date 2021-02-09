@@ -1,13 +1,14 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import ReactDOM from 'react-dom'
 import SizeMenu from './SizeMenu'
 import TilesMenu from './TilesMenu'
 import axios from 'axios'
 import MapCRUD from './MapCRUD'
-import {calcGridParams} from './Helpers'
 import GameLayout from './GameLayout'
 import BrushSizeMenu from './BrushSizeMenu'
 import MapController from './MapController'
+import StructureMenu from './StructureMenu'
+import CharacterMenu from './CharacterMenu'
 
 
 export default function MapCreator(){
@@ -17,33 +18,43 @@ export default function MapCreator(){
     const [selectedPattern, setSelectedPattern] = useState('')
     const [brushSize, setBrushSize] = useState(1)
     const [size, setSize] = useState(defaultSizes)
-    const [gridParams, setGridParams] = useState(calcGridParams(size) )
+    const [currentSize, setCurrentSize] = useState(defaultSizes)
+    const [patternType, setPatternType] = useState('tile')
 
-    const [tiles, setTiles] = useState({})
-    const [structures, setStructures] = useState({})
+    const tiles = useRef({})
+    const structures = useRef({})
+    const [load, setLoad] = useState(null)
 
     const placeTile = (getter, setter, hex) => {
         let tilesToChange = getter(hex, brushSize)
         let list = {}
         tilesToChange.forEach((el)=>{
-            list[el.props.id.x+'-'+el.props.id.y] = {hex: el.props.id, pattern: selectedPattern.id}
+            // console.log(selectedPattern)
+            let tile = el.ref.current.props
+            list[tile.id.x+'-'+tile.id.y] = {hex: tile.id, pattern: selectedPattern.id}
         })
 
-        setTiles({...tiles, ...list})
+        switch (patternType){
+            case 'tile': tiles.current = {...tiles.current, ...list}; break;
+            case 'structure': structures.current = {...structures.current, ...list}; break;
+            // case 'tile': setTiles({...tiles, ...list}); break;
+        }
 
-        setter(tilesToChange, selectedPattern.image_id)
+        setter(tilesToChange, selectedPattern.id, patternType)
     }
 
-    const placeStructure = (getter, setter, hex) => {
-        let tilesToChange = getter(hex, brushSize)
-        let list = {}
-        tilesToChange.forEach((el)=>{
-            list[el.props.id.x+'-'+el.props.id.y] = {hex: el.props.id, pattern: selectedPattern.id}
-        })
+    const loadIntoMap = async (data) => {
 
-        setStructures({...tiles, ...list})
+        let map = JSON.parse(data.map_json)
+        const {width, height, name} = data
 
-        setter(tilesToChange, selectedPattern.image_id)
+        await setSize({x:width, y:height, size:10})
+        await setCurrentSize({x:width, y:height, size:10})
+
+        structures.current = map.structure
+        tiles.current = map.tile
+
+        setLoad(data)
     }
 
     return(
@@ -53,13 +64,15 @@ export default function MapCreator(){
                 <MapController
                     selectedPattern={selectedPattern}
                     brushSize={brushSize}
-                    gridParams={gridParams}
+                    load={load}
+                    unsetLoad = {() => setLoad(null)}
+                    size={currentSize}
                     setTile = {placeTile}
                 />
             }
 
             rightTopSpace = {
-                <SizeMenu  size={size} setSize={setSize} changeGridParams={() => setGridParams(calcGridParams(size))}  />
+                <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)}  />
             }
 
             rightBottomSpace={
@@ -71,15 +84,24 @@ export default function MapCreator(){
             rightMenu = {
                 <MapCRUD
                     editable={true}
-                    // hexList={hexList}
-                    gridParams={gridParams}
-                    setGridParams={(size) => setGridParams(calcGridParams(size))}
-                    setSize = {setSize}
+                    mapToSave={{structures:structures, tiles:tiles}}
+                    loadIntoMap = {loadIntoMap}
+                    size={currentSize}
+                    setSize = {setCurrentSize}
                 />
             }
 
             bottomMenu={
-                <TilesMenu onMenuClick={(tile) => setSelectedPattern(tile) } selectedPattern={selectedPattern} />
+                <div className="flex flex-row" >
+                    <div className="sub-menu menu-v">
+                        <button className='btn-primary' onClick={() => setPatternType('tile')} >Tile</button>
+                        <button className='btn-primary' onClick={() => setPatternType('structure')} >structure</button>
+                        {/* <button className='btn-primary' onClick={() => setPatternType('character')} >character</button> */}
+                    </div>
+                    {patternType == 'tile' ? <TilesMenu onMenuClick={(tile) => setSelectedPattern(tile) } selectedPattern={selectedPattern} /> : ''}
+                    {patternType == 'structure' ? <StructureMenu onMenuClick={(struct) => setSelectedPattern(struct) } selectedPattern={selectedPattern} /> : ''}
+                    {/* {patternType == 'character' ? <CharacterMenu onMenuClick={(character) => setSelectedPattern(character) } selectedPattern={selectedPattern} /> : ''} */}
+                </div>
             }
         />
     )

@@ -11,11 +11,11 @@ export default function TilesMenu({selectedPattern, onMenuClick, updater}){
     }, [JSON.stringify(tiles), updater]
     )
 
-    const onClick = (e) => {
+    const onClick = ({target}) => {
         let tile = tiles.find((el)=>{
-            return el.id == e.target.id
+            return el.id == target.id
         })
-        onMenuClick(tile)
+        onMenuClick(tile, target)
     }
 
     return(

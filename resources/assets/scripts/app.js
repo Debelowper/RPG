@@ -6,6 +6,7 @@ import ImageUploader from './components/ImageUploader'
 import StatSystemCreator from './components/StatSystemCreator'
 import ClassCreator from './components/ClassCreator'
 import Game from './components/Game'
+import StructureCreator from './components/StructureCreator'
 
 
 
@@ -37,4 +38,9 @@ if(document.getElementById('createStatSystem') ){
 if(document.getElementById('createClass') ){
     let createClass = document.getElementById('createClass');
     ReactDOM.render(<ClassCreator {...(createClass.dataset)} />, document.getElementById('createClass'))
+}
+
+if(document.getElementById('createStructure') ){
+    let createStructure = document.getElementById('createStructure');
+    ReactDOM.render(<StructureCreator {...(createStructure.dataset)} />, document.getElementById('createStructure'))
 }

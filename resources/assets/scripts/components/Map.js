@@ -4,35 +4,35 @@ import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid'
 import Tile from './Tile';
 import PatternList from './PatternList'
 
-export function MapCallback({ setHexRefs, onHexClick, gridParams}){
+export function MapCallback({hexList, onHexClick, gridParams}){
 
     const clicked = React.useRef(false)
-
-    var hexagons = GridGenerator.orientedRectangle(gridParams.x, gridParams.y)
-
     return(
         <div className="block w-full" onMouseDown={() => clicked.current = true} onMouseUp={() => clicked.current = false}>
+
             <HexGrid  width={gridParams.width} height={gridParams.height} viewBox={gridParams.viewboxParams.join(' ')}>
+
                 <Layout size={{ x: gridParams.size, y: gridParams.size }}>
                     {
-                        hexagons.map((hex, i) =>{
-                            hex.id = {x:hex.q , y: i % gridParams.y}
-                            return (
-                                <Tile
-                                    ref={setHexRefs}
-                                    key={'r'+hex.id.x+'c'+hex.id.y}
-                                    hex={hex}
-                                    id={hex.id}
-                                    onHexClick={
-                                        onHexClick
-                                    }
-                                    onHexHover={() =>{
-                                        if(clicked.current){
-                                            onHexClick(hex)
+                        Object.values(hexList).map((hex, i) =>{
+                            if(hex.id.x < gridParams.x && hex.id.y < gridParams.y){
+                                return (
+                                    <Tile
+                                        ref={hex.ref}
+                                        key={'r'+hex.id.x+'c'+hex.id.y}
+                                        hex={{q:hex.q, s:hex.s, r:hex.r, id:hex.id}}
+                                        id={hex.id}
+                                        onHexClick={
+                                            onHexClick
                                         }
-                                    }}
-                                />
-                            )
+                                        onHexHover={() =>{
+                                            if(clicked.current){
+                                                onHexClick(hex)
+                                            }
+                                        }}
+                                    />
+                                )
+                            }
                         })
                     }
                 </Layout>
@@ -45,7 +45,7 @@ export function MapCallback({ setHexRefs, onHexClick, gridParams}){
 export const Map = React.memo(MapCallback, (prevProps, props) => {
     if(JSON.stringify(props.gridParams) != JSON.stringify(prevProps.gridParams)  ||
         prevProps.onHexClick != props.onHexClick
-){
+    ){
         return false
     }else{
         return true

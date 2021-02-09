@@ -11,7 +11,7 @@ export default class Tile extends Component {
         this.state = {
             character:'',
             structure:'',
-            pattern:''
+            tile:''
         }
     }
 
@@ -24,29 +24,56 @@ export default class Tile extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState){
-        if(nextState.pattern != this.state.pattern){
+        if(nextState.tile != this.state.tile || nextState.structure != this.state.structure ||  nextState.character != this.state.character){
             return true
         }else{
             return false
         }
     }
 
-    changePattern = (patternId) => {
-        this.setState({pattern: patternId.toString() })
+    changePattern = (pattern, type) => {
+        this.setState({[type]: type + '-' + pattern.toString() })
     }
 
     render(){
-        const {hex} = this.props
 
+        const {hex} = this.props
         return(
+        <>
             <Hexagon
                 onClick={this.onClick}
-                onMouseEnter={this.onHover}
+                onMouseLeave={this.onHover}
                 q={hex.q}
                 r={hex.r}
                 s={hex.s}
-                fill={this.state.pattern}
+                fill={this.state.tile}
             />
+            {
+                this.state.structure ?
+
+                    <Hexagon
+                        onClick={this.onClick}
+                        onMouseLeave={this.onHover}
+                        q={hex.q}
+                        r={hex.r}
+                        s={hex.s}
+                        fill={this.state.structure}
+                    />
+                : ''
+            }
+            {
+                this.state.character ?
+                    <Hexagon
+                        onClick={this.onClick}
+                        onMouseLeave={this.onHover}
+                        q={hex.q}
+                        r={hex.r}
+                        s={hex.s}
+                        fill={this.state.character}
+                    />
+                : ''
+            }
+        </>
         )
     }
 }

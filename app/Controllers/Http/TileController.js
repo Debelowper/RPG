@@ -59,8 +59,14 @@ class TileController {
         return tiles
     }
 
-    async loadTiles(request){
+    async loadTiles({request}){
 
+        const {tileIDs} = request.post()
+        var tiles = await Database
+            .table('tiles')
+            .whereIn('id', tileIDs)
+
+        return tiles
     }
 
 

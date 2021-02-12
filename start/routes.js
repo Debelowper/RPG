@@ -42,7 +42,8 @@ Route.group(()=>{
 Route.group(()=>{
     Route.post('save', 'TileController.saveTile')
     Route.post('delete', 'TileController.deleteTile')
-    Route.get('load', 'TileController.loadUserTiles')
+    Route.get('loadUser', 'TileController.loadUserTiles')
+    Route.post('load', 'TileController.loadTiles')
 }).prefix('Tile/').middleware('auth')
 
 

@@ -11,16 +11,18 @@ export default class Tile extends Component {
         this.state = {
             character:'',
             structure:'',
-            tile:''
+            tile:'',
         }
     }
 
     onClick = () => {
-        this.props.onHexClick(this.props.hex)
+        this.props.onHexClick({hex: this.props.hex,tile: this.state.tile, structure: this.state.structure,character: this.state.character})
     }
 
     onHover = () => {
-        this.props.onHexHover(this.props.hex)
+        if(this.props.clicked.current){
+            this.props.onHexClick({hex: this.props.hex,tile: this.state.tile, structure: this.state.structure,character: this.state.character})
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState){

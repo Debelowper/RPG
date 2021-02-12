@@ -3,7 +3,7 @@ import { Pattern } from 'react-hexgrid';
 import axios from 'axios'
 
 async function loadTiles(){
-    return await axios.get('Tile/load')
+    return await axios.get('Tile/loadUser')
 }
 
 export default function PatternList(){
@@ -25,6 +25,7 @@ export default function PatternList(){
             }
 
             <Pattern key={'elfSorcerer'} id={'character-elfSorcerer'} link={'./sorcerer-elf.png'} />
+            <Pattern key={'draugr'} id={'character-draugr'} link={'./draugr.png'} />
             <Pattern key={'watchtower'} id={'structure-watchtower'} link={'./watchtower.png'} />
         </>
     )

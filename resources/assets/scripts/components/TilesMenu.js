@@ -41,6 +41,6 @@ export default function TilesMenu({selectedPattern, onMenuClick, updater}){
 }
 
 async function loadTiles(){
-    return await axios.get('Tile/load')
+    return await axios.get('Tile/loadUser')
 
 }

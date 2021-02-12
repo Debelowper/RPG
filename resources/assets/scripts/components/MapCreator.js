@@ -25,11 +25,10 @@ export default function MapCreator(){
     const structures = useRef({})
     const [load, setLoad] = useState(null)
 
-    const placeTile = (getter, setter, hex) => {
-        let tilesToChange = getter(hex, brushSize)
+    const setTile = (getter, setter, hex) => {
+        let tilesToChange = getter(hex.hex, brushSize)
         let list = {}
         tilesToChange.forEach((el)=>{
-            // console.log(selectedPattern)
             let tile = el.ref.current.props
             list[tile.id.x+'-'+tile.id.y] = {hex: tile.id, pattern: selectedPattern.id}
         })
@@ -37,7 +36,6 @@ export default function MapCreator(){
         switch (patternType){
             case 'tile': tiles.current = {...tiles.current, ...list}; break;
             case 'structure': structures.current = {...structures.current, ...list}; break;
-            // case 'tile': setTiles({...tiles, ...list}); break;
         }
 
         setter(tilesToChange, selectedPattern.id, patternType)
@@ -67,7 +65,7 @@ export default function MapCreator(){
                     load={load}
                     unsetLoad = {() => setLoad(null)}
                     size={currentSize}
-                    setTile = {placeTile}
+                    setTile = {setTile}
                 />
             }
 
@@ -90,7 +88,6 @@ export default function MapCreator(){
                     setSize = {setCurrentSize}
                 />
             }
-
             bottomMenu={
                 <div className="flex flex-row" >
                     <div className="sub-menu menu-v">
@@ -98,8 +95,8 @@ export default function MapCreator(){
                         <button className='btn-primary' onClick={() => setPatternType('structure')} >structure</button>
                         {/* <button className='btn-primary' onClick={() => setPatternType('character')} >character</button> */}
                     </div>
-                    {patternType == 'tile' ? <TilesMenu onMenuClick={(tile) => setSelectedPattern(tile) } selectedPattern={selectedPattern} /> : ''}
-                    {patternType == 'structure' ? <StructureMenu onMenuClick={(struct) => setSelectedPattern(struct) } selectedPattern={selectedPattern} /> : ''}
+                    {patternType == 'tile' ? <TilesMenu onMenuClick={(tile) => setSelectedPattern(tile) } selectedPattern={selectedPattern} /> : null}
+                    {patternType == 'structure' ? <StructureMenu onMenuClick={(struct) => setSelectedPattern(struct) } selectedPattern={selectedPattern} /> : null}
                     {/* {patternType == 'character' ? <CharacterMenu onMenuClick={(character) => setSelectedPattern(character) } selectedPattern={selectedPattern} /> : ''} */}
                 </div>
             }

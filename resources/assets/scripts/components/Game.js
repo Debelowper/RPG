@@ -10,8 +10,10 @@ import GameLayout from './GameLayout'
 import BrushSizeMenu from './BrushSizeMenu'
 import MapController from './MapController'
 import CharacterPanel from './CharacterPanel'
-import ActionMenu from './ActionMenu'
+import ActionController from './Actions/ActionController'
 import {HexUtils} from 'react-hexgrid';
+import TurnMenu from './TurnMenu'
+import CharacterMenu from './CharacterMenu'
 
 export default function Game () {
 
@@ -19,105 +21,47 @@ export default function Game () {
     const [size, setSize] = useState(defaultSizes)
     const [selectedCharacter, setSelectedCharacter] = useState('')
     const [selectedAction, setSelectedAction] = useState('')
-    const [currentCharacter, setCurrentCharacter] = useState({name:'', currentHex:{}})
+    const [currentCharacter, setCurrentCharacter] = useState('')
+    const [load, setLoad] = useState(null)
 
     const tiles = useRef({})
     const structures = useRef({})
-    const [load, setLoad] = useState(null)
+
+    const [tilesList, setTilesList] = useState([])
+    const [structuresList, setStructuresList] = useState([])
+    const [charactersList, setCharactersList] = useState([])
 
     const [turn, setTurn] = useState(0)
 
-    const characters = {
-        elfSorcerer: {
-                name:'elfSorcerer',
-                url:'/sorcerer-elf.png',
-                speed:{speedLeft: 1, walk:30, fly:0, swim:10, climb:10}
-
-        },
-    }
-
-    const characterMenu = () => {
-        return (
-            <div  className="sub-menu menu-v w-full " >
-                {
-                    Object.values(characters).map((el)=>{
-                        return(
-                            <div  key={el.name} >
-                                <p>{el.name}</p>
-                                <img src={el.url} width={50} height={50} onClick={() => {setCurrentCharacter({...el, currentHex:{}}); setSelectedCharacter(el.name)  }} />
-                            </div>
-                        )
-                    })
-                }
-            </div>
-        )
-    }
+    const [isYourTurn, setIsYourTurn] = useState(false)
+    const [actionFunction, setActionFunction] = useState()
+    const [action, setAction] = useState([])
 
     const roll = (max, min = 1) => {
           return Math.floor(Math.random() * (max - min) ) + min;
     }
 
-    const renderTurnMenu = () => {
-        return(
-            <div>
-                <h1>Turn Counter</h1>
-                <div className="flex flex-row">
-                    <button className="btn-primary" onClick={ () => setTurn(turn+1) }>
-                        {turn == 0 ? 'Roll Initiative' : 'Next Turn'}
-                    </button>
-                    <button className="btn-primary" onClick={()=> setTurn(0)}>
-                        Stop
-                    </button>
-
-                </div>
-            </div>
-        )
-    }
-
     useEffect(()=>{
-        setCurrentCharacter({...currentCharacter, speed:{...currentCharacter.speed, speedLeft:1}})
+        let refreshedList = {}
+        Object.values(charactersList).forEach((el)=>{
+            refreshedList[el.name] = {...el, speed:100}
+        })
+        setCharactersList(refreshedList)
+        // setCurrentCharacter({...currentCharacter, speed:100})
     }, [turn])
 
-    const action = () => {
-        switch(selectedAction.name){
-            case 'move':
-                return moveCharacter
-                break
-            default:
-                return ()=>console.log('nothing selected')
-        }
-    }
-
-    const moveCharacter = (getter, setter, hex) => {
-        console.log(currentCharacter.speed.speedLeft)
-        let tilesToChange
-        let option = selectedAction.option
-        if(Object.values(currentCharacter.currentHex).length != 0 ){
-            let neighbours = HexUtils.neighbours(currentCharacter.currentHex)
-            let destID = HexUtils.getID(hex)
-            neighbours.forEach((el)=>{
-                if(HexUtils.getID(el) == destID ){
-                    let tileSize = 5;
-                    let mult = 1
-                    let speed = currentCharacter.speed
-
-                    if(speed.speedLeft >= tileSize/(mult*speed[option]) ){
-                        setCurrentCharacter({...currentCharacter, currentHex:hex, speed: {...speed, speedLeft: speed.speedLeft - tileSize/(mult*speed[option])  } })
-
-
-                        tilesToChange = getter(currentCharacter.currentHex, '1')
-                        setter(tilesToChange, '', 'character')
-
-                        tilesToChange = getter(hex, '1')
-                        setter(tilesToChange, currentCharacter.name, 'character')
-                    }
-                }
+    useEffect(()=>{
+        if(action.length != 0){
+            action.forEach((el) => {
+                characterReducer(el.action)
             })
-        }else{
-            tilesToChange = getter(hex, '1')
-            setCurrentCharacter({...currentCharacter, currentHex:hex})
-            setter(tilesToChange, currentCharacter.name, 'character')
+            setAction([])
         }
+    }, [JSON.stringify(action)])
+
+    const characterReducer = (action) => {
+        let newChars = action
+        setCharactersList({...charactersList, ...action })
     }
 
     const loadIntoMap = async (data) => {
@@ -130,9 +74,20 @@ export default function Game () {
         structures.current = map.structure
         tiles.current = map.tile
 
+        setTilesList((await loadTilesList(map.tile)).data)
         setLoad(data)
     }
 
+    const loadTilesList = async (map) => {
+        let tileList = []
+        Object.values(map).forEach((el)=>{
+            if(!tileList.find((i) => i == el.pattern)){
+                tileList.push(el.pattern)
+            }
+        })
+
+        return await axios.post('Tile/load', {tileIDs:tileList})
+    }
 
     return (
         <GameLayout
@@ -140,8 +95,8 @@ export default function Game () {
             content={
                 <MapController
                     size={size}
-                    setTile={action()}
-                    selectedPattern={selectedCharacter}
+                    setTile={actionFunction}
+                    selectedPattern={currentCharacter}
                     brushSize={1}
                     load={load}
                     unsetLoad = {() => setLoad(null)}
@@ -150,7 +105,15 @@ export default function Game () {
 
             rightMenu = {
                 <div className="menu-v">
-                    {renderTurnMenu()}
+                    <TurnMenu
+                        turn={turn} setTurn={setTurn}
+                        isYourTurn={isYourTurn} setIsYourTurn={setIsYourTurn}
+                        roll={roll}
+                        characters={charactersList}
+                        currentCharacter={currentCharacter}
+                        setAction={setAction}
+                    />
+
                     <div className="sub-menu menu-v">
                         <MapCRUD
                             editable={false}
@@ -164,7 +127,15 @@ export default function Game () {
             }
 
             bottomMenu={
-                characterMenu()
+                <CharacterMenu
+                    currentCharacter={currentCharacter}
+                    setCurrentCharacter={setCurrentCharacter}
+                    setSelectedCharacter={setSelectedCharacter}
+                    charactersList={charactersList}
+                    isYourTurn={isYourTurn}
+                    setAction={setAction}
+                    setActionFunction={setActionFunction}
+                />
             }
 
             bottomLeftSpace={
@@ -172,9 +143,19 @@ export default function Game () {
             }
 
             bottomRightSpace={
-                <ActionMenu setSelectedAction={setSelectedAction} selectedAction={selectedAction} />
+                <ActionController
+                    setSelectedAction={setSelectedAction}
+                    selectedAction={selectedAction}
+                    characters={charactersList}
+                    structures={structuresList}
+                    tiles={tilesList}
+                    currentCharacter={currentCharacter}
+                    setActionFunction={setActionFunction}
+                    setAction={setAction}
+                    inCombat={turn > 0 ? true : false}
+                    isYourTurn={isYourTurn}
+                />
             }
         />
     )
-
 }

@@ -25,11 +25,8 @@ export function MapCallback({hexList, onHexClick, gridParams}){
                                         onHexClick={
                                             onHexClick
                                         }
-                                        onHexHover={() =>{
-                                            if(clicked.current){
-                                                onHexClick(hex)
-                                            }
-                                        }}
+                                        clicked={clicked}
+
                                     />
                                 )
                             }

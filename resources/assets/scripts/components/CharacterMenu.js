@@ -1,54 +1,66 @@
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import axios from 'axios'
+import {spawn, isSpawned} from './Actions/Spawn'
 
-export default function StructureMenu({selectedPattern, onMenuClick, updater}){
+export default function CharacterMenu({currentCharacter, setCurrentCharacter, setSelectedCharacter, charactersList, isYourTurn, setAction, setActionFunction}){
 
-    const [characters, setCharacters] = useState([])
-
-    // useEffect(async ()=>{
-    //     setCharacters((await loadStructures()).data)
-    // }, [JSON.stringify(characters), updater]
-    // )
-
-    const onClick = ({target}) => {
-        let tile = {id:'elfSorcerer', filename:'./sorcerer-elf.png', image_id:'elfSorcerer'}
-        onMenuClick(tile, target)
-    }
-    // const onClick = ({target}) => {
-    //     let tile = characters.find((el)=>{
-    //         return el.id == target.id
-    //     })
-    //     onMenuClick(tile, target)
-    // }
+    const [characters, setCharacters] = useState(
+        [
+            {
+                name:'elfSorcerer',
+                url:'/sorcerer-elf.png',
+                moveSpeeds:{walk:30, fly:0, swim:10, climb:10},
+                initiativeBonus:3,
+            },
+            {
+                name:'draugr',
+                url:'/draugr.png',
+                moveSpeeds:{walk:30, fly:0, swim:10, climb:10},
+                initiativeBonus:3,
+            },
+        ]
+    )
 
     return(
-        <div className="sub-menu menu-v">
-            <h2 className="text-xl font-bold">Caracter Menu</h2>
-            <div className='menu menu-h ' style={{backgroundImage: 'url(/black-marble.jpg)'}} >
-                {/* {
-                    characters.map((el, i)=>{
-                        return (
-                    <div key={el.name} className="flex flex-col text-white">
-                    <p>{el.name}</p>
-                    <img className={selectedPattern.id == el.id ? "border-2 border-red-500" : "border-2 border-black"}
-                    onClick={onClick} name={el.name} id={el.id} key={i} src={el.url} width={50} height={50}
-                    />
-
-                    </div>
-                        )
-                    })
-                } */}
-                <div key={'elfSorcerer'} className="flex flex-col text-white">
-                    <p>{'elfSorcerer'}</p>
-                    <img className={selectedPattern.id == 'elfSorcerer' ? "border-2 border-red-500" : "border-2 border-black"}
-                        onClick={onClick} name={'elfSorcerer'} id={'elfSorcerer'} key={'elfSorcerer'} src={'./sorcerer-elf.png'} width={50} height={50}
-                    />
-
-                </div>
-            </div>
+        <div  className="sub-menu menu-h w-full" >
+            {
+                characters.map((el)=>{
+                    return(
+                        <div  key={el.name} className="menu-v">
+                            <p>{el.name}</p>
+                            <img src={el.url} width={50} height={50} onClick={() =>  setSelectedCharacter(el.name)  } />
+                            <button className={"btn-primary " + (currentCharacter == el.name ? 'bg-black' : '')}
+                                onClick={() => isYourTurn ? console.log('finish your turn') : setCurrentCharacter(el.name) }
+                            >
+                                {currentCharacter == el.name ? 'locked In' : 'lock In'}
+                            </button>
+                            {isSpawned(charactersList, el.name) ? '' :
+                            <button
+                                className="btn-primary"
+                                onClick={() =>
+                                    setActionFunction(() =>
+                                        spawn(
+                                            {
+                                                characters: characters,
+                                                spawnedChars:charactersList ,
+                                                currentCharacter: currentCharacter,
+                                                setAction: setAction
+                                            }
+                                        )
+                                    )
+                                }
+                            >
+                                spawn
+                            </button>
+                            }
+                        </div>
+                    )
+                })
+            }
         </div>
     )
+
 }
 
 async function loadStructures(){

@@ -1,31 +1,37 @@
 import React, {useState, useEffect, Component} from 'react'
 import ReactDOM from 'react-dom'
-import { HexGrid, Layout, Hexagon, GridGenerator, Pattern } from 'react-hexgrid';
+import { HexGrid, Layout, Hexagon, GridGenerator, Pattern, HexUtils } from 'react-hexgrid';
 import Tile from './Tile';
 import PatternList from './PatternList'
 
-export function MapCallback({hexList, onHexClick, gridParams}){
+export function MapCallback({hexList, onHexClick, size}){
+
+    const [gridParams, setGridParams] = useState(calcGridParams(size))
+
+    useEffect(()=>{
+        setGridParams(calcGridParams(size))
+    }, [JSON.stringify(size)])
 
     const clicked = React.useRef(false)
     return(
-        <div className="block w-full" onMouseDown={() => clicked.current = true} onMouseUp={() => clicked.current = false}>
+        <div className="flex flex-grow" onMouseDown={() => clicked.current = true} onMouseUp={() => clicked.current = false}>
 
             <HexGrid  width={gridParams.width} height={gridParams.height} viewBox={gridParams.viewboxParams.join(' ')}>
 
-                <Layout size={{ x: gridParams.size, y: gridParams.size }}>
+                <Layout size={{ x: gridParams.size, y: gridParams.size }}  >
                     {
                         Object.values(hexList).map((hex, i) =>{
-                            if(hex.id.x < gridParams.x && hex.id.y < gridParams.y){
+                            let id = HexUtils.getID(hex.hex)
+                            if(hex.hex.q < gridParams.x && ( hex.hex.r - hex.hex.s)/2 < gridParams.y){
                                 return (
                                     <Tile
                                         ref={hex.ref}
-                                        key={'r'+hex.id.x+'c'+hex.id.y}
-                                        hex={{q:hex.q, s:hex.s, r:hex.r, id:hex.id}}
-                                        id={hex.id}
-                                        onHexClick={
-                                            onHexClick
-                                        }
+                                        key={id}
+                                        hex={hex.hex}
+                                        id={id}
+                                        onHexClick={onHexClick}
                                         clicked={clicked}
+                                        gridParams={gridParams}
 
                                     />
                                 )
@@ -33,7 +39,7 @@ export function MapCallback({hexList, onHexClick, gridParams}){
                         })
                     }
                 </Layout>
-                <PatternList />
+                <PatternList size={{x:gridParams.size, y:gridParams.size}}/>
             </HexGrid>
         </div>
     )
@@ -48,3 +54,26 @@ export const Map = React.memo(MapCallback, (prevProps, props) => {
         return true
     }
 })
+
+function calcGridParams ({x, y, size}) {
+
+    let kx = 1.5 *size
+    let ky = Math.sqrt(3)*size
+
+    let spacesX = (kx*x + kx/2)
+    let spacesY = (ky*y + ky/2)
+
+    var viewboxParams = [-size, -size*Math.sqrt(3)/2, spacesX, spacesY]
+
+    let width = (kx*x + kx/2) + 'vw'
+    let height = (ky*y + ky/2) + 'vw'
+
+    return {
+        x:x,
+        y: y,
+        width:width ,
+        height:height,
+        size:size,
+        viewboxParams: viewboxParams
+    }
+}

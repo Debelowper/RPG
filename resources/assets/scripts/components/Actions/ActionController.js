@@ -2,6 +2,7 @@ import React, {useEffect} from 'react'
 import ActionMenu from './ActionMenu'
 import {move} from './Move'
 import {spawn} from './Spawn'
+import {attack} from './Attack'
 
 export default function ActionController({characters, structures, tiles, selectedAction, setSelectedAction, setAction, currentCharacter, setActionFunction, inCombat, isYourTurn}){
 
@@ -20,7 +21,15 @@ export default function ActionController({characters, structures, tiles, selecte
                      })
                      break
                 case 'attack':
-                    return attackCharacter
+                    return attack({
+                        characters: characters,
+                        structures: structures,
+                         tiles: tiles,
+                         currentCharacter:currentCharacter,
+                         setAction: setAction,
+                         option: selectedAction.option,
+                         inCombat: inCombat
+                    })
                     break
                 case 'spawn':
                     return spawn({
@@ -43,6 +52,10 @@ export default function ActionController({characters, structures, tiles, selecte
     }, [JSON.stringify(selectedAction), JSON.stringify(characters), JSON.stringify(structures), JSON.stringify(tiles), currentCharacter, inCombat])
 
     return(
-        <ActionMenu setSelectedAction={setSelectedAction} selectedAction={selectedAction} />
+        <ActionMenu
+            setSelectedAction={setSelectedAction}
+            selectedAction={selectedAction}
+            actionList={characters[currentCharacter] ? characters[currentCharacter].actions : {}}
+        />
     )
 }

@@ -5,7 +5,6 @@ import SizeMenu from './SizeMenu'
 import TilesMenu from './TilesMenu'
 import axios from 'axios'
 import MapCRUD from './MapCRUD'
-import {calcGridParams} from './Helpers'
 import GameLayout from './GameLayout'
 import BrushSizeMenu from './BrushSizeMenu'
 import MapController from './MapController'
@@ -17,7 +16,7 @@ import CharacterMenu from './CharacterMenu'
 
 export default function Game () {
 
-    const defaultSizes = {x:16,y:8,size:10}
+    const defaultSizes = {x:16,y:8,size:3}
     const [size, setSize] = useState(defaultSizes)
     const [selectedCharacter, setSelectedCharacter] = useState('')
     const [selectedAction, setSelectedAction] = useState('')
@@ -27,28 +26,15 @@ export default function Game () {
     const tiles = useRef({})
     const structures = useRef({})
 
-    const [tilesList, setTilesList] = useState([])
-    const [structuresList, setStructuresList] = useState([])
-    const [charactersList, setCharactersList] = useState([])
+    const [tileList, setTilesList] = useState([])
+    const [structureList, setStructuresList] = useState([])
+    const [characterList, setCharacterList] = useState([])
 
     const [turn, setTurn] = useState(0)
 
     const [isYourTurn, setIsYourTurn] = useState(false)
     const [actionFunction, setActionFunction] = useState()
     const [action, setAction] = useState([])
-
-    const roll = (max, min = 1) => {
-          return Math.floor(Math.random() * (max - min) ) + min;
-    }
-
-    useEffect(()=>{
-        let refreshedList = {}
-        Object.values(charactersList).forEach((el)=>{
-            refreshedList[el.name] = {...el, speed:100}
-        })
-        setCharactersList(refreshedList)
-        // setCurrentCharacter({...currentCharacter, speed:100})
-    }, [turn])
 
     useEffect(()=>{
         if(action.length != 0){
@@ -61,7 +47,7 @@ export default function Game () {
 
     const characterReducer = (action) => {
         let newChars = action
-        setCharactersList({...charactersList, ...action })
+        setCharacterList({...characterList, ...action })
     }
 
     const loadIntoMap = async (data) => {
@@ -69,7 +55,7 @@ export default function Game () {
         let map = JSON.parse(data.map_json)
         const {width, height, name} = data
 
-        await setSize({x:width, y:height, size:10})
+        await setSize({x:width, y:height, size:size.size})
 
         structures.current = map.structure
         tiles.current = map.tile
@@ -108,8 +94,7 @@ export default function Game () {
                     <TurnMenu
                         turn={turn} setTurn={setTurn}
                         isYourTurn={isYourTurn} setIsYourTurn={setIsYourTurn}
-                        roll={roll}
-                        characters={charactersList}
+                        characters={characterList}
                         currentCharacter={currentCharacter}
                         setAction={setAction}
                     />
@@ -120,7 +105,6 @@ export default function Game () {
                             loadIntoMap = {loadIntoMap}
                             mapToSave={{structures:structures, tiles:tiles}}
                             size={size}
-                            setSize = {setSize}
                         />
                     </div>
                 </div>
@@ -131,7 +115,7 @@ export default function Game () {
                     currentCharacter={currentCharacter}
                     setCurrentCharacter={setCurrentCharacter}
                     setSelectedCharacter={setSelectedCharacter}
-                    charactersList={charactersList}
+                    characterList={characterList}
                     isYourTurn={isYourTurn}
                     setAction={setAction}
                     setActionFunction={setActionFunction}
@@ -139,16 +123,18 @@ export default function Game () {
             }
 
             bottomLeftSpace={
-                <CharacterPanel />
+                <CharacterPanel
+                    character={characterList[currentCharacter]}
+                />
             }
 
             bottomRightSpace={
                 <ActionController
                     setSelectedAction={setSelectedAction}
                     selectedAction={selectedAction}
-                    characters={charactersList}
-                    structures={structuresList}
-                    tiles={tilesList}
+                    characters={characterList}
+                    structures={structureList}
+                    tiles={tileList}
                     currentCharacter={currentCharacter}
                     setActionFunction={setActionFunction}
                     setAction={setAction}

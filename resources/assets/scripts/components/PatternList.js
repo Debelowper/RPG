@@ -6,9 +6,9 @@ async function loadTiles(){
     return await axios.get('Tile/loadUser')
 }
 
-export default function PatternList(){
+export default function PatternList({size}){
     const [tiles, setTiles] =useState([])
-
+    
     useEffect(
         async () =>{
             setTiles((await loadTiles()).data)
@@ -20,13 +20,13 @@ export default function PatternList(){
         <>
             {
                 tiles.map( (el, i)=>{
-                    return <Pattern key={i} id={'tile-'+ el.id.toString()} link={el.url} />
+                    return <Pattern key={i} id={'tile-'+ el.id.toString()} link={el.url} size={size} />
                 })
             }
 
-            <Pattern key={'elfSorcerer'} id={'character-elfSorcerer'} link={'./sorcerer-elf.png'} />
-            <Pattern key={'draugr'} id={'character-draugr'} link={'./draugr.png'} />
-            <Pattern key={'watchtower'} id={'structure-watchtower'} link={'./watchtower.png'} />
+            <Pattern key={'elfSorcerer'} id={'character-elfSorcerer'} link={'./sorcerer-elf.png'} size={size} />
+            <Pattern key={'draugr'} id={'character-draugr'} link={'./draugr.png'} size={size} />
+            <Pattern key={'watchtower'} id={'structure-watchtower'} link={'./watchtower.png'} size={size} />
         </>
     )
 }

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
+import {roll} from './Actions/ActionUtils'
 
-export default function TurnMenu ({setTurn, turn, isYourTurn, setIsYourTurn, characters, roll, currentCharacter, setAction}){
+export default function TurnMenu ({setTurn, turn, isYourTurn, setIsYourTurn, characters, currentCharacter, setAction}){
 
     const isTurnOver = () => {
         let response = Object.values(characters).reduce((sum, el)=> {
@@ -22,15 +23,24 @@ export default function TurnMenu ({setTurn, turn, isYourTurn, setIsYourTurn, cha
         }
     }
 
+    const endCombat = () => {
+        setTurn(0)
+        let actions = [{type:'character', action:{}} ]
+        Object.values(characters).forEach((char)=>{
+            actions[0].action[char.name] = {...char, initiative:-1, myTurn:false, speed:100 }
+        })
+        setAction(actions)
+    }
+
     const renderTurnMenu = () => {
         return(
             <div>
                 <h1>Turn Counter</h1>
                 <div className="flex flex-row">
-                    <button className="btn-primary" onClick={ () =>  rollInitiative()  }>
+                    <button className="btn-primary" onClick={rollInitiative}>
                         {turn == 0 ? 'Roll Initiative' : 'Next Turn'}
                     </button>
-                    <button className="btn-primary" onClick={()=> setTurn(0)}>
+                    <button className="btn-primary" onClick={endCombat}>
                         Stop
                     </button>
                 </div>

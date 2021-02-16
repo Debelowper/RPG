@@ -9,11 +9,11 @@ import BrushSizeMenu from './BrushSizeMenu'
 import MapController from './MapController'
 import StructureMenu from './StructureMenu'
 import CharacterMenu from './CharacterMenu'
-
+import {HexUtils} from 'react-hexgrid'
 
 export default function MapCreator(){
 
-    const defaultSizes = {x:16,y:8,size:10}
+    const defaultSizes = {x:16,y:8,size:3}
 
     const [selectedPattern, setSelectedPattern] = useState('')
     const [brushSize, setBrushSize] = useState(1)
@@ -30,7 +30,7 @@ export default function MapCreator(){
         let list = {}
         tilesToChange.forEach((el)=>{
             let tile = el.ref.current.props
-            list[tile.id.x+'-'+tile.id.y] = {hex: tile.id, pattern: selectedPattern.id}
+            list[HexUtils.getID(el.hex)] = {hex: hex, pattern: selectedPattern.id}
         })
 
         switch (patternType){
@@ -46,8 +46,8 @@ export default function MapCreator(){
         let map = JSON.parse(data.map_json)
         const {width, height, name} = data
 
-        await setSize({x:width, y:height, size:10})
-        await setCurrentSize({x:width, y:height, size:10})
+        await setSize({x:width, y:height, size:size.size})
+        await setCurrentSize({x:width, y:height, size:size.size})
 
         structures.current = map.structure
         tiles.current = map.tile

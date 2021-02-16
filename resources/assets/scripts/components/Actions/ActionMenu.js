@@ -1,10 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 
-export default function ActionMenu ({setSelectedAction, selectedAction}){
+export default function ActionMenu ({setSelectedAction, selectedAction, actionList}){
 
     const [options, setOptions] = useState(false)
-
     const [actions, setActions] = useState({
         'move':{current:'walk', options: ['walk', 'fly', 'swim', 'climb']},
         'attack':{current:'attack'},
@@ -22,8 +21,17 @@ export default function ActionMenu ({setSelectedAction, selectedAction}){
         'ready':{current: 'ready'},
     })
 
+    useEffect(()=>{
+        let newActions = {}
+        Object.entries(actionList).forEach(el =>{
+            newActions[el[0]] = {'current':Object.keys(el[1].default)[0], options: Object.keys(el[1].options) }
+        })
+        setActions(newActions)
+        setSelectedAction({...selectedAction, name:null})
 
-    if(options){
+    }, [JSON.stringify(actionList)])
+
+    const renderOptions = () => {
         return (
             <div className="sub-menu h-full ">
                 <div className="grid grid-cols-12 w-full">
@@ -49,7 +57,9 @@ export default function ActionMenu ({setSelectedAction, selectedAction}){
                 </div>
             </div>
         )
-    }else{
+    }
+
+    const renderActionMenu = () => {
         return(
             <div className="sub-menu h-full ">
                 <div className="grid grid-cols-12 w-full">
@@ -73,5 +83,12 @@ export default function ActionMenu ({setSelectedAction, selectedAction}){
                 </div>
             </div>
         )
+    }
+
+
+    if(options){
+        return renderOptions()
+    }else{
+        return renderActionMenu()
     }
 }

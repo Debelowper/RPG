@@ -5,13 +5,16 @@ import PropTypes from 'prop-types';
 
 
 export default class Tile extends Component {
-    constructor(props, context){
+    constructor(props){
         super(props)
+
+
 
         this.state = {
             character:'',
             structure:'',
             tile:'',
+            effect:'',
         }
     }
 
@@ -26,10 +29,21 @@ export default class Tile extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState){
-        if(nextState.tile != this.state.tile || nextState.structure != this.state.structure ||  nextState.character != this.state.character){
+        // console.log(layout)
+        if(nextState.tile != this.state.tile ||
+            nextState.structure != this.state.structure ||
+            nextState.character != this.state.character ||
+            JSON.stringify(nextProps.gridParams) != JSON.stringify(this.props.gridParams)
+        ){
             return true
         }else{
             return false
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(prevProps.gridParams.size != this.props.gridParams.size){
+            this.forceUpdate()
         }
     }
 
@@ -38,7 +52,6 @@ export default class Tile extends Component {
     }
 
     render(){
-
         const {hex} = this.props
         return(
         <>
@@ -72,6 +85,18 @@ export default class Tile extends Component {
                         r={hex.r}
                         s={hex.s}
                         fill={this.state.character}
+                    />
+                : ''
+            }
+            {
+                this.state.effect ?
+                    <Hexagon
+                        onClick={this.onClick}
+                        onMouseLeave={this.onHover}
+                        q={hex.q}
+                        r={hex.r}
+                        s={hex.s}
+                        fill={this.state.effect}
                     />
                 : ''
             }

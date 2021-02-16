@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
-import {HexUtils} from 'react-hexgrid';
+import {HexUtils, Hex, GridGenerator} from 'react-hexgrid';
 import {Map} from './Map'
-import {calcGridParams} from './Helpers'
-import {GridGenerator} from 'react-hexgrid';
+import {circle, cone} from './Shapes'
+
+
 
 export default function MapController({ selectedPattern, size, setTile, brushSize, load, unsetLoad}){
 
@@ -11,15 +12,12 @@ export default function MapController({ selectedPattern, size, setTile, brushSiz
     const maxSize = React.useRef({x:80,y:80,size:10})
 
     useEffect(()=>{
-            let gridParams = calcGridParams(size)
-
-            var hexagons = GridGenerator.orientedRectangle(gridParams.x, gridParams.y)
+            var hexagons = GridGenerator.orientedRectangle(size.x, size.y)
             let list = {}
             hexagons.forEach((hex, i)=>{
-                hex.id = {x:hex.q , y: i % gridParams.y}
-                let key= hex.id.x+'-'+hex.id.y
+                let key=HexUtils.getID(hex)
                 if(!hexList[key]){
-                    list[key] = {q:hex.q, s:hex.s, r:hex.r, id:hex.id, ref:React.createRef()}
+                    list[key] = { hex:hex, ref:React.createRef()}
                 }
             })
             setHexList({...hexList, ...list})
@@ -38,8 +36,6 @@ export default function MapController({ selectedPattern, size, setTile, brushSiz
         }
     }, [load])
 
-
-
     const onHexClick = React.useCallback ((hex) => {
         setTile(getTilesToChange, changeChildPattern, hex)
     },[getTilesToChange, changeChildPattern, hexList, brushSize, selectedPattern, setTile])
@@ -47,19 +43,16 @@ export default function MapController({ selectedPattern, size, setTile, brushSiz
 
     const getTilesToChange = React.useCallback((hex) => {
         let brush = parseInt(brushSize)
-        let tilesArray = Object.values(hexList)
-        let tiles = tilesArray.filter(el=>{
-            if((Math.abs(hex.id.x - el.id.x) < 4) && (Math.abs(hex.id.y - el.id.y) < 4) ){
-                return (
-                    HexUtils.distance(hex, el) < brush
-                )
-            } else{
-                return false
+        let tilesList = circle(hex, brushSize-1)
+        let tilesToChange = []
+        tilesList.forEach((el)=>{
+            if(hexList[HexUtils.getID(el)]){
+                tilesToChange.push(hexList[HexUtils.getID(el)])
             }
         })
-        return tiles
-    }, [brushSize, hexList])
 
+        return tilesToChange
+    }, [brushSize, hexList])
 
 
     const  changeChildPattern = React.useCallback((tiles, selectedPattern, type) => {
@@ -68,13 +61,11 @@ export default function MapController({ selectedPattern, size, setTile, brushSiz
         })
     },[selectedPattern])
 
-
-
     return (
         <Map
             hexList = {hexList}
             onHexClick = {onHexClick}
-            gridParams = {calcGridParams(size)}
+            size = {size}
         />
     )
 }

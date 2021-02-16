@@ -1,17 +1,28 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-export default function CharacterPanel(){
+export default function CharacterPanel({character}){
+    const renderRangeInput = (label, resource, resourceMax) => {
+        return(
+            <div>
+                <label>{label} </label>
+                <input type='range' value={resource} min={0} max={resourceMax} ></input>
+                <output>{resource}</output>
+            </div>
+        )
+    }
 
+    if(character){
+        return(
+            <div className="flex flex-col">
 
-    return(
-        <div className="flex flex-col">
+                {renderRangeInput('hp', character.hp, character.baseStats.hp)}
+                <label> mana </label>
+                <input type='range'  />
 
-            <label> health </label>
-            <input type='range' />
-            <label> mana </label>
-            <input type='range'  />
-
-        </div>
-    )
+            </div>
+        )
+    }else{
+        return <div className="flex flex-col"></div>
+    }
 }

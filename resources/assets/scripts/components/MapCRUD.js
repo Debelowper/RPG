@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import axios from 'axios'
 import ResourceMenu from './ResourceMenu'
 
-export default function MapCRUD({mapToSave, size, loadIntoMap, setSize, editable}){
+export default function MapCRUD({mapToSave, size, loadIntoMap, editable}){
 
     const [mapList, setMapList] = useState('')
 

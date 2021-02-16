@@ -3,20 +3,35 @@ import ReactDOM from 'react-dom'
 import axios from 'axios'
 import {spawn, isSpawned} from './Actions/Spawn'
 
-export default function CharacterMenu({currentCharacter, setCurrentCharacter, setSelectedCharacter, charactersList, isYourTurn, setAction, setActionFunction}){
+export default function CharacterMenu({currentCharacter, setCurrentCharacter, setSelectedCharacter, characterList, isYourTurn, setAction, setActionFunction}){
 
     const [characters, setCharacters] = useState(
         [
             {
                 name:'elfSorcerer',
+                hp:50,
+                defense:3,
+                dodge:10,
+                actionsPerTurn:10,
+                actions:{
+                    move:{default: {walk:30} , options:{walk:30, fly:0, swim:10, climb:10} },
+                    attack:{default: {wand:{damage:10, bonus:10, range:5, type:'ranged'}} , options:{wand:{damage:10, bonus:10, range:5, type:'ranged'} } },
+
+                },
                 url:'/sorcerer-elf.png',
-                moveSpeeds:{walk:30, fly:0, swim:10, climb:10},
                 initiativeBonus:3,
             },
             {
                 name:'draugr',
+                hp:80,
+                defense:6,
+                dodge:0,
+                actionsPerTurn:10,
+                actions:{
+                    move:{default: {walk:30} , options:{walk:30, fly:0, swim:10, climb:10} },
+                    attack:{default: {sword:{damage:8, bonus: 2, range:1, type:'melee'}} , options:{sword:{damage:8, bonus: 2, range:1, type:'melee'} } }  ,
+                },
                 url:'/draugr.png',
-                moveSpeeds:{walk:30, fly:0, swim:10, climb:10},
                 initiativeBonus:3,
             },
         ]
@@ -35,7 +50,7 @@ export default function CharacterMenu({currentCharacter, setCurrentCharacter, se
                             >
                                 {currentCharacter == el.name ? 'locked In' : 'lock In'}
                             </button>
-                            {isSpawned(charactersList, el.name) ? '' :
+                            {isSpawned(characterList, el.name) ? '' :
                             <button
                                 className="btn-primary"
                                 onClick={() =>
@@ -43,7 +58,7 @@ export default function CharacterMenu({currentCharacter, setCurrentCharacter, se
                                         spawn(
                                             {
                                                 characters: characters,
-                                                spawnedChars:charactersList ,
+                                                spawnedChars:characterList ,
                                                 currentCharacter: currentCharacter,
                                                 setAction: setAction
                                             }

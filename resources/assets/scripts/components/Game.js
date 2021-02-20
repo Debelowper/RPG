@@ -11,7 +11,7 @@ import MapController from './MapController'
 import CharacterPanel from './CharacterPanel'
 import ActionController from './Actions/ActionController'
 import {HexUtils} from 'react-hexgrid';
-import TurnMenu from './TurnMenu'
+import TurnController from './TurnController'
 import CharacterMenu from './CharacterMenu'
 
 export default function Game () {
@@ -46,7 +46,6 @@ export default function Game () {
     }, [JSON.stringify(action)])
 
     const characterReducer = (action) => {
-        let newChars = action
         setCharacterList({...characterList, ...action })
     }
 
@@ -83,7 +82,6 @@ export default function Game () {
                     size={size}
                     setTile={actionFunction}
                     selectedPattern={currentCharacter}
-                    brushSize={1}
                     load={load}
                     unsetLoad = {() => setLoad(null)}
                 />
@@ -91,7 +89,7 @@ export default function Game () {
 
             rightMenu = {
                 <div className="menu-v">
-                    <TurnMenu
+                    <TurnController
                         turn={turn} setTurn={setTurn}
                         isYourTurn={isYourTurn} setIsYourTurn={setIsYourTurn}
                         characters={characterList}

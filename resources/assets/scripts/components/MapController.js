@@ -2,11 +2,9 @@ import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import {HexUtils, Hex, GridGenerator} from 'react-hexgrid';
 import {Map} from './Map'
-import {circle, cone} from './Shapes'
+import {circle, line, cone, ring} from './Shapes'
 
-
-
-export default function MapController({ selectedPattern, size, setTile, brushSize, load, unsetLoad}){
+export default function MapController({ selectedPattern, size, setTile, load, unsetLoad}){
 
     const [hexList, setHexList] = useState({})
     const maxSize = React.useRef({x:80,y:80,size:10})
@@ -38,12 +36,26 @@ export default function MapController({ selectedPattern, size, setTile, brushSiz
 
     const onHexClick = React.useCallback ((hex) => {
         setTile(getTilesToChange, changeChildPattern, hex)
-    },[getTilesToChange, changeChildPattern, hexList, brushSize, selectedPattern, setTile])
+    },[getTilesToChange, changeChildPattern, hexList, selectedPattern, setTile])
 
 
-    const getTilesToChange = React.useCallback((hex) => {
-        let brush = parseInt(brushSize)
-        let tilesList = circle(hex, brushSize-1)
+    const getTilesToChange = React.useCallback(({target, shape='circle', size=1, start, angle}) => {
+
+        let tilesList
+        switch(shape){
+            case 'circle':
+                tilesList = circle(target, size-1)
+                break
+            case 'ring':
+                tilesList = circle(target, size-1)
+                break
+            case 'line':
+                tilesList = line(start, target)
+                break
+            case 'cone':
+                tilesList = cone(start, target, angle)
+                break
+        }
         let tilesToChange = []
         tilesList.forEach((el)=>{
             if(hexList[HexUtils.getID(el)]){
@@ -52,7 +64,7 @@ export default function MapController({ selectedPattern, size, setTile, brushSiz
         })
 
         return tilesToChange
-    }, [brushSize, hexList])
+    }, [ hexList])
 
 
     const  changeChildPattern = React.useCallback((tiles, selectedPattern, type) => {

@@ -56,6 +56,7 @@ const DIRECTIONS = {
               resp[HexUtils.getID(i)] = i
           })
       })
+      delete resp[HexUtils.getID(start)]
 
       return Object.values(resp)
   }

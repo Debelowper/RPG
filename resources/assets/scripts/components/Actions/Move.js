@@ -9,16 +9,16 @@ export function move ({characters, tiles, structures, setAction, currentCharacte
             let newTile = tiles.find((el) => hex.tile.split('-')[1] == el.id)
             let mult = newTile[option+'_speed']/100
             if(mult != 0){
-                if(char.speed >= tileSize/(mult*char.actions.move.options[option]) && newTile.passable == true ){
+                if(char.resources.speed >= tileSize/(mult*char.actions.move.options[option]) && newTile.passable == true ){
                     let tilesToChange
-                    let nextSpeed = inCombat ? char.speed - 100*tileSize/(mult*char.actions.move.options[option]) : char.speed
-                    let updatedChar = {...char, currentHex:hex.hex, speed: nextSpeed }
+                    let nextSpeed = inCombat ? char.resources.speed - 100*tileSize/(mult*char.actions.move.options[option]) : char.resources.speed
+                    let updatedChar = {...char, currentHex:hex.hex, resources: {...char.resources ,speed: nextSpeed} }
                     setAction( [ {type:'character', action:{ [updatedChar.name]: updatedChar } } ] )
 
-                    tilesToChange = getter(char.currentHex, '1')
+                    tilesToChange = getter({target:char.currentHex})
                     setter(tilesToChange, '', 'character')
 
-                    tilesToChange = getter(hex.hex, '1')
+                    tilesToChange = getter({target:hex.hex})
                     setter(tilesToChange, char.name, 'character')
                 }
             }

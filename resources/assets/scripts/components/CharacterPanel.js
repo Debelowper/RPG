@@ -16,9 +16,8 @@ export default function CharacterPanel({character}){
         return(
             <div className="flex flex-col">
 
-                {renderRangeInput('hp', character.hp, character.baseStats.hp)}
-                <label> mana </label>
-                <input type='range'  />
+                {renderRangeInput('hp', character.resources['hp'], character.baseStats.resources['hp'])}
+
 
             </div>
         )

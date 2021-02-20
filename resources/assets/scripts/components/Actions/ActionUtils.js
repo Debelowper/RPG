@@ -36,3 +36,27 @@ export function roll (max, min = 1) {
 export function isInRange(hex, character, range){
     return HexUtils.distance(character.currentHex, hex) <= range
 }
+
+export function hasResources(char, action){
+    return(
+        action.cost.reduce((el)=>{
+            return !(char.resources[el.resource] >= el.cost)
+        }, true)
+    )
+}
+
+export function spendResources(char, action){
+    let resources = {}
+    action.cost.forEach((el)=>{
+        resources[el.resource] =  char.resources[el.resource] - el.cost
+    })
+    return ({ ...char, resources: {...char.resources , ...resources }})
+}
+
+export function setRange(selectedAttack){
+    let range = 1
+    if(selectedAttack.types.find(el => el == 'ranged')){
+        range = selectedAttack.range
+    }
+    return range
+}

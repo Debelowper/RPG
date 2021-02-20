@@ -8,8 +8,6 @@ export default class Tile extends Component {
     constructor(props){
         super(props)
 
-
-
         this.state = {
             character:'',
             structure:'',
@@ -19,12 +17,24 @@ export default class Tile extends Component {
     }
 
     onClick = () => {
-        this.props.onHexClick({hex: this.props.hex,tile: this.state.tile, structure: this.state.structure,character: this.state.character})
+        this.props.onHexClick({
+            hex: this.props.hex,
+            tile: this.state.tile,
+            structure: this.state.structure,
+            character: this.state.character,
+            effect: this.state.effect
+        })
     }
 
     onHover = () => {
         if(this.props.clicked.current){
-            this.props.onHexClick({hex: this.props.hex,tile: this.state.tile, structure: this.state.structure,character: this.state.character})
+            this.props.onHexClick({
+                hex: this.props.hex,
+                tile: this.state.tile,
+                structure: this.state.structure,
+                character: this.state.character,
+                effect: this.state.effect
+            })
         }
     }
 
@@ -33,6 +43,7 @@ export default class Tile extends Component {
         if(nextState.tile != this.state.tile ||
             nextState.structure != this.state.structure ||
             nextState.character != this.state.character ||
+            nextState.effect != this.state.effect ||
             JSON.stringify(nextProps.gridParams) != JSON.stringify(this.props.gridParams)
         ){
             return true
@@ -51,55 +62,37 @@ export default class Tile extends Component {
         this.setState({[type]: type + '-' + pattern.toString() })
     }
 
-    render(){
+    renderHex = (fill) => {
         const {hex} = this.props
         return(
-        <>
             <Hexagon
                 onClick={this.onClick}
                 onMouseLeave={this.onHover}
                 q={hex.q}
                 r={hex.r}
                 s={hex.s}
-                fill={this.state.tile}
+                fill={fill}
             />
-            {
-                this.state.structure ?
+        )
+    }
 
-                    <Hexagon
-                        onClick={this.onClick}
-                        onMouseLeave={this.onHover}
-                        q={hex.q}
-                        r={hex.r}
-                        s={hex.s}
-                        fill={this.state.structure}
-                    />
-                : ''
-            }
-            {
-                this.state.character ?
-                    <Hexagon
-                        onClick={this.onClick}
-                        onMouseLeave={this.onHover}
-                        q={hex.q}
-                        r={hex.r}
-                        s={hex.s}
-                        fill={this.state.character}
-                    />
-                : ''
-            }
-            {
-                this.state.effect ?
-                    <Hexagon
-                        onClick={this.onClick}
-                        onMouseLeave={this.onHover}
-                        q={hex.q}
-                        r={hex.r}
-                        s={hex.s}
-                        fill={this.state.effect}
-                    />
-                : ''
-            }
+    render(){
+        return(
+        <>
+            {this.renderHex(this.state.tile)}
+
+            {this.state.structure ?
+                this.renderHex(this.state.structure)
+            : ''}
+
+            {this.state.character ?
+                this.renderHex(this.state.character)
+            : ''}
+
+            {this.state.effect ?
+                this.renderHex(this.state.effect)
+            : ''}
+
         </>
         )
     }

@@ -3,6 +3,7 @@ import ActionMenu from './ActionMenu'
 import {move} from './Move'
 import {spawn} from './Spawn'
 import {attack} from './Attack'
+import {castSpell} from './CastSpell'
 
 export default function ActionController({characters, structures, tiles, selectedAction, setSelectedAction, setAction, currentCharacter, setActionFunction, inCombat, isYourTurn}){
 
@@ -24,11 +25,22 @@ export default function ActionController({characters, structures, tiles, selecte
                     return attack({
                         characters: characters,
                         structures: structures,
-                         tiles: tiles,
-                         currentCharacter:currentCharacter,
-                         setAction: setAction,
-                         option: selectedAction.option,
-                         inCombat: inCombat
+                        tiles: tiles,
+                        currentCharacter:currentCharacter,
+                        setAction: setAction,
+                        option: selectedAction.option,
+                        inCombat: inCombat
+                    })
+                    break
+                case 'castSpell':
+                    return castSpell({
+                        characters: characters,
+                        structures: structures,
+                        tiles: tiles,
+                        currentCharacter:currentCharacter,
+                        setAction: setAction,
+                        option: selectedAction.option,
+                        inCombat: inCombat
                     })
                     break
                 case 'spawn':

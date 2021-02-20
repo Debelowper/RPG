@@ -26,7 +26,7 @@ export default function MapCreator(){
     const [load, setLoad] = useState(null)
 
     const setTile = (getter, setter, hex) => {
-        let tilesToChange = getter(hex.hex, brushSize)
+        let tilesToChange = getter({target:hex.hex, size:brushSize})
         let list = {}
         tilesToChange.forEach((el)=>{
             let tile = el.ref.current.props
@@ -61,7 +61,6 @@ export default function MapCreator(){
             content={
                 <MapController
                     selectedPattern={selectedPattern}
-                    brushSize={brushSize}
                     load={load}
                     unsetLoad = {() => setLoad(null)}
                     size={currentSize}

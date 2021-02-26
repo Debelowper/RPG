@@ -15,14 +15,20 @@ export default function TurnController ({setTurn, turn, isYourTurn, setIsYourTur
     const rollInitiative = () => {
             let actions = [{type:'character', action:{}} ]
             Object.values(characters).forEach((char)=>{
-                let initiative = char.baseStats.initiativeBonus + roll(20 )
-                actions[0].action[char.name] = {...char, initiative:initiative, baseInitiative:initiative,  myTurn:false, speed:100 }
+                let initiative = char.base.initiativeBonus + roll(20 )
+                let newChar = char
+                newChar.losses.speed = 0
+                newChar.initiative = initiative
+                newChar.baseInitiative = initiative
+                newChar.myTurn = false
+
+                actions[0].action[char.name] = newChar
             })
             return actions
     }
 
     const passTurn = () => {
-        let actions
+        let actions = []
         if(turn == 0){
             setTurn(turn + 1)
             actions = rollInitiative()
@@ -31,23 +37,30 @@ export default function TurnController ({setTurn, turn, isYourTurn, setIsYourTur
                 setTurn(turn + 1)
                 actions = [{type:'character', action:{}} ]
                 Object.values(characters).forEach((char)=>{
-                    actions[0].action[char.name] = {...char, initiative:char.baseInitiative, resources:{...char.resources, speed:100} }
+                    let newChar = char
+                    let updates = newChar.passTurn()
+                    newChar.effects = updates.effects
+                    newChar.losses = updates.losses
+                    newChar.initiative = updates.initiative
+
+                    actions[0].action[char.name] = newChar
+
                 })
             }
         }
         setAction(actions)
     }
 
-    // const applyTimeout(char){
-    //     let actions = [{type:'character', action:{}} ]
-    //     actions[0].action[char.name] = {...char, initiative:char.baseInitiative, speed:100 }
-    // }
-
     const endCombat = () => {
         setTurn(0)
         let actions = [{type:'character', action:{}} ]
         Object.values(characters).forEach((char)=>{
-            actions[0].action[char.name] = {...char, initiative:-1, baseInitiative:-1, myTurn:false, resources:{...char.resources, speed:100} }
+            let updatedChar = char
+            updatedChar.initiative = -1
+            updatedChar.baseInitiative = -1
+            updatedChar.myTurn = false
+            updatedChar.losses = {...updatedChar.losses, speed:0}
+            actions[0].action[char.name] = updatedChar
         })
         setAction(actions)
     }
@@ -73,8 +86,10 @@ export default function TurnController ({setTurn, turn, isYourTurn, setIsYourTur
     const endTurn = () => {
         if(isYourTurn){
             setIsYourTurn(false)
-            let updatedChar = {...characters[currentCharacter], initiative:0, myTurn:false, }
-            let action = [{type: 'character', action:{ [currentCharacter]: updatedChar} }]
+            let char = characters[currentCharacter]
+            char.initiative = 0
+            char.myTurn = false
+            let action = [{type: 'character', action:{ [currentCharacter]: char} }]
             setAction(action)
         }
     }
@@ -82,8 +97,9 @@ export default function TurnController ({setTurn, turn, isYourTurn, setIsYourTur
     const startTurn = () => {
         if(canYouStartTurn()){
             setIsYourTurn(true)
-            let updatedChar = {...characters[currentCharacter], myTurn:true, }
-            let action = [{type: 'character', action:{ [currentCharacter]: updatedChar} }]
+            let char = characters[currentCharacter]
+            char.myTurn = true
+            let action = [{type: 'character', action:{ [currentCharacter]: char} }]
             setAction(action)
         }else{
             console.log('it s not your turn')

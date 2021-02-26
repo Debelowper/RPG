@@ -13,6 +13,7 @@ import ActionController from './Actions/ActionController'
 import {HexUtils} from 'react-hexgrid';
 import TurnController from './TurnController'
 import CharacterMenu from './CharacterMenu'
+import Character from './Character'
 
 export default function Game () {
 
@@ -46,7 +47,12 @@ export default function Game () {
     }, [JSON.stringify(action)])
 
     const characterReducer = (action) => {
-        setCharacterList({...characterList, ...action })
+        let newList = {}
+        Object.entries(action).forEach(char=>{
+            let data = char[1].calculate()
+            newList[char[0]] = new Character(data)
+        })
+        setCharacterList({...characterList, ...newList })
     }
 
     const loadIntoMap = async (data) => {

@@ -1,18 +1,22 @@
-export function spawn({characters, spawnedChars, currentCharacter, setAction}){
+import Character, {getChar} from './../Character'
+
+export function spawn({characters, currentCharacter, setAction}){
 
     const spawnCharacter = (getter, setter, hex) => {
-        if(!isSpawned(spawnedChars, currentCharacter)){
-            let char = characters.find((el) => el.name == currentCharacter)
+        if(!isSpawned(characters, currentCharacter)){
+            // let char = characters.find(el => el.name == currentCharacter)
             let tilesToChange = getter({target:hex.hex})
-            setAction( [{type:'character', action:{
-                [char.name]: {
-                    ...char,
-                    baseStats:char,
-                    currentHex:hex.hex,
-                    initiative:-1,
-                    myTurn:false,
-                }
-            }  }] )
+
+            let data = {}
+            data.base = getChar(currentCharacter)
+            data.name = data.base.name
+            data.currentHex = hex.hex
+            data.initiative = -1
+            data.myTurn = false
+
+            let char = new Character(data)
+
+            setAction( [{type:'character', action:{[char.name]: char}  }] )
             setter(tilesToChange, char.name, 'character')
         }else{
             console.log('you have already been spawned')

@@ -16,7 +16,6 @@ export default function CharacterMenu({currentCharacter, setCurrentCharacter, se
         setChars(charIDs.map(el => new Character(el)) )
     }, [])
 
-    console.log(chars)
 
     return(
         <div  className="sub-menu menu-h w-full" >

@@ -14,19 +14,24 @@ export function isNeighbour (hex, currentHex) {
 }
 
 export function isOccupied  (hex, characters)  {
-    if(getTargetChar(hex, characters) != null){
+    if(getTargetChars([hex], characters) != null){
         console.log('it is occupied')
         return true
     }
     return false
 }
 
-export function getTargetChar(hex, characters){
-    return(
-        Object.values(characters).find((el)=>{
+export function getTargetChars(hexes, characters){
+    let targets = {}
+    hexes.forEach(hex =>{
+        let targ = Object.values(characters).find((el)=>{
             return HexUtils.getID(el.currentHex) == HexUtils.getID(hex)
         })
-    )
+        if(targ)(
+            targets[targ.name] = targ
+        )
+    })
+    return Object.keys(targets) == 0 ? null : targets
 }
 
 export function roll (max, min = 1) {
@@ -38,6 +43,7 @@ export function isInRange(hex, character, range){
 }
 
 export function hasResources(char, action){
+    // console.log(action)
     return(
         action.cost.reduce((el)=>{
             return !(char.resources[el.resource] >= el.cost)
@@ -50,13 +56,7 @@ export function spendResources(char, action){
     action.cost.forEach((el)=>{
         resources[el.resource] =  char.resources[el.resource] - el.cost
     })
-    return ({ ...char, resources: {...char.resources , ...resources }})
-}
-
-export function setRange(selectedAttack){
-    let range = 1
-    if(selectedAttack.types.find(el => el == 'ranged')){
-        range = selectedAttack.range
-    }
-    return range
+    let updatedChar = char
+    updatedChar.resources = {...char.resources, ...resources}
+    return updatedChar
 }

@@ -4,30 +4,22 @@ import ReactDOM from 'react-dom'
 export default function ActionMenu ({setSelectedAction, selectedAction, actionList}){
 
     const [options, setOptions] = useState(false)
-    const [actions, setActions] = useState({
-        'move':{current:'walk', options: ['walk', 'fly', 'swim', 'climb']},
-        'attack':{current:'attack'},
-        'castSpell':{current:'castSpell'},
-        'dash':{current: 'dash'},
-        'useAbility':{current: 'useAbility'},
-        'grapple':{current: 'grapple'},
-        'shove':{current: 'shove'},
-        'dodge':{current: 'dodge'},
-        'disengage':{current: 'disengage'},
-        'useSkill':{current: 'useSkill'},
-        'search':{current: 'search'},
-        'useShield':{current: 'useShield'},
-        'help':{current: 'help'},
-        'ready':{current: 'ready'},
-    })
+    const [actions, setActions] = useState({})
 
     useEffect(()=>{
         let newActions = {}
         Object.entries(actionList).forEach(el =>{
-            newActions[el[0]] = {'current':Object.keys(el[1].default)[0], options: Object.keys(el[1].options) }
+            let current = ''
+            switch(el[0]){
+                case 'move': current = 'walk'; break
+                case 'mainHand': current = 'punch'; break
+            }
+
+            newActions[el[0]] = {'current':current, options: el[1] }
         })
+        setOptions(false)
         setActions(newActions)
-        setSelectedAction({...selectedAction, name:null})
+        setSelectedAction({ name:null})
 
     }, [JSON.stringify(actionList)])
 
@@ -36,19 +28,19 @@ export default function ActionMenu ({setSelectedAction, selectedAction, actionLi
             <div className="sub-menu h-full ">
                 <div className="grid grid-cols-12 w-full">
                     {
-                        actions[selectedAction.name].options.map((el)=>{
+                        Object.values(actions[selectedAction.name].options).map((el)=>{
                             return(
-                                <div key={el} className="col-span-3">
-                                    <button className={"btn-primary " + (selectedAction.option == el ? ' bg-black' : '')}
+                                <div key={el.name} className="col-span-3">
+                                    <button className={"btn-primary " + (Object.keys(selectedAction.option)[0] == el.name ? ' bg-black' : '')}
                                         onClick = {() => {
                                             setActions(
-                                                {...actions, [selectedAction.name]: {...actions[selectedAction.name], 'current': el }}
+                                                {...actions, [selectedAction.name]: {...actions[selectedAction.name], 'current': el.name }}
                                             )
-                                            setSelectedAction({name: selectedAction.name, option:el})
+                                            setSelectedAction({name: selectedAction.name, option: el })
                                             setOptions(false)
                                         }}
                                     >
-                                        {el}
+                                        {el.name}
                                     </button>
                                 </div>
                             )
@@ -66,8 +58,16 @@ export default function ActionMenu ({setSelectedAction, selectedAction, actionLi
                     {
                         Object.entries(actions).map((el)=>{
                             return(
-                                <div key={el[0]}  className={"col-span-3 flex flex-row btn-primary h-full" + (selectedAction.name == el[0] ? ' bg-black' : '')}
-                                    onClick = {() => setSelectedAction({name: el[0], option:el[1].current})}
+                                <div key={el[0]}  className={"col-span-3 flex flex-row btn-primary h-12" + (selectedAction.name == el[0]  ? ' bg-black' : '') }
+                                    onClick = {() =>
+                                        {
+                                            let option = el[1].options.find(act=> act.name == el[1].current)
+                                            setSelectedAction({
+                                                name: el[0],
+                                                option:option ? option : {}
+                                            })
+                                        }
+                                    }
                                 >
                                     <button className='w-5/6'>{el[1].current}</button>
                                     {
@@ -84,7 +84,6 @@ export default function ActionMenu ({setSelectedAction, selectedAction, actionLi
             </div>
         )
     }
-
 
     if(options){
         return renderOptions()

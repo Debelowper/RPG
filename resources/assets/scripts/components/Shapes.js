@@ -60,3 +60,14 @@ export function cone(start, end, angle){
 
   return Object.values(resp)
 }
+
+export function rectangle(x, y, startCorner){
+    let hexas = [];
+    for (let q = 0; q < x; q++) {
+        let offset = Math.floor(q/2); // or q>>1
+        for (let r = -offset; r < y - offset; r++) {
+            hexas.push(new Hex(q+ startCorner.q, r+ startCorner.r, -q-r+ startCorner.s));
+        }
+    }
+    return hexas;
+}

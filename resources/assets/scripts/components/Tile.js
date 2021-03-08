@@ -13,6 +13,7 @@ export default class Tile extends Component {
             structure:'',
             tile:'',
             effect:'',
+            visible:true,
         }
     }
 
@@ -44,6 +45,7 @@ export default class Tile extends Component {
             nextState.structure != this.state.structure ||
             nextState.character != this.state.character ||
             nextState.effect != this.state.effect ||
+            nextState.visible != this.state.visible ||
             JSON.stringify(nextProps.gridParams) != JSON.stringify(this.props.gridParams)
         ){
             return true
@@ -62,6 +64,10 @@ export default class Tile extends Component {
         this.setState({[type]: type + '-' + pattern.toString() })
     }
 
+    setVisibility = (arg) => {
+        this.setState({visible:arg})
+    }
+
     renderHex = (fill) => {
         const {hex} = this.props
         return(
@@ -77,24 +83,32 @@ export default class Tile extends Component {
     }
 
     render(){
-        return(
-        <>
-            {this.renderHex(this.state.tile)}
+        if(this.state.visible == true){
+            return(
+                <>
+                    {this.renderHex(this.state.tile)}
 
-            {this.state.structure ?
-                this.renderHex(this.state.structure)
-            : ''}
+                    {this.state.structure ?
+                        this.renderHex(this.state.structure)
+                    : ''}
 
-            {this.state.character ?
-                this.renderHex(this.state.character)
-            : ''}
+                    {this.state.character ?
+                        this.renderHex(this.state.character)
+                    : ''}
 
-            {this.state.effect ?
-                this.renderHex(this.state.effect)
-            : ''}
+                    {this.state.effect ?
+                        this.renderHex(this.state.effect)
+                    : ''}
 
-        </>
-        )
+                </>
+            )
+        }else{
+            return(
+                <>
+                    {this.renderHex(null)}
+                </>
+            )
+        }
     }
 }
 

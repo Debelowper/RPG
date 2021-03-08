@@ -1,5 +1,5 @@
 import {Action, Ability, Move} from './Actions/Action'
-import {Attack, Damage, Ranged, Melee, ApplyEffect, DC, Area} from './Actions/Abilities/Tags'
+import {Attack, Damage, Ranged, Melee, ApplyEffect, DC, Area, Self} from './Actions/Abilities/Tags'
 import {Effect, DoT, Buff} from './Actions/Abilities/Effects'
 
 export default class Character{
@@ -264,7 +264,8 @@ const unholyRage = new Ability({
                     new Buff({buffType: 'bonus', buffTarget: 'hp', value:20}),
                 ],
             })
-        })
+        }),
+        new Self()
     ]
 })
 

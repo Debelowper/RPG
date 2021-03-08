@@ -23,7 +23,7 @@ export function isOccupied  (hex, characters)  {
 
 export function getTargetChars(hexes, characters){
     let targets = {}
-    hexes.forEach(hex =>{
+    Object.values(hexes).forEach(hex =>{
         let targ = Object.values(characters).find((el)=>{
             return HexUtils.getID(el.currentHex) == HexUtils.getID(hex)
         })

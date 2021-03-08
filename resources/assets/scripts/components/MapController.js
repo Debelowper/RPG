@@ -2,9 +2,9 @@ import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
 import {HexUtils, Hex, GridGenerator} from 'react-hexgrid';
 import {Map} from './Map'
-import {circle, line, cone, ring} from './Shapes'
+import {circle, line, cone, ring, rectangle} from './Shapes'
 
-export default function MapController({ selectedPattern, size, setTile, load, unsetLoad}){
+export default function MapController({ visibleTiles={}, selectedPattern, size, setTile, load, unsetLoad}){
 
     const [hexList, setHexList] = useState({})
     const maxSize = React.useRef({x:80,y:80,size:10})
@@ -34,6 +34,11 @@ export default function MapController({ selectedPattern, size, setTile, load, un
         }
     }, [load])
 
+    useEffect(()=>{
+        setTileVisibilities()
+    }, [JSON.stringify(visibleTiles)])
+
+
     const onHexClick = React.useCallback ((hex) => {
         setTile(getTilesToChange, changeChildPattern, hex)
     },[getTilesToChange, changeChildPattern, hexList, selectedPattern, setTile])
@@ -47,7 +52,7 @@ export default function MapController({ selectedPattern, size, setTile, load, un
                 tilesList = circle(target, size-1)
                 break
             case 'ring':
-                tilesList = circle(target, size-1)
+                tilesList = ring(target, size-1)
                 break
             case 'line':
                 tilesList = line(start, target)
@@ -73,11 +78,24 @@ export default function MapController({ selectedPattern, size, setTile, load, un
         })
     },[selectedPattern])
 
+    const setTileVisibilities = () => {
+        if(Object.keys(visibleTiles).length > 0){
+            Object.entries(hexList).forEach(arr=>{
+                if(visibleTiles[arr[0]]){
+                    arr[1].ref.current.setVisibility(true)
+                }else{
+                    arr[1].ref.current.setVisibility(false)
+                }
+            })
+        }
+    }
+
+
     return (
         <Map
-            hexList = {hexList}
+            hexList= {hexList}
             onHexClick = {onHexClick}
-            size = {size}
+            size={size}
         />
     )
 }

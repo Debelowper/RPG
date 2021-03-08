@@ -44,12 +44,7 @@ export function line(start, end){
 }
 
 export function cone(start, end, angle){
-  let distance = HexUtils.distance(start, end)
-  let outerRing = ring(start, distance)
-  let arc = 2*Math.PI*distance*angle/360
-  let outerHexes = outerRing.filter((el)=>{
-      return HexUtils.distance(end, el) < arc/2
-  })
+  let outerHexes = arc(start, end, angle)
   let resp = {}
   outerHexes.forEach(el => {
       line(start, el).forEach( i =>{
@@ -70,4 +65,14 @@ export function rectangle(x, y, startCorner){
         }
     }
     return hexas;
+}
+
+export function arc(start, end, angle){
+    let distance = HexUtils.distance(start, end)
+    let outerRing = ring(start, distance)
+    let perimeter = 2*Math.PI*distance*angle/360
+    let outerHexes = outerRing.filter((el)=>{
+        return HexUtils.distance(end, el) < perimeter/2
+    })
+    return outerHexes
 }

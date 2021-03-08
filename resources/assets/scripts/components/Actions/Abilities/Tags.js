@@ -48,20 +48,15 @@ export class Melee{
 }
 
 export class Area{
-    constructor({ shape, radius=1}){
+    constructor({ shape, radius=1, angle=1}){
         this.radius = radius
         this.shape = shape
+        this.angle = angle
     }
 
-    doAction({start, end}){
-        let response = []
-        switch(this.shape){
-            case 'ring': response = ring(end, this.radius); break
-            case 'circle': response = circle(end, this.radius); break
-            case 'line': response = line(start, end); break
-            case 'cone': response = cone(start, end); break
-        }
-        return response
+    doAction({source, target, rangeUtils, self=true}){
+
+        return rangeUtils.getAreaTargets({target:target, shape:this.shape, source:source, radius:this.radius, angle:this.angle, self:self})
     }
 }
 

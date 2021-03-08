@@ -10,10 +10,12 @@ import BrushSizeMenu from './BrushSizeMenu'
 import MapController from './MapController'
 import CharacterPanel from './CharacterPanel'
 import ActionController from './Actions/ActionController'
-import {HexUtils} from 'react-hexgrid';
+import {Hex, HexUtils} from 'react-hexgrid';
 import TurnController from './TurnController'
 import CharacterMenu from './CharacterMenu'
 import Character from './Character'
+import {ring, line} from './Shapes'
+import RangeUtils from './RangeUtils'
 
 export default function Game () {
 
@@ -27,8 +29,8 @@ export default function Game () {
     const tiles = useRef({})
     const structures = useRef({})
 
-    const [tileList, setTilesList] = useState([])
-    const [structureList, setStructuresList] = useState([])
+    const [tileList, setTileList] = useState([])
+    const [structureList, setStructureList] = useState([watchtower])
     const [characterList, setCharacterList] = useState([])
 
     const [turn, setTurn] = useState(0)
@@ -36,6 +38,8 @@ export default function Game () {
     const [isYourTurn, setIsYourTurn] = useState(false)
     const [actionFunction, setActionFunction] = useState()
     const [action, setAction] = useState([])
+
+    const rangeUtils = new RangeUtils(tileList, structureList, characterList, tiles, structures)
 
     useEffect(()=>{
         if(action.length != 0){
@@ -65,7 +69,7 @@ export default function Game () {
         structures.current = map.structure
         tiles.current = map.tile
 
-        setTilesList((await loadTilesList(map.tile)).data)
+        setTileList((await loadTilesList(map.tile)).data)
         setLoad(data)
     }
 
@@ -85,6 +89,9 @@ export default function Game () {
             backgroundURL='/forest.jpg'
             content={
                 <MapController
+                    visibleTiles={rangeUtils.getLOSTiles(
+                        characterList[currentCharacter] ? characterList[currentCharacter].currentHex : null, 6
+                    )}
                     size={size}
                     setTile={actionFunction}
                     selectedPattern={currentCharacter}
@@ -92,6 +99,7 @@ export default function Game () {
                     unsetLoad = {() => setLoad(null)}
                 />
             }
+
 
             rightMenu = {
                 <div className="menu-v">
@@ -138,6 +146,7 @@ export default function Game () {
                     selectedAction={selectedAction}
                     characters={characterList}
                     structures={structureList}
+                    rangeUtils={rangeUtils}
                     tiles={tileList}
                     currentCharacter={currentCharacter}
                     setActionFunction={setActionFunction}
@@ -148,4 +157,17 @@ export default function Game () {
             }
         />
     )
+}
+
+const watchtower = {
+    name:'watchtower',
+    id:'watchtower',
+    image_id:'watchtower',
+    destructible:true,
+    climbable:true,
+    climb_speed:1,
+    cover:'full',
+    blocks_sight:true,
+    enterable:false,
+
 }

@@ -3,7 +3,7 @@ import ActionMenu from './ActionMenu'
 import {move} from './Move'
 import {ability} from './Ability'
 
-export default function ActionController({characters, structures, tiles, selectedAction, setSelectedAction, setAction, currentCharacter, setActionFunction, inCombat, isYourTurn}){
+export default function ActionController({characters, structures, tiles, selectedAction, rangeUtils, setSelectedAction, setAction, currentCharacter, setActionFunction, inCombat, isYourTurn}){
 
     const buildAction = () => {
         if(isYourTurn || !inCombat){
@@ -26,6 +26,7 @@ export default function ActionController({characters, structures, tiles, selecte
                         characters: characters,
                         structures: structures,
                         tiles: tiles,
+                        rangeUtils:rangeUtils,
                         currentCharacter:currentCharacter,
                         setAction: setAction,
                         selectedAction: selectedAction,

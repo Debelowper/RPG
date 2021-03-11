@@ -25,6 +25,7 @@ export function getTargetChars(hexes, characters){
     let targets = {}
     Object.values(hexes).forEach(hex =>{
         let targ = Object.values(characters).find((el)=>{
+            // console.log(el.currentHex, hex)
             return HexUtils.getID(el.currentHex) == HexUtils.getID(hex)
         })
         if(targ)(

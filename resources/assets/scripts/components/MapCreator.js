@@ -69,7 +69,7 @@ export default function MapCreator(){
             }
 
             rightTopSpace = {
-                <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)}  />
+                <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)} edit={true}  />
             }
 
             rightBottomSpace={

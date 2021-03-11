@@ -1,6 +1,7 @@
 import {Action, Ability, Move} from './Actions/Action'
 import {Attack, Damage, Ranged, Melee, ApplyEffect, DC, Area, Self} from './Actions/Abilities/Tags'
 import {Effect, DoT, Buff} from './Actions/Abilities/Effects'
+import {Weapon, Armor, Trinket} from './Inventory/Equipment'
 
 export default class Character{
     constructor(data){
@@ -283,6 +284,13 @@ let climb = new Move({
 })
 let move = [walk, fly, swim, climb]
 
+const sword = new Weapon({
+    name:'sword',
+    types:['sharp'],
+    weight:5,
+    damage:15,
+})
+
 const characters = {
     elfSorcerer: {
         name:'elfSorcerer',
@@ -308,6 +316,8 @@ const characters = {
         resources:{hp:80,actions:10, speed:100 },
         defenses:{piercing:8, slashing:2, blunt:4, fire:-2, ice:5, radiant:-4, dark:4, thunder:0},
         defensesPercentage:{piercing:0, slashing:0, blunt:0, fire:0, ice:0, radiant:0, dark:0, thunder:0},
+        equipments:[sword],
+        inventory:[],
         dodge:0,
         move:move,
         mainHand:fists,

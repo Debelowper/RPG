@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {roll} from './Actions/ActionUtils'
 import TurnMenu from './TurnMenu'
+import { ShortcutConsumer } from 'react-keybind'
 
 export default function TurnController ({setTurn, turn, isYourTurn, setIsYourTurn, characters, currentCharacter, setAction}){
 
@@ -108,17 +109,21 @@ export default function TurnController ({setTurn, turn, isYourTurn, setIsYourTur
 
     return (
         <>
-            <TurnMenu
-                turn={turn}
-                isYourTurn={isYourTurn}
-                setAction={setAction}
-                endTurn={endTurn}
-                startTurn={startTurn}
-                canYouStartTurn={canYouStartTurn}
-                isInCombat={isInCombat}
-                passTurn={passTurn}
-                endCombat={endCombat}
-            />
+            <ShortcutConsumer>
+                {()=>(
+                    <TurnMenu
+                        turn={turn}
+                        isYourTurn={isYourTurn}
+                        setAction={setAction}
+                        endTurn={endTurn}
+                        startTurn={startTurn}
+                        canYouStartTurn={canYouStartTurn}
+                        isInCombat={isInCombat}
+                        passTurn={passTurn}
+                        endCombat={endCombat}
+                    />
+                )}
+            </ShortcutConsumer>
         </>
     )
 

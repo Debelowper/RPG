@@ -8,8 +8,6 @@ import ClassCreator from './components/ClassCreator'
 import Game from './components/Game'
 import StructureCreator from './components/StructureCreator'
 
-
-
 if(document.getElementById('adventure') ){
     let adventure = document.getElementById('adventure');
     ReactDOM.render(<Game {...(adventure.dataset)} />, document.getElementById('adventure'))

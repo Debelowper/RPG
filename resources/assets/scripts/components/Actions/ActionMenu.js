@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import ReactDOM from 'react-dom'
+import { withShortcut } from 'react-keybind'
 
-export default function ActionMenu ({setSelectedAction, selectedAction, actionList}){
+function ActionMenuMain ({setSelectedAction, selectedAction, actionList, shortcut}){
 
     const [options, setOptions] = useState(false)
     const [actions, setActions] = useState({})
@@ -22,6 +23,54 @@ export default function ActionMenu ({setSelectedAction, selectedAction, actionLi
         setSelectedAction({ name:null})
 
     }, [JSON.stringify(actionList)])
+
+    useEffect(()=>{
+        unsetHotkeys()
+        setHotkeys()
+        if(Object.keys(actions).length == 0){
+            unsetHotkeys()
+        }
+
+    },[JSON.stringify(actions), JSON.stringify(options), JSON.stringify(selectedAction)])
+
+    const toggleOptions = () => {
+        if(selectedAction){
+            setOptions(!options)
+        }
+    }
+
+    const setHotkeys = () => {
+        if(!options){
+            Object.values(hotkeys).forEach(el=>{
+                let opt = Object.keys(actions).length > 0 ? actions[el.name].options.find(item => item.name == actions[el.name].current) : null
+                shortcut.registerShortcut(() => setSelectedAction({
+                    name:el.name, option: opt ? opt : {}  }) ,
+                    [el.key], el.name, el.name
+                )
+            })
+        }else{
+            actions[selectedAction.name].options.forEach((el, i)=>{
+                let index = i+1
+                shortcut.registerShortcut(
+                    ()=>
+                        {setSelectedAction({name:selectedAction.name, option: el })
+                        setOptions(false)
+                        setActions({...actions, [selectedAction.name]: {...actions[selectedAction.name], 'current': el.name }})
+                    } ,
+                    [index], index, index
+                )
+            })
+        }
+        shortcut.registerShortcut( toggleOptions, ['tab'],'toggleOptions', 'toggleOptions' )
+    }
+
+    const unsetHotkeys = () => {
+        Object.values(hotkeys).forEach(el=>{
+            shortcut.unregisterShortcut([el.key])
+        })
+        shortcut.unregisterShortcut( ['tab'] )
+    }
+
 
     const renderOptions = () => {
         return (
@@ -85,9 +134,30 @@ export default function ActionMenu ({setSelectedAction, selectedAction, actionLi
         )
     }
 
+const hotkeys = {
+    movement: {key: 'q', name: 'move' },
+    mainHand:{key:'w', name:'mainHand'},
+    offHand:{key:'e', name:'offHand'},
+    ability1:{key:1, name:'ability1'},
+    ability2:{key:2, name:'ability2'},
+    ability3:{key:3, name:'ability3'},
+    ability4:{key:4, name:'ability4'},
+    ability5:{key:5, name:'ability5'},
+    ability6:{key:6, name:'ability6'},
+    ability7:{key:7, name:'ability7'},
+    ability8:{key:8, name:'ability8'},
+    // equip:{key:, name:},
+    // openInventory:{key:, name:},
+
+}
+
     if(options){
         return renderOptions()
     }else{
         return renderActionMenu()
     }
 }
+
+const ActionMenu = withShortcut(ActionMenuMain)
+
+export default ActionMenu

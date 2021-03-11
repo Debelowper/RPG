@@ -2,6 +2,7 @@ import React, {useEffect} from 'react'
 import ActionMenu from './ActionMenu'
 import {move} from './Move'
 import {ability} from './Ability'
+import { ShortcutConsumer } from 'react-keybind'
 
 export default function ActionController({characters, structures, tiles, selectedAction, rangeUtils, setSelectedAction, setAction, currentCharacter, setActionFunction, inCombat, isYourTurn}){
 
@@ -46,10 +47,14 @@ export default function ActionController({characters, structures, tiles, selecte
     }, [JSON.stringify(selectedAction), JSON.stringify(characters), JSON.stringify(structures), JSON.stringify(tiles), currentCharacter, inCombat])
 
     return(
-        <ActionMenu
-            setSelectedAction={setSelectedAction}
-            selectedAction={selectedAction}
-            actionList={characters[currentCharacter] ? characters[currentCharacter].actions : {}}
-        />
+        <ShortcutConsumer>
+            {() => (
+                <ActionMenu
+                    setSelectedAction={setSelectedAction}
+                    selectedAction={selectedAction}
+                    actionList={characters[currentCharacter] ? characters[currentCharacter].actions : {}}
+                />
+            )}
+        </ShortcutConsumer>
     )
 }

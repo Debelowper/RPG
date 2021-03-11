@@ -1,7 +1,8 @@
-import React, {Component} from 'react'
+import React, {useEffect} from 'react'
 import ReactDOM from 'react-dom'
+import {withShortcut} from 'react-keybind'
 
-export default function SizeMenu({size, setSize, setCurrentSize }){
+function SizeMenuMain({size, setSize, setCurrentSize, edit , shortcut}){
 
     const onClick = () => {
         setCurrentSize()
@@ -15,26 +16,46 @@ export default function SizeMenu({size, setSize, setCurrentSize }){
         }
     }
 
+    useEffect(()=>{
+
+        shortcut.unregisterShortcut(['+'] )
+        shortcut.unregisterShortcut(['-'] )
+        shortcut.registerShortcut( (e) => {e.preventDefault() ;setSize(size.size < 8 ? {...size, size:size.size+1 }: size)}, ['+'], 'moreZoom', 'moreZoom' )
+        shortcut.registerShortcut( (e) => {e.preventDefault() ;setSize(size.size > 1 ? {...size, size:size.size-1 } : size)}, ['-'], 'lessZoom', 'lessZoom' )
+    },[size])
+
     return(
         <>
             <div className="text-sm">
-                <div>
-                    <label >width  </label>
-                    <input placeholder={'x'} value={size.x} onChange={handleChange} className="input  w-16" type='number' ></input>
-                </div>
-                <div>
-                    <label>height </label>
-                    <input placeholder={'y'} value={size.y} onChange={handleChange} className="input w-16" type='number' ></input>
-                </div>
+                {edit ?
+                    <>
+                        <div>
+                            <label >width  </label>
+                            <input placeholder={'x'} value={size.x} onChange={handleChange} className="input  w-16" type='number' ></input>
+                        </div>
+                        <div>
+                            <label>height </label>
+                            <input placeholder={'y'} value={size.y} onChange={handleChange} className="input w-16" type='number' ></input>
+                        </div>
+                    </>
+                :
+                    ''
+                }
                 <div>
                     <label>size </label>
                     <input placeholder={'size'} value={size.size} onChange={handleChange} className="input w-16" type='number' ></input>
                 </div>
             </div>
-            {/*<input placeholder={'size'} value={size.size} onChange={handleChange} className="border-4 rounded" type='number' ></input>*/}
-            <button onClick={onClick} className="btn-primary">Apply</button>
+            {
+                edit ?
+                    <button onClick={onClick} className="btn-primary">Apply</button>
+                :
+                ''
+            }
         </>
-
     )
-
 }
+
+const SizeMenu = withShortcut(SizeMenuMain)
+
+export default SizeMenu

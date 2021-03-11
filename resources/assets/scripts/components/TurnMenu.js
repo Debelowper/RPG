@@ -1,6 +1,14 @@
-import React from 'react'
+import React, {useEffect} from 'react'
+import {withShortcut} from 'react-keybind'
 
-export default function TurnMenu ({turn, isYourTurn, endTurn, startTurn, canYouStartTurn, isInCombat, passTurn, endCombat}){
+function TurnMenuMain ({turn, isYourTurn, endTurn, startTurn, canYouStartTurn, isInCombat, passTurn, endCombat, shortcut}){
+
+    useEffect(()=>{
+        isInCombat() ?
+        shortcut.registerShortcut( () => {isYourTurn ? endTurn() : startTurn()}, ['x'], 'passTurn', 'passTurn' ) :
+        shortcut.unregisterShortcut(['x'] )
+
+    }, [isInCombat])
 
     const renderTurnMenu = () => {
         return(
@@ -36,5 +44,8 @@ export default function TurnMenu ({turn, isYourTurn, endTurn, startTurn, canYouS
             {renderTurnMenu()}
         </>
     )
-
 }
+
+const TurnMenu = withShortcut(TurnMenuMain)
+
+export default TurnMenu

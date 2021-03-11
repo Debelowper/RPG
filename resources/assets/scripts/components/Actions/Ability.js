@@ -12,12 +12,10 @@ export function ability ({characters, tiles, structures, rangeUtils, setAction, 
 
         let char = characters[currentCharacter]
         let selectedAbility = selectedAction.option
-
         if(hasResources(char, selectedAbility)){
 
             let targetHexes = getTargets(selectedAbility, char, hex)
             if(targetHexes){
-
                 let targets = getTargetChars(targetHexes, characters)
 
                 let updatedChar = spendResources(char, selectedAbility)
@@ -76,7 +74,7 @@ export function ability ({characters, tiles, structures, rangeUtils, setAction, 
         const target = rangeUtils.getRangedTarget({target:hex.hex, source: char.currentHex, range:range})
 
         if(target){
-            let hexes = target
+            let hexes = [target]
 
             let self = selectedAbility.tags.find(el=> el.constructor.name == 'Self')
             if(self){

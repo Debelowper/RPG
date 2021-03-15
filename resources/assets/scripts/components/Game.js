@@ -103,11 +103,14 @@ export default function Game () {
                 }
 
                 rightTopSpace = {
-                    <ShortcutConsumer>
-                        {()=>(
-                            <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)} edit={false}  />
-                        )}
-                    </ShortcutConsumer>
+                    <div className='hidden'>
+
+                        <ShortcutConsumer>
+                            {()=>(
+                                <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)} edit={false}  />
+                            )}
+                        </ShortcutConsumer>
+                    </div>
                 }
 
 

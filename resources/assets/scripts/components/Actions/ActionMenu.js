@@ -12,8 +12,9 @@ function ActionMenuMain ({setSelectedAction, selectedAction, actionList, shortcu
         Object.entries(actionList).forEach(el =>{
             let current = ''
             switch(el[0]){
-                case 'move': current = 'walk'; break
-                case 'mainHand': current = 'punch'; break
+                case 'move': current = actions[el[0]] ? actions[el[0]].current : 'walk'; break
+                case 'mainHand': current = actions[el[0]] ?  actions[el[0]].current : 'punch'; break
+                default: current = actions[el[0]] ?  actions[el[0]].current : '' ; break
             }
 
             newActions[el[0]] = {'current':current, options: el[1] }

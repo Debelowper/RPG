@@ -6,10 +6,11 @@ export class Action {
 }
 
 export class Ability extends Action{
-    constructor({tags = [], name, cost}){
-        super({name, type: 'ability'})
+    constructor({tags = [], name, cost, type='ability', requirement=null}){
+        super({name, type})
         this.tags = tags
         this.cost = cost
+        this.requirement = requirement
     }
 }
 

@@ -20,7 +20,7 @@ export class Damage{
         this.type = type
         this.damage = damage
         this.bypassDef = bypassDef
-        this.defTypes = ['none', 'both', 'def', 'percent']
+        this.bypassDefTypes = ['none', 'both', 'def', 'percent']
     }
 
     doAction(target){
@@ -29,7 +29,7 @@ export class Damage{
 }
 
 export class Ranged{
-    constructor({range, blockable}){
+    constructor({range, blockable=true}){
         this.range = range
         this.blockable = blockable
     }

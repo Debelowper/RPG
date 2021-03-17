@@ -129,7 +129,6 @@ function ActionMenuMain ({setSelectedAction, selectedAction, actionList, shortcu
                             )
                         })
                     }
-
                 </div>
             </div>
         )

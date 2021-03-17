@@ -10,13 +10,14 @@ export class Attack{
         this.damage = damage
         this.effects = effects
     }
+
     doAction(targetChar){
         return attack(targetChar, this.bonus, this.damage, this.effects)
     }
 }
 
 export class Damage{
-    constructor({type, damage, bypassDef}){
+    constructor({type, damage, bypassDef='none'}){
         this.type = type
         this.damage = damage
         this.bypassDef = bypassDef
@@ -97,6 +98,12 @@ export class Summon{
     }
     doAction(target){
         this.effect.putEffect(target)
+    }
+}
+
+export class Terrain{
+    constructor({terrain}){
+        this.terrain = terrain
     }
 }
 

@@ -16,7 +16,6 @@ export class Trinket extends Equipment{
     constructor({name, actions, weight, buffs, craft, cost, durability}){
         super({ name:name, actions:actions, weight:weight, buffs:buffs, craft:craft, cost:cost, durability:durability})
         this.equipCost = {resource:'actions', cost:1}
-
     }
 }
 

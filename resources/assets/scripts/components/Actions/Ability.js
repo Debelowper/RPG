@@ -53,8 +53,6 @@ export function ability ({characters, tiles, structures, rangeUtils, setAction, 
                     })
                 }
 
-
-
                 setAction( [ {type:'character', action:{ [updatedChar.name]: updatedChar, ...targets } } ] )
 
             }

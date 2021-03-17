@@ -49,11 +49,13 @@ export class DoT {
 }
 
 export class Buff {
-    constructor({buffType, buffTarget, value}){
+    constructor({buffType, buffTarget, value, weaponTypes=[], damageTypes=[]}){
         this.buffType = buffType
         this.buffTarget = buffTarget
+        this.weaponTypes = weaponTypes
+        this.damageTypes = damageTypes
         this.value = value
-        this.buffTypes = ['stat', 'bonus']
+        this.buffTypes = ['stat', 'actionBonus', 'resourceBonus']
     }
     doEffect(){
         return

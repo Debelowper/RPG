@@ -6,14 +6,15 @@ export class Action {
 }
 
 export class Ability extends Action{
-    constructor({tags = [], name, cost, type='ability', requirement=null}){
+    constructor({tags = [], name, cost, type='ability', requirement=null, damageBonus=0, attackBonus=0}){
         super({name, type})
         this.tags = tags
         this.cost = cost
         this.requirement = requirement
+        this.damageBonus = damageBonus
+        this.attackBonus = attackBonus
     }
 }
-
 
 export class Move extends Action{
     constructor({ value, name}){

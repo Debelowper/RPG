@@ -1,5 +1,5 @@
 import {Action, Ability, Move} from './Actions/Action'
-import {Attack, Damage, Ranged, Melee, ApplyEffect, DC, Area, Self} from './Actions/Abilities/Tags'
+import {Attack, Damage, Range, DC, Area, Self} from './Actions/Abilities/Tags'
 import {Effect, DoT, Buff} from './Actions/Abilities/Effects'
 import {Weapon, Armor, Trinket} from './Inventory/Equipment'
 
@@ -51,10 +51,10 @@ export default class Character{
 
         let abilityOptions = [...this.base.abilities]
         // console.log(this.base.abilities)
-        abilityOptions = abilityOptions.map(el => this.addBonusToAbilities(el, bonuses.actionBonuses))
+        abilityOptions = abilityOptions.map(el => el.addBonusToAbility(bonuses.actionBonuses))
         actions.move = this.base.move
-        actions.mainHand = this.makeWeaponAbilities(this.base.equipmentSlots.find(el => el.name == 'mainHand').item).map(el=> this.addBonusToAbilities(el, bonuses.actionBonuses))
-        actions.offHand = this.makeWeaponAbilities(this.base.equipmentSlots.find(el => el.name == 'offHand').item).map(el=> this.addBonusToAbilities(el, bonuses.actionBonuses))
+        actions.mainHand = this.makeWeaponAbilities(this.base.equipmentSlots.find(el => el.name == 'mainHand').item).map(el=> el.addBonusToAbility(bonuses.actionBonuses))
+        actions.offHand = this.makeWeaponAbilities(this.base.equipmentSlots.find(el => el.name == 'offHand').item).map(el=> el.addBonusToAbility(bonuses.actionBonuses))
         actions.ability1=abilityOptions
         actions.ability2=abilityOptions
         actions.ability3=abilityOptions
@@ -69,96 +69,6 @@ export default class Character{
         return actions
     }
 
-    addBonusToAbilities(ability, bonuses){
-        // console.log(ability)
-
-        const addBonusDamage = (damage, bonuses, weaponType=null) =>{
-            let dmg = Object.assign({}, damage)
-            bonuses.forEach(el=>{
-                if(el.damageTypes.find(dmgType => dmgType == dmg.type) &&
-                    (weaponType == null || el.weaponTypes.find(weapType => weapType == weaponType) )
-                ){
-                    dmg.damage = dmg.damage + el.bonus
-                }
-            })
-            return new Damage(dmg)
-        }
-
-        const addBonusAttackToAbility = (newAbility, bonuses, weaponType=null) =>{
-            let ability = Object.assign({}, newAbility)
-            ability.tags = ability.tags.map(el => {
-                if(el.constructor.name == 'Attack'){
-                    let newBonus = bonuses.attack.reduce((acc, item) => {
-                        if(weaponType == null || item.weaponTypes.find(weapType => weapType == weaponType )){
-                            return acc + item.bonus
-                        }
-                        return acc
-                    }, el.bonus)
-                    return new Attack({...el, bonus:newBonus})
-                }
-                return el
-            })
-            return new Ability(ability)
-        }
-        const addBonusDCToAbility = (newAbility, bonuses, weaponType=null) =>{
-            let ability = Object.assign({}, newAbility)
-            ability.tags = ability.tags.map(el => {
-                if(el.constructor.name == 'DC'){
-                    let newValue = bonuses.DC.reduce((acc, item) => {
-                        if(weaponType == null || item.weaponTypes.find(weapType => weapType == weaponType )){
-                            return acc + item.bonus
-                        }
-                        return acc
-                    }, el.value)
-                    return new DC({...el, value:newValue})
-                }
-                return el
-            })
-            return new Ability(ability)
-        }
-
-        const addBonusDamageToAbility = (newAbility, bonuses) => {
-            let ability = Object.assign({}, newAbility)
-
-            ability.tags = ability.tags.map(el => {
-                if(el.constructor.name == 'Damage'){
-                    return addBonusDamage(el, bonuses.damage)
-                }
-                return el
-            })
-
-            ability.tags = ability.tags.map(el => {
-                if(el.constructor.name == 'DC'){
-                    let newDmg = el.damage.map(dmg => addBonusDamage(dmg, bonuses.damage) )
-                    return new DC({...el, damage:newDmg})
-                }
-                return el
-            })
-
-            ability.tags = ability.tags.map(el => {
-                if(el.constructor.name == 'Attack'){
-                    let newDmg = el.damage.map(dmg => addBonusDamage(dmg, bonuses.damage) )
-                    return new Attack({...el, damage:newDmg})
-                }
-                return el
-            })
-            console.log(ability)
-
-            return new Ability(ability)
-        }
-
-        let newAbility = Object.assign({}, ability)
-
-        newAbility = addBonusDamageToAbility(newAbility, bonuses)
-
-        newAbility = addBonusAttackToAbility(newAbility, bonuses)
-
-
-        newAbility = addBonusDCToAbility(newAbility, bonuses)
-
-        return new Ability(newAbility)
-    }
-
     makeWeaponAbilities (weapon){
 
         const addAbilityBonusToWeaponDamage = (ability, weapon) => {
@@ -171,12 +81,12 @@ export default class Character{
 
         const calcAbilityRange = (ability, weapon) => {
             let rangeTag
-            if(!ability.tags.find(el => el.constructor.name == 'Ranged' ||  el.constructor.name == 'Melee')){
+            if(!ability.tags.find(el => el.constructor.name == 'Range')){
                 if(weapon.types.find(el => el =='melee')){
-                    rangeTag = new Melee({range:weapon.range})
+                    rangeTag = new Range({range:weapon.range, type:'melee'})
                 }
                 if(weapon.types.find(el => el =='ranged')){
-                    rangeTag = new Ranged({range:weapon.range})
+                    rangeTag = new Range({range:weapon.range, type:'ranged'})
                 }
             }
             return rangeTag
@@ -190,28 +100,49 @@ export default class Character{
                         let newAbility = Object.assign({},item)
 
                         let newAtkBonus = weapon.bonus + item.attackBonus
-                        // + bonuses.attack.reduce((acc, el) => el + acc , 0)
 
                         let newDamage = []
 
                         newDamage.push(addAbilityBonusToWeaponDamage(item, weapon))
                         weapon.damage.extra.forEach(el => newDamage.push(el))
 
-                        let atk = new Attack({
-                            bonus: newAtkBonus,
-                            damage: newDamage,
-                        })
 
                         let rangeTag = calcAbilityRange(item, weapon)
 
+
                         newAbility.name = item.name
                         newAbility.cost = item.cost
+                        newAbility.weapon = weapon
                         newAbility.tags = [
                             ...weapon.effects,
                             ...item.tags,
-                            atk,
                         ]
+
                         rangeTag ? newAbility.tags.push(rangeTag) : null
+
+                        let tagCount = 1
+                        newAbility.tags = newAbility.tags.map((tag) =>{
+                            let newTag = new newAbility.tags[0].constructor(newAbility.tags[0])
+                            newTag['tagId'] = tagCount
+                            tagCount +=1
+                            return newTag
+                        })
+
+                        let atk = new Attack({
+                            bonus: newAtkBonus,
+                            refs: [],
+                        })
+
+                        newDamage.forEach(dmg => {
+                            atk.refs.push(tagCount)
+                            let newTag = new Damage(dmg)
+                            newTag.tagId = tagCount
+                            newAbility.tags.push(newTag)
+                            tagCount +=1
+                        })
+                        atk.tagId = tagCount
+                        newAbility.tags.push(atk)
+
                         weaponAbilities.push(new Ability(newAbility))
                     }
                 }
@@ -226,18 +157,21 @@ export default class Character{
     }
 
     calcBonuses(){
-        let bonuses = {actionBonuses:{damage:[], attack:[], DC:[], duration:[], cost:[]}, resourceBonuses:[], defenseBonuses:{dodge:[], defenses:[], defensePercentage:[]}, skillBonuses:[]}
+        let bonuses = {actionBonuses:{Damage:[], Attack:[], DC:[], Range:[], Area:[]}, resourceBonuses:[], defenseBonuses:{dodge:[], defenses:[], defensePercentage:[]}, skillBonuses:[]}
         Object.values(this.effects).forEach(el=>{
-            el.effect.forEach(buff => {
+            el.tags.forEach(buff => {
                 if(buff.constructor.name == 'Buff'){
                     if(buff.buffType == 'resourceBonus'){
-                        if(bonuses.resourceBonuses[buff.buffTarget]){
-                            bonuses.resourceBonuses[buff.buffTarget] += buff.value * el.stacks.length
+                        if(bonuses.resourceBonuses[buff.buffTag]){
+                            bonuses.resourceBonuses[buff.buffTag] += buff.value * el.stacks.length
                         }else{
-                            bonuses.resourceBonuses[buff.buffTarget] = buff.value * el.stacks.length
+                            bonuses.resourceBonuses[buff.buffTag] = buff.value * el.stacks.length
                         }
                     }else if(buff.buffType == 'actionBonus'){
-                        bonuses.actionBonuses[buff.buffTarget] = [...bonuses.actionBonuses[buff.buffTarget] , {bonus:buff.value * el.stacks.length, damageTypes:buff.damageTypes, weaponTypes:buff.weaponTypes }]
+                        bonuses.actionBonuses[buff.buffTag] = [
+                            ...bonuses.actionBonuses[buff.buffTag] ,
+                            {bonus:buff.value*el.stacks.length, buffAttr:buff.buffAttr, conditions:buff.conditions, damageTypes:buff.damageTypes, weaponTypes:buff.weaponTypes, abilityTypes:buff.abilityTypes }
+                        ]
                     }
                 }
             })
@@ -340,12 +274,7 @@ export default class Character{
 
         return resp
     }
-
 }
-
-const actionTypes = [ 'attack', 'DC', 'buff', 'illusion', 'summon', 'inventory', 'charControl', 'transform', 'ranged', 'melee', 'self', 'area', 'targeted', 'move']
-
-const effectTypes = ['dot', 'transform', 'buffstat', 'bonus' ,'control', 'summon', 'illusion', 'inventory']
 
 export function getChar(name){
     return characters[name]
@@ -355,22 +284,23 @@ export function getChar(name){
 const fists = new Ability({
     tags:[
         new Attack({
+            tagId:1,
             bonus: 0,
-            damage:[new Damage({type:'blunt', damage:5, bypassDef:'none'})],
-            effects:[new DC(
-                {
-                    value: 10,
-                    effects: [
-                        new Effect({
-                            effects:[new DoT({damage: new Damage({type:'pure', damage:2, bypassDef:'both'}), stackable: true, maxStacks:3}) ],
-                            name:'bleed', timeoutType:'turn', timeout: 3
-                        })
-                    ],
-                    damage:[],
-                }
-            )]
+            tags:[3, 5],
         }),
-        new Melee({range:1})
+        new Range({tagId:2, range:1, type:'melee'}),
+        new DC({
+            tagId:3,
+            value: 10,
+            refs:[7]
+        }),
+        new Effect({
+            refs:[6 ], id:7,
+            name:'bleed', timeoutType:'turn', timeout: 3,
+        }),
+        new DoT({tagId:6, refs:[4] , stackable: true, maxStacks:3}),
+        new Damage({tagId:4, type:'pure', damage:2, bypassDef:'both'}),
+        new Damage({tagId:5, type:'blunt', damage:5, bypassDef:'none'}),
     ],
     name:'punch',
     cost:[{resource:'actions', cost:1}]
@@ -379,6 +309,7 @@ const fists = new Ability({
 const atk = new Ability({
     tags:[],
     type:'weaponAbility',
+    abilityClass:['weapon'],
     attackBonus:0,
     damageBonus:[{type:'slashing', bonus:1}],
     requirements:['mainHand'],
@@ -389,61 +320,66 @@ const atk = new Ability({
 
 const fireball = new Ability({
     name:'fireball',
+    abilityClass:['spell', 'fire', 'ranged'],
     tags:[
         new DC({
+            tagId:1,
             value:10,
             type:'agility',
-            damage:[new Damage({
-                type:'fire',
-                damage:25,
-                bypassDef:'none'
-            })],
+            damage:[],
+            refs:[3]
+        }),
+        new Damage({
+            tagId:3,
+            type:'fire',
+            damage:25,
+            bypassDef:'none'
         }),
         new Area({
+            tagId:2,
             radius: 3,
             shape: 'circle'
         }),
-        new Ranged({
+        new Range({
+            tagId:4,
             range:6,
-            blockable:true
+            blockable:true,
+            type:'ranged',
         })
     ],
-    name:'fireball',
     cost:[{resource:'actions', cost:1}, /*{resource:'spellslot1', cost:1}*/]
 })
 
 const unholyRage = new Ability({
     name: 'unholyRage',
+    abilityClass:['ability', 'self'],
     cost:[{resource:'actions', cost:1}],
     tags:[
-        new ApplyEffect({
-            effect: new Effect({
-                name:'unholyRage', timeoutType:'turn', timeout: 3, maxStacks:2,
-                effects:[
-                    new Buff({buffType: 'actionBonus', buffTarget: 'damage', value:5, weaponTypes:['melee'], damageTypes:['slashing', 'blunt', 'piercing']}),
-                    new Buff({buffType: 'actionBonus', buffTarget: 'attack', value:5, weaponTypes:['melee'], }),
-                    new Buff({buffType: 'resourceBonus', buffTarget: 'hp', value:20}),
-                ],
-            })
+        new Effect({
+            tagId:1,
+            name:'unholyRage', timeoutType:'turn', timeout: 3, maxStacks:2,
+            refs:[3,4,5],
         }),
-        new Self()
+        new Buff({tagId:3 ,buffType: 'actionBonus', buffTag: 'Damage', buffAttr: 'damage', value:5, weaponTypes:['melee'], damageTypes:['slashing', 'blunt', 'piercing']}),
+        new Buff({tagId:4 ,buffType: 'actionBonus', buffTag: 'Attack', buffAttr:'bonus', value:5, weaponTypes:['melee'], }),
+        new Buff({tagId:5 ,buffType: 'resourceBonus', buffTag: 'hp', value:20}),
+        new Self({tagId:2})
     ]
 })
 
 const empowerFire = new Ability({
     name: 'empowerFire',
+    abilityClass:['spell', 'fire', 'self'],
     cost:[{resource:'actions', cost:1}],
     tags:[
-        new ApplyEffect({
-            effect: new Effect({
-                name:'empowerFire', timeoutType:'turn', timeout: 3, maxStacks:1,
-                effects:[
-                    new Buff({buffType: 'actionBonus', buffTarget: 'damage', value:5, damageTypes:['fire']}),
-                    new Buff({buffType: 'actionBonus', buffTarget: 'DC', value:5, }),
-                ],
-            })
+        new Effect({
+            tagId:1, name:'empowerFire', timeoutType:'turn',
+            timeout: 3, maxStacks:1,  refs:[3,4,5],
         }),
-        new Self()
+        new Buff({tagId:5 ,buffType: 'actionBonus', buffTag: 'Damage', buffAttr: 'damage', value:5, damageTypes:['fire']}),
+        new Buff({tagId:3 ,buffType: 'actionBonus', buffTag: 'DC', buffAttr: 'value', value:5}),
+        new Buff({tagId:4 ,buffType: 'actionBonus', buffTag: 'Range', buffAttr: 'range', value:1, conditions:['ranged'] }),
+        new Self({tagId:2}),
     ]
 })
 
@@ -477,7 +413,7 @@ const wand = new Weapon({
     range:5,
     bonus:4,
     weight:2,
-    damage:{primary: new Damage({type:'fire', damage:10, bypassDef:'none'}), extra:[]},
+    damage:{primary: new Damage({type:'ice', damage:10, bypassDef:'none'}), extra:[]},
     slots:['mainHand', 'offHand'],
 })
 

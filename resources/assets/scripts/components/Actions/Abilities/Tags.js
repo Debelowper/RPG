@@ -4,20 +4,28 @@ import {damage} from './Damage'
 import {attack} from './Attack'
 import {DiffClass} from './DC'
 
-export class Attack{
-    constructor({bonus, damage=[], effects=[]}){
-        this.bonus = bonus
-        this.damage = damage
-        this.effects = effects
-    }
-
-    doAction(targetChar){
-        return attack(targetChar, this.bonus, this.damage, this.effects)
+export class Tag{
+    constructor({tagId=0, refs=[]}){
+        this.tagId = tagId
+        this.refs = refs
+        this.tags = []
     }
 }
 
-export class Damage{
-    constructor({type, damage, bypassDef='none'}){
+export class Attack extends Tag{
+    constructor({bonus, refs=[], tagId}){
+        super({tagId, refs})
+        this.bonus = bonus
+    }
+
+    doAction(targetChar){
+        return attack(targetChar, this.bonus, this.tags)
+    }
+}
+
+export class Damage extends Tag{
+    constructor({type, damage, bypassDef='none', tagId, refs}){
+        super({tagId})
         this.type = type
         this.damage = damage
         this.bypassDef = bypassDef
@@ -29,8 +37,10 @@ export class Damage{
     }
 }
 
-export class Ranged{
-    constructor({range, blockable=true}){
+export class Range extends Tag{
+    constructor({range, blockable=true, type , tagId, refs}){
+        super({tagId})
+        this.type = type
         this.range = range
         this.blockable = blockable
     }
@@ -39,17 +49,9 @@ export class Ranged{
     }
 }
 
-export class Melee{
-    constructor({range}){
-        this.range = range
-    }
-    doAction(){
-        return this.range
-    }
-}
-
-export class Area{
-    constructor({ shape, radius=1, angle=1}){
+export class Area extends Tag{
+    constructor({ shape, radius=1, angle=1 , tagId, refs}){
+        super({tagId})
         this.radius = radius
         this.shape = shape
         this.angle = angle
@@ -61,39 +63,37 @@ export class Area{
     }
 }
 
-export class DC{
-    constructor({value, type, damage=[], effects=[]}){
+export class DC extends Tag{
+    constructor({value, type, damage=[], effects=[], tagId, refs}){
+        super({tagId, refs})
         this.value = value
         this.type = type
-        this.damage = damage
-        this.effects = effects
     }
 
     doAction(targetChar){
-        return DiffClass(targetChar, this.value, this.damage, this.effects)
+        return DiffClass(targetChar, this.value, this.tags)
     }
 }
 
-export class Self{
-    constructor(){
+export class Displace extends Tag{
+    constructor({tagId, refs}){
+        super({tagId, refs})
+        //TODO
+    }
+}
+
+export class Self extends Tag{
+    constructor( tagId, refs){
+        super({tagId, refs})
     }
     doAction(self, target){
         return JSON.stringify(self) == JSON.stringify(target)
     }
 }
 
-export class ApplyEffect{
-    constructor({effect}){
-        this.effect = effect
-    }
-    doAction(target){
-
-        this.effect.putEffect(target)
-    }
-}
-
-export class Summon{
-    constructor({effect}){
+export class Summon extends Tag{
+    constructor({effect, tagId, refs}){
+        super({tagId, refs})
         this.effect = effect
     }
     doAction(target){
@@ -101,14 +101,16 @@ export class Summon{
     }
 }
 
-export class Terrain{
-    constructor({terrain}){
+export class Terrain extends Tag{
+    constructor({terrain, tagId, refs}){
+        super({tagId, refs})
         this.terrain = terrain
     }
 }
 
-export class Illusion{
-    constructor({effect}){
+export class Illusion extends Tag{
+    constructor({effect, tagId, refs}){
+        super({tagId, refs})
         this.effect = effect
     }
     doAction(target){
@@ -116,8 +118,9 @@ export class Illusion{
     }
 }
 
-export class Inventory{
-    constructor({items}){
+export class Inventory extends Tag{
+    constructor({items, tagId, refs}){
+        super({tagId, refs})
         this.items = items
     }
     doAction(target){

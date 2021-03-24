@@ -12,6 +12,9 @@ export function ability ({characters, tiles, structures, rangeUtils, setAction, 
 
         let char = characters[currentCharacter]
         let selectedAbility = selectedAction.option
+
+        selectedAbility.tags = selectedAbility.buildTags()
+        console.log(selectedAbility)
         if(hasResources(char, selectedAbility)){
 
             let targetHexes = getTargets(selectedAbility, char, hex)
@@ -33,7 +36,7 @@ export function ability ({characters, tiles, structures, rangeUtils, setAction, 
                             spell.doAction(updatedTarget)
                         }
 
-                        let effect = selectedAbility.tags.find(el=> el.constructor.name == 'ApplyEffect')
+                        let effect = selectedAbility.tags.find(el=> el.constructor.name == 'Effect')
                         if(effect){
                             effect.doAction(updatedTarget)
                         }
@@ -63,7 +66,7 @@ export function ability ({characters, tiles, structures, rangeUtils, setAction, 
 
     const getTargets = (selectedAbility, char, hex) => {
 
-        let checkRange = selectedAbility.tags.find(el=> el.constructor.name == 'Melee' || el.constructor.name == 'Ranged')
+        let checkRange = selectedAbility.tags.find(el=>  el.constructor.name == 'Range')
         let range = 1
         if(checkRange){
             range = checkRange.doAction()

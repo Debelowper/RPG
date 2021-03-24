@@ -16,7 +16,7 @@ import CharacterMenu from './CharacterMenu'
 import Character from './Character'
 import {ring, line} from './Shapes'
 import RangeUtils from './RangeUtils'
-import { ShortcutProvider, ShortcutConsumer } from 'react-keybind'
+import { ShortcutConsumer } from 'react-keybind'
 
 export default function Game () {
 
@@ -86,90 +86,88 @@ export default function Game () {
     }
 
     return (
-        <ShortcutProvider>
-            <GameLayout
-                backgroundURL='/forest.jpg'
-                content={
-                    <MapController
-                        visibleTiles={rangeUtils.getLOSTiles(
-                            characterList[currentCharacter] ? characterList[currentCharacter].currentHex : null, 6
+        <GameLayout
+            backgroundURL='/forest.jpg'
+            content={
+                <MapController
+                    visibleTiles={rangeUtils.getLOSTiles(
+                        characterList[currentCharacter] ? characterList[currentCharacter].currentHex : null, 6
+                    )}
+                    size={size}
+                    setTile={actionFunction}
+                    selectedPattern={currentCharacter}
+                    load={load}
+                    unsetLoad = {() => setLoad(null)}
+                />
+            }
+
+            rightTopSpace = {
+                <div className='hidden'>
+
+                    <ShortcutConsumer>
+                        {()=>(
+                            <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)} edit={false}  />
                         )}
-                        size={size}
-                        setTile={actionFunction}
-                        selectedPattern={currentCharacter}
-                        load={load}
-                        unsetLoad = {() => setLoad(null)}
-                    />
-                }
-
-                rightTopSpace = {
-                    <div className='hidden'>
-
-                        <ShortcutConsumer>
-                            {()=>(
-                                <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)} edit={false}  />
-                            )}
-                        </ShortcutConsumer>
-                    </div>
-                }
+                    </ShortcutConsumer>
+                </div>
+            }
 
 
-                rightMenu = {
-                    <div className="menu-v">
-                        <TurnController
-                            turn={turn} setTurn={setTurn}
-                            isYourTurn={isYourTurn} setIsYourTurn={setIsYourTurn}
-                            characters={characterList}
-                            currentCharacter={currentCharacter}
-                            setAction={setAction}
-                        />
-
-                        <div className="sub-menu menu-v">
-                            <MapCRUD
-                                editable={false}
-                                loadIntoMap = {loadIntoMap}
-                                mapToSave={{structures:structures, tiles:tiles}}
-                                size={size}
-                            />
-                        </div>
-                    </div>
-                }
-
-                bottomMenu={
-                    <CharacterMenu
-                        currentCharacter={currentCharacter}
-                        setCurrentCharacter={setCurrentCharacter}
-                        setSelectedCharacter={setSelectedCharacter}
-                        characterList={characterList}
-                        isYourTurn={isYourTurn}
-                        setAction={setAction}
-                        setActionFunction={setActionFunction}
-                    />
-                }
-
-                bottomLeftSpace={
-                    <CharacterPanel
-                        character={characterList[currentCharacter]}
-                    />
-                }
-
-                bottomRightSpace={
-                    <ActionController
-                        setSelectedAction={setSelectedAction}
-                        selectedAction={selectedAction}
+            rightMenu = {
+                <div className="menu-v">
+                    <TurnController
+                        turn={turn} setTurn={setTurn}
+                        isYourTurn={isYourTurn} setIsYourTurn={setIsYourTurn}
                         characters={characterList}
-                        structures={structureList}
-                        rangeUtils={rangeUtils}
-                        tiles={tileList}
                         currentCharacter={currentCharacter}
-                        setActionFunction={setActionFunction}
                         setAction={setAction}
-                        inCombat={turn > 0 ? true : false}
-                        isYourTurn={isYourTurn}
                     />
-                }
-            />
-        </ShortcutProvider>
+
+                    <div className="sub-menu menu-v">
+                        <MapCRUD
+                            editable={false}
+                            loadIntoMap = {loadIntoMap}
+                            mapToSave={{structures:structures, tiles:tiles}}
+                            size={size}
+                        />
+                    </div>
+                </div>
+            }
+
+            bottomMenu={
+                <CharacterMenu
+                    currentCharacter={currentCharacter}
+                    setCurrentCharacter={setCurrentCharacter}
+                    setSelectedCharacter={setSelectedCharacter}
+                    characterList={characterList}
+                    isYourTurn={isYourTurn}
+                    setAction={setAction}
+                    setActionFunction={setActionFunction}
+                />
+            }
+
+            bottomLeftSpace={
+                <CharacterPanel
+                    character={characterList[currentCharacter]}
+                />
+            }
+
+            bottomRightSpace={
+                <ActionController
+                    setSelectedAction={setSelectedAction}
+                    selectedAction={selectedAction}
+                    characters={characterList}
+                    structures={structureList}
+                    rangeUtils={rangeUtils}
+                    tiles={tileList}
+                    currentCharacter={currentCharacter}
+                    setActionFunction={setActionFunction}
+                    setAction={setAction}
+                    inCombat={turn > 0 ? true : false}
+                    isYourTurn={isYourTurn}
+                />
+            }
+        />
     )
 }
 

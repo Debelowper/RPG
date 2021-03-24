@@ -1,9 +1,10 @@
 import {damage} from './Damage'
+import {Tag} from './Tags'
 
-export class Effect {
-    constructor( {effects, name, timeoutType, timeout, stackType='independent', stacks=[], maxStacks=2}){
+export class Effect extends Tag{
+    constructor( {name, timeoutType, timeout, stackType='independent', stacks=[], maxStacks=2, tagId, refs}){
+        super({tagId, refs})
         this.name = name
-        this.effect = effects
         this.timeoutType = timeoutType
         this.timeout = timeout
         this.stackType = stackType
@@ -35,50 +36,60 @@ export class Effect {
         char.effects[this.name] = this
         return updatedChar
     }
+
+    doAction(target){
+        this.putEffect(target)
+    }
 }
 
-export class DoT {
-    constructor({damage, stackable=false}){
-        this.damage = damage
+export class DoT extends Tag{
+    constructor({refs, stackable=false, tagId}){
+        super({tagId, refs, refs})
         this.stackable = stackable
     }
 
-    doEffect(target){
+    doAction(target){
         this.damage.doAction( target)
     }
 }
 
-export class Buff {
-    constructor({buffType, buffTarget, value, weaponTypes=[], damageTypes=[]}){
+export class Buff extends Tag{
+    constructor({buffType, buffTag, buffAttr, value, weaponTypes=[], damageTypes=[], abilityTypes=[], conditions=[], tagId, refs }){
+        super({tagId, refs})
         this.buffType = buffType
-        this.buffTarget = buffTarget
+        this.buffTag = buffTag
+        this.buffAttr = buffAttr
         this.weaponTypes = weaponTypes
         this.damageTypes = damageTypes
+        this.abilityTypes = abilityTypes
+        this.conditions = conditions
         this.value = value
         this.buffTypes = ['stat', 'actionBonus', 'resourceBonus']
     }
-    doEffect(){
+    doAction(){
         return
     }
 }
 
-export class Transform {
+export class Transform extends Tag{
 
 }
 
-export class Summon {
-    constructor({character, owner}){
+export class Summon extends Tag{
+    constructor({character, owner, tagId, refs}){
+        super({tagId, refs})
         this.character = character
         this.owner = owner
     }
 }
 
-export class Illusion {
+export class Illusion extends Tag{
 
 }
 
-export class DelayedDamage {
-    constructor(damage){
-        this.damage = damage
+export class DelayedDamage extends Tag{
+    constructor(delay, tagId, refs){
+        super({tagId, refs})
+        this.delay = delay
     }
 }

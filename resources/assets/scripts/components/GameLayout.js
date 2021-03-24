@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { ShortcutProvider, ShortcutConsumer } from 'react-keybind'
 
 export default function GameLayout({topContent, content, rightMenu, bottomMenu, backgroundURL, bottomRightSpace, bottomLeftSpace, rightTopSpace, rightBottomSpace}){
 
@@ -56,14 +57,16 @@ export default function GameLayout({topContent, content, rightMenu, bottomMenu, 
     }
 
     return (
-        <div className="flex flex-col h-full " style={{ backgroundRepeat: 'no-repeat', backgroundSize: '100% 100%', backgroundImage: `url(${backgroundURL})`}}>
-            <div className="flex flex-auto overflow-y-auto">
-                <div className="flex flex-grow overflow-x-auto overflow-y-auto" >
-                    {content}
+        <ShortcutProvider>
+            <div className="flex flex-col h-full " style={{ backgroundRepeat: 'no-repeat', backgroundSize: '100% 100%', backgroundImage: `url(${backgroundURL})`}}>
+                <div className="flex flex-auto overflow-y-auto">
+                    <div className="flex flex-grow overflow-x-auto overflow-y-auto" >
+                        {content}
+                    </div>
+                    {renderRightMenu()}
                 </div>
-                {renderRightMenu()}
+                {renderBottomMenu()}
             </div>
-            {renderBottomMenu()}
-        </div>
+        </ShortcutProvider>
     )
 }

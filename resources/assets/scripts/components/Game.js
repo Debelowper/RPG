@@ -17,6 +17,7 @@ import Character from './Character'
 import {ring, line} from './Shapes'
 import RangeUtils from './RangeUtils'
 import { ShortcutConsumer } from 'react-keybind'
+import InventoryPanel from './Inventory/InventoryPanel'
 
 export default function Game () {
 
@@ -39,6 +40,9 @@ export default function Game () {
     const [isYourTurn, setIsYourTurn] = useState(false)
     const [actionFunction, setActionFunction] = useState()
     const [action, setAction] = useState([])
+    const [inventories, setInventories] = useState([])
+
+    const [rightPanelOption, setRightPanelOption] = useState('mapLoader')
 
     const rangeUtils = new RangeUtils(tileList, structureList, characterList, tiles, structures)
 
@@ -85,6 +89,8 @@ export default function Game () {
         return await axios.post('Tile/load', {tileIDs:tileList})
     }
 
+
+
     return (
         <GameLayout
             backgroundURL='/forest.jpg'
@@ -102,19 +108,11 @@ export default function Game () {
             }
 
             rightTopSpace = {
-                <div className='hidden'>
-
-                    <ShortcutConsumer>
-                        {()=>(
-                            <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)} edit={false}  />
-                        )}
-                    </ShortcutConsumer>
-                </div>
-            }
-
-
-            rightMenu = {
                 <div className="menu-v">
+                    <div className = 'space-x-2'>
+                        <button className='btn-primary' onClick={() => setRightPanelOption('inventory')}>Inventory</button>
+                        <button className='btn-primary' onClick={() => setRightPanelOption('mapLoader')}>Map Loader</button>
+                    </div>
                     <TurnController
                         turn={turn} setTurn={setTurn}
                         isYourTurn={isYourTurn} setIsYourTurn={setIsYourTurn}
@@ -123,19 +121,49 @@ export default function Game () {
                         setAction={setAction}
                     />
 
-                    <div className="sub-menu menu-v">
-                        <MapCRUD
-                            editable={false}
-                            loadIntoMap = {loadIntoMap}
-                            mapToSave={{structures:structures, tiles:tiles}}
-                            size={size}
-                        />
+                    <div className='hidden'>
+
+                        <ShortcutConsumer>
+                            {()=>(
+                                <SizeMenu  size={size} setSize={setSize} setCurrentSize={() => setCurrentSize(size)} edit={false}  />
+                            )}
+                        </ShortcutConsumer>
                     </div>
+                </div>
+            }
+
+            rightMenu = {
+                <div className="menu-v flex-grow h-full">
+                    {
+                        rightPanelOption == 'mapLoader' ?
+                            <div className="sub-menu menu-v">
+                                <MapCRUD
+                                    editable={false}
+                                    loadIntoMap = {loadIntoMap}
+                                    mapToSave={{structures:structures, tiles:tiles}}
+                                    size={size}
+                                />
+                            </div>
+                        : ''
+                    }
+                    {
+                        rightPanelOption == 'inventory' ?
+                            <div className='sub-menu menu-v h-full'>
+                                <InventoryPanel
+                                    inventories={inventories}
+                                    setInventories={setInventories}
+                                    character={characterList[currentCharacter]}
+                                    setAction={setAction}
+                                />
+                            </div>
+                        : ''
+                    }
                 </div>
             }
 
             bottomMenu={
                 <CharacterMenu
+                    characterLimits={gameSetup.characterLimits}
                     currentCharacter={currentCharacter}
                     setCurrentCharacter={setCurrentCharacter}
                     setSelectedCharacter={setSelectedCharacter}
@@ -149,6 +177,7 @@ export default function Game () {
             bottomLeftSpace={
                 <CharacterPanel
                     character={characterList[currentCharacter]}
+                    openInventory={(el) => Object.keys(el).length > 0 ? setInventories([...inventories, el]) : null }
                 />
             }
 
@@ -182,4 +211,11 @@ const watchtower = {
     cover:'full',
     blocks_sight:true,
     enterable:false,
+}
+
+const gameSetup = {
+    characterLimits:{
+        elfSorcerer: 1,
+        draugr:2,
+    }
 }

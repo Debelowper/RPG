@@ -13,7 +13,8 @@ function ActionMenuMain ({setSelectedAction, selectedAction, actionList, shortcu
             let current = ''
             switch(el[0]){
                 case 'move': current = actions[el[0]] ? actions[el[0]].current : 'walk'; break
-                case 'mainHand': current = actions[el[0]] ?  actions[el[0]].current : 'punch'; break
+                case 'mainHand': current = actions[el[0]] ?  actions[el[0]].current : el[1][0].name; break
+                case 'offHand': current = actions[el[0]] ?  actions[el[0]].current : el[1][0].name; break
                 default: current = actions[el[0]] ?  actions[el[0]].current : '' ; break
             }
 

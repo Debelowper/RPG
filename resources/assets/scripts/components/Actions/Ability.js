@@ -12,9 +12,9 @@ export function ability ({characters, tiles, structures, rangeUtils, setAction, 
 
         let char = characters[currentCharacter]
         let selectedAbility = selectedAction.option
-
+        // console.log(char)
         selectedAbility.tags = selectedAbility.buildTags()
-        console.log(selectedAbility)
+        // console.log(selectedAbility)
         if(hasResources(char, selectedAbility)){
 
             let targetHexes = getTargets(selectedAbility, char, hex)

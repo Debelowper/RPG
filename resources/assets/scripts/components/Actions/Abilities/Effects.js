@@ -2,8 +2,8 @@ import {damage} from './Damage'
 import {Tag} from './Tags'
 
 export class Effect extends Tag{
-    constructor( {name, timeoutType, timeout, stackType='independent', stacks=[], maxStacks=2, tagId, refs}){
-        super({tagId, refs})
+    constructor( {name, timeoutType, timeout, stackType='independent', stacks=[], maxStacks=2, tagId, refs, tags}){
+        super({tagId, refs, tags})
         this.name = name
         this.timeoutType = timeoutType
         this.timeout = timeout
@@ -49,7 +49,7 @@ export class DoT extends Tag{
     }
 
     doAction(target){
-        this.damage.doAction( target)
+        this.tags.find(el => el.constructor.name == 'Damage' ?  el : null).doAction(target)
     }
 }
 

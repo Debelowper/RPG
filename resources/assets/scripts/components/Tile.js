@@ -40,7 +40,6 @@ export default class Tile extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState){
-        // console.log(layout)
         if(nextState.tile != this.state.tile ||
             nextState.structure != this.state.structure ||
             nextState.character != this.state.character ||
@@ -93,7 +92,7 @@ export default class Tile extends Component {
                     : ''}
 
                     {this.state.character ?
-                        this.renderHex(this.state.character)
+                        this.renderHex(this.state.character.split('[')[0])
                     : ''}
 
                     {this.state.effect ?

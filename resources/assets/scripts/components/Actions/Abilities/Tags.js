@@ -5,10 +5,10 @@ import {attack} from './Attack'
 import {DiffClass} from './DC'
 
 export class Tag{
-    constructor({tagId=0, refs=[]}){
+    constructor({tagId=0, refs=[], tags =[]}){
         this.tagId = tagId
         this.refs = refs
-        this.tags = []
+        this.tags = tags
     }
 }
 

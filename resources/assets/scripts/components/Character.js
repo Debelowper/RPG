@@ -3,8 +3,10 @@ import {Attack, Damage, Range, DC, Area, Self} from './Actions/Abilities/Tags'
 import {Effect, DoT, Buff} from './Actions/Abilities/Effects'
 import {Weapon, Armor, Trinket} from './Inventory/Equipment'
 
+
 export default class Character{
-    constructor({name, base, effects, losses, equipments, stats, resources, defenses, defensesPercentage, bonuses, dodge, actions, triggers, myTurn, initiative, baseInitiative, currentHex, url}){
+    constructor({player, name, base, effects, losses, equipments, stats, resources, defenses, defensesPercentage, bonuses, dodge, actions, triggers, myTurn, initiative, baseInitiative, currentHex, url}){
+        this.player = player
         this.name = name ? name : ''
         this.base = base
         this.effects = effects ? effects : {}
@@ -26,23 +28,26 @@ export default class Character{
         this.baseInitiative = baseInitiative ? baseInitiative : -1
         this.currentHex = currentHex ? currentHex : {}
         this.url = url ? url : ''
+
     }
 
     calculate(){
         let response = {...this}
+
         // response['stats'] = this.base.stats + this.effects.stats + this.equipments.stats
 
         response.bonuses = this.calcBonuses()
         response.url = this.base.url
         response.losses = this.calcLosses()
         response.resources = this.calcResources(response.bonuses.resourceBonuses, response.losses)
-        response.defenses = this.calcDefenses()
+        response.defenses = this.calcDefenses(response.bonuses)
         response.dodge = this.calcDodge()
-        response.defensesPercentage = this.calcDefensesPercentage()
+        response.defensesPercentage = this.calcDefensesPercentage(response.bonuses)
 
         response.actions = this.getActions(response.bonuses)
         // response.triggers = getTriggers()
-        //
+
+        console.log(response)
         return response
     }
 
@@ -50,11 +55,18 @@ export default class Character{
         let actions = {}
 
         let abilityOptions = [...this.base.abilities]
-        // console.log(this.base.abilities)
         abilityOptions = abilityOptions.map(el => el.addBonusToAbility(bonuses.actionBonuses))
         actions.move = this.base.move
-        actions.mainHand = this.makeWeaponAbilities(this.base.equipmentSlots.find(el => el.name == 'mainHand').item).map(el=> el.addBonusToAbility(bonuses.actionBonuses))
-        actions.offHand = this.makeWeaponAbilities(this.base.equipmentSlots.find(el => el.name == 'offHand').item).map(el=> el.addBonusToAbility(bonuses.actionBonuses))
+
+        const mainHandWeapon = Object.values(this.equipments).find(el => el.name == 'mainHand').item
+        const offHandWeapon = Object.values(this.equipments).find(el => el.name == 'offHand').item
+        actions.mainHand = Object.keys(mainHandWeapon).length > 0
+            ? this.makeWeaponAbilities(Object.values(this.equipments).find(el => el.name == 'mainHand').item).map(el=> el.addBonusToAbility(bonuses.actionBonuses))
+            : [this.base.mainHand]
+        actions.offHand = Object.keys(offHandWeapon).length > 0
+            ? this.makeWeaponAbilities(Object.values(this.equipments).find(el => el.name == 'offHand').item).map(el=> el.addBonusToAbility(bonuses.actionBonuses))
+            : [this.base.offHand]
+
         actions.ability1=abilityOptions
         actions.ability2=abilityOptions
         actions.ability3=abilityOptions
@@ -65,7 +77,7 @@ export default class Character{
         actions.ability8=abilityOptions
 
         actions.skill=[]
-
+        console.log(actions.offHand)
         return actions
     }
 
@@ -92,23 +104,19 @@ export default class Character{
             return rangeTag
         }
 
-        let weaponAbilities = weapon.constructor.name == 'Weapon' ? [] : [fists]
-        if(weaponAbilities.length == 0){
+        let weaponAbilities = []
+        if(weapon.constructor.name == 'Weapon'){
             this.base.weaponAbilities.forEach((item, i) => {
                 if(item.type == 'weaponAbility'){
                     if(!item.requirement || weapon.types.find(el => el == item.requirement)){
                         let newAbility = Object.assign({},item)
-
                         let newAtkBonus = weapon.bonus + item.attackBonus
-
                         let newDamage = []
 
                         newDamage.push(addAbilityBonusToWeaponDamage(item, weapon))
                         weapon.damage.extra.forEach(el => newDamage.push(el))
 
-
                         let rangeTag = calcAbilityRange(item, weapon)
-
 
                         newAbility.name = item.name
                         newAbility.cost = item.cost
@@ -157,7 +165,8 @@ export default class Character{
     }
 
     calcBonuses(){
-        let bonuses = {actionBonuses:{Damage:[], Attack:[], DC:[], Range:[], Area:[]}, resourceBonuses:[], defenseBonuses:{dodge:[], defenses:[], defensePercentage:[]}, skillBonuses:[]}
+        // bonuses = {actionBonuses:{Damage:[], Attack:[], DC:[], Range:[], Area:[]}, resourceBonuses:[], defenseBonuses:{dodge:[], defenses:[], defensePercentage:[]}, skillBonuses:[]}
+        let bonuses = this.base.bonuses
         Object.values(this.effects).forEach(el=>{
             el.tags.forEach(buff => {
                 if(buff.constructor.name == 'Buff'){
@@ -169,9 +178,11 @@ export default class Character{
                         }
                     }else if(buff.buffType == 'actionBonus'){
                         bonuses.actionBonuses[buff.buffTag] = [
-                            ...bonuses.actionBonuses[buff.buffTag] ,
+                            ...bonuses.actionBonuses[buff.buffTag],
                             {bonus:buff.value*el.stacks.length, buffAttr:buff.buffAttr, conditions:buff.conditions, damageTypes:buff.damageTypes, weaponTypes:buff.weaponTypes, abilityTypes:buff.abilityTypes }
                         ]
+                    }else if(buff.buffType == 'defenseBonus'){
+                        bonuses.defenseBonuses[buff.buffTag] = [...bonuses.defenseBonuses[buff.buffTag], {[buff.buffAttr]:buff.value}]
                     }
                 }
             })
@@ -180,39 +191,37 @@ export default class Character{
     }
 
     calcDodge(){
-        let dodge = this.base.dodge +
-            (this.effects.dodge ? this.effects.dodge : 0 ) +
-            (this.equipments.dodge ? this.equipments.dodge : 0)
+        let dodge = this.base.dodge
+        const armors = Object.values(this.equipments).filter(el => el.type == 'armor' ).map(el=> el.item).filter(el=> Object.keys(el).length > 0)
+        armors.forEach(el => {
+            dodge += el.dodge
+        })
+
         return dodge
     }
 
-    calcDefenses(){
+    calcDefenses(bonuses){
         let defenses = {...this.base.defenses}
-        if(this.effects.defenses){
-            Object.entries(this.effects.defenses).forEach( el => {
-                defenses[el[0]]= defenses[el[0]] + el[1]
-            })
-        }
-        if(this.equipments.defenses){
-            Object.entries(this.equipments.defenses).forEach( el => {
-                defenses[el[0]] = defenses[el[0]] - el[1]
-            })
-        }
+        const armors = Object.values(this.equipments).filter(el => el.type == 'armor' ).map(el=> el.item).filter(el=> Object.keys(el).length > 0)
+
+        armors.forEach(el => {
+            Object.entries(el.defenses).forEach(def => defenses[def[0]] += def[1])
+        })
+
+        bonuses.defenseBonuses.defenses.forEach(el => defenses[Object.keys(el)[0]] += Object.values(el)[0] )
+
         return defenses
     }
 
-    calcDefensesPercentage(){
+    calcDefensesPercentage(bonuses){
         let defensesPercentage = {...this.base.defensesPercentage}
-        if(this.effects.defensesPercentage){
-            Object.entries(this.effects.defensesPercentage).forEach( el => {
-                defensesPercentage[el[0]]= defensesPercentage[el[0]] + el[1]
-            })
-        }
-        if(this.equipments.defensesPercentage){
-            Object.entries(this.equipments.defensesPercentage).forEach( el => {
-                defensesPercentage[el[0]] = defensesPercentage[el[0]] - el[1]
-            })
-        }
+        const armors = Object.values(this.equipments).filter(el => el.type == 'armor' ).map(el=> el.item).filter(el=> Object.keys(el).length > 0)
+
+        armors.forEach(el => {
+            Object.entries(el.defensesPercentage).forEach(def => defensesPercentage[def[0]] += def[1])
+        })
+        bonuses.defenseBonuses.defensePercentage.forEach(el => defensesPercentage[Object.keys(el)[0]] += Object.values(el)[0] )
+
         return defensesPercentage
     }
 
@@ -246,226 +255,77 @@ export default class Character{
 
     }
 
+    equip(equipment){
+
+        const applyEquipmentBuffs = (equipment) => {
+
+            let equipEffect = new Effect({
+                name:'equipEffect',
+                timeoutType:'permanent',
+                timeout:0,
+                tagId:9999,
+            })
+
+            if(Object.keys(equipment.item).length > 0){
+                if(equipment.item.buffs){
+                    equipment.item.buffs.forEach(buff=> equipEffect.tags.push(buff))
+                }
+            }
+            return equipEffect
+        }
+
+        const name = equipment.name
+
+        if(this.equipments[name] ){
+            if(Object.keys(this.equipments[name].item).length > 0){
+                console.log('you already have an equipped item');
+                return
+            }
+        }
+
+        const itemEffects = applyEquipmentBuffs(equipment)
+        this.effects[name + '_buffs'] = itemEffects
+        this.equipments[name] = equipment
+        return this
+    }
+
+    unequip(equipment){
+
+        const name = equipment.name
+        delete this[name + '_buffs']
+        this.equipments[name].item = {}
+        return this
+    }
+
     passTurn(){
         let resp = {}
         resp.effects = {}
 
         Object.entries(this.effects).forEach(effect=>{
-            effect[1].timeout -= 1
+            if(effect.timeoutType != 'permanent'){
+                effect[1].timeout -= 1
 
-            effect[1].effect.forEach(el => {
-                effect[1].stacks.forEach(stack=>{
-                    el.doEffect(this)
+                effect[1].tags.forEach(el => {
+                    effect[1].stacks.forEach(stack=>{
+                        el.doAction(this)
+                    })
                 })
-            })
 
-            effect[1].stacks = effect[1].stacks.map(el=>{
-                return el-1
-            })
-            effect[1].stacks = effect[1].stacks.filter(el => el > 0)
+                effect[1].stacks = effect[1].stacks.map(el=>{
+                    return el-1
+                })
+                effect[1].stacks = effect[1].stacks.filter(el => el > 0)
 
-            if(effect[1].timeout > 0){
-                resp.effects[effect[0]] = effect[1]
+                if(effect[1].timeout > 0){
+                    resp.effects[effect[0]] = effect[1]
+                }
             }
-        })
 
-        resp.initiative = this.baseInitiative
-        resp.losses = {...this.losses, speed:0}
+            resp.initiative = this.baseInitiative
+            resp.losses = {...this.losses, speed:0}
+        })
 
         return resp
     }
-}
 
-export function getChar(name){
-    return characters[name]
-}
-
-
-const fists = new Ability({
-    tags:[
-        new Attack({
-            tagId:1,
-            bonus: 0,
-            tags:[3, 5],
-        }),
-        new Range({tagId:2, range:1, type:'melee'}),
-        new DC({
-            tagId:3,
-            value: 10,
-            refs:[7]
-        }),
-        new Effect({
-            refs:[6 ], id:7,
-            name:'bleed', timeoutType:'turn', timeout: 3,
-        }),
-        new DoT({tagId:6, refs:[4] , stackable: true, maxStacks:3}),
-        new Damage({tagId:4, type:'pure', damage:2, bypassDef:'both'}),
-        new Damage({tagId:5, type:'blunt', damage:5, bypassDef:'none'}),
-    ],
-    name:'punch',
-    cost:[{resource:'actions', cost:1}]
-})
-
-const atk = new Ability({
-    tags:[],
-    type:'weaponAbility',
-    abilityClass:['weapon'],
-    attackBonus:0,
-    damageBonus:[{type:'slashing', bonus:1}],
-    requirements:['mainHand'],
-    name:'attack',
-    cost:[{resource:'actions', cost:1}],
-})
-
-
-const fireball = new Ability({
-    name:'fireball',
-    abilityClass:['spell', 'fire', 'ranged'],
-    tags:[
-        new DC({
-            tagId:1,
-            value:10,
-            type:'agility',
-            damage:[],
-            refs:[3]
-        }),
-        new Damage({
-            tagId:3,
-            type:'fire',
-            damage:25,
-            bypassDef:'none'
-        }),
-        new Area({
-            tagId:2,
-            radius: 3,
-            shape: 'circle'
-        }),
-        new Range({
-            tagId:4,
-            range:6,
-            blockable:true,
-            type:'ranged',
-        })
-    ],
-    cost:[{resource:'actions', cost:1}, /*{resource:'spellslot1', cost:1}*/]
-})
-
-const unholyRage = new Ability({
-    name: 'unholyRage',
-    abilityClass:['ability', 'self'],
-    cost:[{resource:'actions', cost:1}],
-    tags:[
-        new Effect({
-            tagId:1,
-            name:'unholyRage', timeoutType:'turn', timeout: 3, maxStacks:2,
-            refs:[3,4,5],
-        }),
-        new Buff({tagId:3 ,buffType: 'actionBonus', buffTag: 'Damage', buffAttr: 'damage', value:5, weaponTypes:['melee'], damageTypes:['slashing', 'blunt', 'piercing']}),
-        new Buff({tagId:4 ,buffType: 'actionBonus', buffTag: 'Attack', buffAttr:'bonus', value:5, weaponTypes:['melee'], }),
-        new Buff({tagId:5 ,buffType: 'resourceBonus', buffTag: 'hp', value:20}),
-        new Self({tagId:2})
-    ]
-})
-
-const empowerFire = new Ability({
-    name: 'empowerFire',
-    abilityClass:['spell', 'fire', 'self'],
-    cost:[{resource:'actions', cost:1}],
-    tags:[
-        new Effect({
-            tagId:1, name:'empowerFire', timeoutType:'turn',
-            timeout: 3, maxStacks:1,  refs:[3,4,5],
-        }),
-        new Buff({tagId:5 ,buffType: 'actionBonus', buffTag: 'Damage', buffAttr: 'damage', value:5, damageTypes:['fire']}),
-        new Buff({tagId:3 ,buffType: 'actionBonus', buffTag: 'DC', buffAttr: 'value', value:5}),
-        new Buff({tagId:4 ,buffType: 'actionBonus', buffTag: 'Range', buffAttr: 'range', value:1, conditions:['ranged'] }),
-        new Self({tagId:2}),
-    ]
-})
-
-let walk = new Move({
-    type:'move', name:'walk', value: 100,
-})
-let fly = new Move({
-    type:'move', name:'fly', value: 0,
-})
-let swim = new Move({
-    type:'move', name:'swim', value: 50,
-})
-let climb = new Move({
-    type:'move', name:'climb', value: 25,
-})
-let move = [walk, fly, swim, climb]
-
-const sword = new Weapon({
-    name:'sword',
-    types:['melee'],
-    range:1,
-    bonus:2,
-    weight:5,
-    damage:{primary: new Damage({type:'slashing', damage:15, bypassDef:'none'}), extra:[new Damage({type:'fire', damage:3, bypassDef:'none'})]},
-    slots:['mainHand', 'offHand'],
-})
-
-const wand = new Weapon({
-    name:'wand',
-    types:['ranged'],
-    range:5,
-    bonus:4,
-    weight:2,
-    damage:{primary: new Damage({type:'ice', damage:10, bypassDef:'none'}), extra:[]},
-    slots:['mainHand', 'offHand'],
-})
-
-const characters = {
-    elfSorcerer: {
-        name:'elfSorcerer',
-        stats:{},
-        resources:{hp:50,actions:10, speed:100 },
-        defenses:{piercing:0, slashing:2, blunt:0, fire:5, ice:5, radiant:0, dark:0, thunder:5, pure:0},
-        defensesPercentage:{piercing:0, slashing:0, blunt:0, fire:0, ice:0, radiant:0, dark:0, thunder:0, pure:0},
-        equipmentSlots:[
-            {name:'mainHand', type:'weapon', item:wand }, {name:'offHand', type:'weapon', item:{} },
-            {name:'armor', type:'armor', item:{} }, {name:'gloves', type:'armor', item:{} }, {name:'necklace', type:'trinket', item:{} }
-        ],
-        permabuffs:{},
-        dodge:10,
-        move:move,
-        mainHand:fists,
-        offHand:fists,
-        weaponAbilities:[
-            atk
-        ],
-        abilities:[
-            fireball,
-            empowerFire,
-            // magicMissile:{types:['damage', 'ranged', 'attack'], damage:[{damage:15, type:'blunt'}], bonus:999, range:6 , cost:[{resource:'spellslot1', cost:1}, {resource:'actions', cost:1}] },
-        ],
-
-        url:'/sorcerer-elf.png',
-        initiativeBonus:3,
-    },
-    draugr:{
-        name:'draugr',
-        resources:{hp:80,actions:10, speed:100 },
-        defenses:{piercing:8, slashing:2, blunt:4, fire:-2, ice:5, radiant:-4, dark:4, thunder:0},
-        defensesPercentage:{piercing:0, slashing:0, blunt:0, fire:0, ice:0, radiant:0, dark:0, thunder:0},
-        equipmentSlots:[
-            {name:'mainHand', type:'weapon', item:sword }, {name:'offHand', type:'weapon', item:{} },
-            {name:'armor', type:'armor', item:{} }, {name:'gloves', type:'armor', item:{} }, {name:'necklace', type:'trinket', item:{} }
-        ],
-        permabuffs:{},
-        dodge:0,
-        move:move,
-        mainHand:fists,
-        offHand:fists,
-        weaponAbilities:[
-            atk
-        ],
-        abilities:[
-            unholyRage
-        ],
-        url:'/draugr.png',
-        initiativeBonus:3,
-    },
 }

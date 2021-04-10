@@ -19,22 +19,22 @@ export class Ability extends Action{
     }
 
     buildTags(){
-        const getTag = (id) => {
-            return this.tags.find(el => el.tagId == id)
+        const getTag = (id, tags) => {
+            return tags.find(el => el.tagId == id)
         }
 
         const isTagMorphed = (tag) => {
             return tag.refs.length == tag.tags.length
         }
 
-        const morphRefs = (tag) => {
-            let tags = tag.refs.map(ref=>{
-                let x = getTag(ref)
+        const morphRefs = (tag, tags) => {
+            let newTags = tag.refs.map(ref=>{
+                let x = getTag(ref, tags)
                 return isTagMorphed(x) ? x : null
             })
-            tags = tags.filter(el => el != null)
+            newTags = newTags.filter(el => el != null)
             let resp = tag.constructor(tag)
-            resp.tags = tags
+            resp.tags = newTags
             return resp
         }
 
@@ -56,7 +56,7 @@ export class Ability extends Action{
         let builtTags = [...this.tags]
         while( !areAllMorphed(builtTags)){
             builtTags = builtTags.map(tag => {
-                return morphRefs(tag)
+                return morphRefs(tag, builtTags)
             })
         }
         builtTags = clearDuplicates(builtTags)

@@ -17,7 +17,7 @@ export default function GameLayout({topContent, content, rightMenu, bottomMenu, 
                             : ''
                         }
                     </div>
-                    <div className="row-span-4">
+                    <div className="row-span-4 h-full w-full">
                         {rightMenu}
                     </div>
                     <div className="row-span-1">

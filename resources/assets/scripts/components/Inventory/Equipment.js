@@ -1,40 +1,41 @@
-export class Equipment {
-    constructor({name, actions=[], weight, buffs=[], craft={}, cost=0, durability = null, slots}){
-        this.name = name
+import {Item} from './Inventory'
+
+export class Equipment extends Item{
+    constructor({name, actions=[], weight, buffs=[], craft={}, cost=0, durability = null, slots, equipCost={resource:'actions', cost:1}}){
+        super({name, weight, cost, consumable:'no'})
         this.actions = actions
-        this.weight = weight
         this.buffs = buffs
         this.craft = craft
-        this.cost = cost
         this.durability = durability
-        this.slots
+        this.slots = slots
+        this.isEquipped = false
+        this.equipCost = equipCost
     }
-
 }
 
 export class Trinket extends Equipment{
-    constructor({name, actions, weight, buffs, craft, cost, durability}){
-        super({ name:name, actions:actions, weight:weight, buffs:buffs, craft:craft, cost:cost, durability:durability})
-        this.equipCost = {resource:'actions', cost:1}
+    constructor({name, actions, weight, buffs, craft, cost, durability, slots, equipCost}){
+        super({ name, actions, weight, buffs, craft, cost, durability, slots, equipCost})
     }
 }
 
 export class Armor extends Equipment{
-    constructor({types, name, actions, weight, buffs, craft, cost, durability}){
-        super({ name:name, actions:actions, weight:weight, buffs:buffs, craft:craft, cost:cost, durability:durability})
+    constructor({types, name, actions, weight, buffs, craft, cost, durability, defenses={}, defensesPercentage={}, dodge=0, slots, equipCost}){
+        super({ name, actions, weight, buffs, craft, cost, durability, slots, equipCost})
         this.types = types
-        this.equipCost = {resource:'actions', cost:1}
+        this.defenses = defenses
+        this.defensesPercentage = defensesPercentage
+        this.dodge = dodge
     }
 }
 
 export class Weapon extends Equipment{
-    constructor( {damage, types, name, actions, weight, buffs, craft, cost, durability, slots, effects=[], bonus=0, range}){
-        super({ name:name, actions:actions, weight:weight, buffs:buffs, craft:craft, cost:cost, durability:durability, slots:slots})
+    constructor( {damage, types, name, actions, weight, buffs, craft, cost, durability, slots, effects=[], bonus=0, range, equipCost}){
+        super({ name, actions, weight, buffs, craft, cost, durability, slots, equipCost})
         this.damage = damage
         this.bonus = bonus
         this.range = range
         this.types = types
         this.effects = effects
-        this.equipCost = {resource:'actions', cost:1}
     }
 }

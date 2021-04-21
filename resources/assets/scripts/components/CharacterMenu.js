@@ -252,6 +252,14 @@ const elfSorcererBag= new Bag({
     items:[wand],
 })
 
+const fireAmulet = new Trinket({
+    name:'fireAmulet',
+    weight:0.5,
+    buffs:[
+        new Buff({tagId:0 ,buffType: 'actionBonus', buffTag: 'Damage', buffAttr: 'damage', value:3, damageTypes:['fire']}),
+    ],
+})
+
 
 
 const characters = {
@@ -265,7 +273,7 @@ const characters = {
         equipmentSlots:{
             mainHand:{name:'mainHand', type:'weapon', item:wand }, offHand:{name:'offHand', type:'weapon', item:{} },
             armor:{name:'armor', type:'armor', item:leatherJacket }, gloves:{name:'gloves', type:'armor', item:leatherGloves },
-            necklace:{name:'necklace', type:'trinket', item:{} },bag:{name:'bag', type:'inventory', item:elfSorcererBag}
+            amulet:{name:'amulet', type:'trinket', item:fireAmulet },bag:{name:'bag', type:'inventory', item:elfSorcererBag}
         },
         permabuffs:{},
         dodge:10,
@@ -292,7 +300,7 @@ const characters = {
         equipmentSlots:{
             mainHand:{name:'mainHand', type:'weapon', item:sword }, offHand:{name:'offHand', type:'weapon', item:{} },
             armor:{name:'armor', type:'armor', item:{} }, gloves:{name:'gloves', type:'armor', item:{} },
-            necklace:{name:'necklace', type:'trinket', item:{} },bag:{name:'bag', type:'inventory', item:{}}
+            amulet:{name:'amulet', type:'trinket', item:{} },bag:{name:'bag', type:'inventory', item:{}}
         },
         permabuffs:{},
         dodge:0,

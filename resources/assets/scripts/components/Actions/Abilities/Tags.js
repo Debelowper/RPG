@@ -94,10 +94,11 @@ export class Self extends Tag{
 export class Summon extends Tag{
     constructor({effect, tagId, refs}){
         super({tagId, refs})
-        this.effect = effect
+
+
     }
-    doAction(target){
-        this.effect.putEffect(target)
+    doAction(target, character){
+        spawn(character)
     }
 }
 

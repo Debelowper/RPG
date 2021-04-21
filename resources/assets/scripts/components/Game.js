@@ -201,7 +201,7 @@ export default function Game () {
 }
 
 
-const watchtower = {
+const watchtower = { 
     name:'watchtower',
     id:'watchtower',
     image_id:'watchtower',

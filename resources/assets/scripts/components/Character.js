@@ -77,7 +77,8 @@ export default class Character{
         actions.ability8=abilityOptions
 
         actions.skill=[]
-        console.log(actions.offHand)
+
+        actions.name = this.name
         return actions
     }
 
@@ -166,7 +167,8 @@ export default class Character{
 
     calcBonuses(){
         // bonuses = {actionBonuses:{Damage:[], Attack:[], DC:[], Range:[], Area:[]}, resourceBonuses:[], defenseBonuses:{dodge:[], defenses:[], defensePercentage:[]}, skillBonuses:[]}
-        let bonuses = this.base.bonuses
+        let bonuses = new Bonuses()
+
         Object.values(this.effects).forEach(el=>{
             el.tags.forEach(buff => {
                 if(buff.constructor.name == 'Buff'){
@@ -179,8 +181,9 @@ export default class Character{
                     }else if(buff.buffType == 'actionBonus'){
                         bonuses.actionBonuses[buff.buffTag] = [
                             ...bonuses.actionBonuses[buff.buffTag],
-                            {bonus:buff.value*el.stacks.length, buffAttr:buff.buffAttr, conditions:buff.conditions, damageTypes:buff.damageTypes, weaponTypes:buff.weaponTypes, abilityTypes:buff.abilityTypes }
+                            {bonus:buff.value*el.stacks.length, buffAttr:buff.buffAttr, conditions:buff.conditions, damageTypes:buff.damageTypes, weaponTypes:buff.weaponTypes, abilityTypes:buff.abilityTypes}
                         ]
+
                     }else if(buff.buffType == 'defenseBonus'){
                         bonuses.defenseBonuses[buff.buffTag] = [...bonuses.defenseBonuses[buff.buffTag], {[buff.buffAttr]:buff.value}]
                     }
@@ -264,6 +267,7 @@ export default class Character{
                 timeoutType:'permanent',
                 timeout:0,
                 tagId:9999,
+                stacks:[1],
             })
 
             if(Object.keys(equipment.item).length > 0){
@@ -284,6 +288,7 @@ export default class Character{
         }
 
         const itemEffects = applyEquipmentBuffs(equipment)
+
         this.effects[name + '_buffs'] = itemEffects
         this.equipments[name] = equipment
         return this
@@ -328,4 +333,13 @@ export default class Character{
         return resp
     }
 
+}
+
+class Bonuses {
+    constructor(){
+        this.actionBonuses = {Damage:[], Attack:[], DC:[], Range:[], Area:[]}
+        this.resourceBonuses= []
+        this.defenseBonuses = {dodge:[], defenses:[], defensePercentage:[]},
+        this.skillBonuses = []
+    }
 }

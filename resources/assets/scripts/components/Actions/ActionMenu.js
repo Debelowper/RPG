@@ -6,16 +6,22 @@ function ActionMenuMain ({setSelectedAction, selectedAction, actionList, shortcu
 
     const [options, setOptions] = useState(false)
     const [actions, setActions] = useState({})
+    const [char, setChar] = useState('')
 
     useEffect(()=>{
         let newActions = {}
+        let isNewChar = false
+        if(char != actionList.name){
+            isNewChar=true
+            setChar(actionList.name)
+        }
         Object.entries(actionList).forEach(el =>{
             let current = ''
             switch(el[0]){
-                case 'move': current = actions[el[0]] ? actions[el[0]].current : 'walk'; break
-                case 'mainHand': current = actions[el[0]] ?  actions[el[0]].current : el[1][0].name; break
-                case 'offHand': current = actions[el[0]] ?  actions[el[0]].current : el[1][0].name; break
-                default: current = actions[el[0]] ?  actions[el[0]].current : '' ; break
+                case 'move': current = actions[el[0]] && !isNewChar ? actions[el[0]].current : 'walk'; break
+                case 'mainHand': current = actions[el[0]] && !isNewChar ?  actions[el[0]].current : el[1][0].name; break
+                case 'offHand': current = actions[el[0]] && !isNewChar ?  actions[el[0]].current : el[1][0].name; break
+                default: current = actions[el[0]] && !isNewChar ?  actions[el[0]].current : '' ; break
             }
 
             newActions[el[0]] = {'current':current, options: el[1] }
@@ -34,6 +40,7 @@ function ActionMenuMain ({setSelectedAction, selectedAction, actionList, shortcu
         }
 
     },[JSON.stringify(actions), JSON.stringify(options), JSON.stringify(selectedAction)])
+
 
     const toggleOptions = () => {
         if(selectedAction){
